@@ -1,4 +1,5 @@
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQTextMessage;
 
 import javax.jms.*;
 
@@ -19,7 +20,7 @@ public class Consumer {
             MessageConsumer consumer = session.createConsumer(destination);
 
             // Wait for a message
-            Message message = consumer.receive(1000);
+            /*Message message = consumer.receive(100);
 
             if (message instanceof TextMessage) {
                 TextMessage textMessage = (TextMessage) message;
@@ -27,11 +28,28 @@ public class Consumer {
                 System.out.println("Received: " + text);
             } else {
                 System.out.println("Received: " + message);
-            }
+            }*/
 
-            consumer.close();
-            session.close();
-            connection.close();
+            MessageListener listener = new MessageListener() {
+                public void onMessage(Message message) {
+                    if (message instanceof TextMessage) {
+                        ActiveMQTextMessage textMessage = (ActiveMQTextMessage) message;
+                        try {
+                            Thread.sleep(3000);
+                            String text = textMessage.getText();
+                            System.out.println("Received: " + text);
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        System.out.println("Received: " + message);
+                    }
+                }
+            };
+            consumer.setMessageListener(listener);
+
+
         }catch(Exception ex){
             ex.printStackTrace();
         }
