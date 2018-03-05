@@ -11,7 +11,7 @@ public class Consumer {
 
             // Create a Session
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            
+
             // Create the destination (Topic or Queue)
             Destination destination = session.createQueue("Evrim");
 

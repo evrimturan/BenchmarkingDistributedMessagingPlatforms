@@ -20,12 +20,14 @@ public class Producer {
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
             // Create a messages
-            String text = "Evrimin mesaji";
-            TextMessage message = session.createTextMessage(text);
+            for(int i = 0;i<5;i++){
+                String text = "Al proje bitti " + i;
+                TextMessage message = session.createTextMessage(text);
 
-            // Tell the producer to send the message
-            //System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
-            producer.send(message);
+                // Tell the producer to send the message
+                //System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
+                producer.send(message);
+            }
 
             // Clean up
             session.close();
