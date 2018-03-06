@@ -5,7 +5,7 @@ import javax.jms.*;
 
 public class Consumer {
     public static void main(String[] args) {
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://159.89.102.49:61616");
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://159.65.120.184:61616");
         try{
             Connection connection = connectionFactory.createConnection("admin","admin");
             connection.start();
