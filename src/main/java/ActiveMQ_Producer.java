@@ -2,7 +2,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 
-public class Producer {
+public class ActiveMQ_Producer {
     public static void main(String[] args) {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://159.89.102.49:61616");
         try{
