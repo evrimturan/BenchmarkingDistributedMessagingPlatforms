@@ -13,7 +13,7 @@ public class RabbitMQ_Producer {
         factory.setUsername("admin");
         factory.setPassword("admin");
         factory.setPort(5672);
-        factory.setHost("159.65.120.184");
+        factory.setHost("159.89.102.49");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
