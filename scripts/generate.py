@@ -7,21 +7,22 @@ def __start__():
     statement = 'SELECT count\(*\) FROM customers;'
     try:
         _connector.cmd_query(statement)
+        print('Table exists.')
     except mysql.connector.errors.ProgrammingError:
         print('Table does not exist. Creating...')
-        _statement = 'CREATE TABLE \'customers\' \(' \
+        _statement = 'CREATE TABLE customers (' \
                      'ID int,' \
-                     'FirstName varchar\(64\),' \
-                     'LastName varchar\(64\),' \
-                     'Address varchar\(256\),' \
-                     'Fee DECIMAL\(5,2\)' \
-                     '\)\;'  #add more if necessary
+                     'FirstName varchar(64),' \
+                     'LastName varchar(64),' \
+                     'Address varchar(256),' \
+                     'Fee DECIMAL(5,2)' \
+                     ');'  #add more if necessary
         _connector.cmd_query(_statement)
-
+        print('Table created.')
     _connector.close()
 
 
-def __generate__(_con):
+def __generate__():
     pass
 
 
