@@ -4,7 +4,7 @@ import mysql.connector
 def __start__():
     print('Starting insertion.')
     _connector = mysql.connector.connect(user='producer', password='producerdb1123@', host='207.154.192.177', database='BILLING_RECORDS', port=23306)
-    statement = 'SELECT count\(*\) FROM customers;'
+    statement = 'SELECT count(*) FROM customers;'
     try:
         _connector.cmd_query(statement)
         print('Table exists.')
