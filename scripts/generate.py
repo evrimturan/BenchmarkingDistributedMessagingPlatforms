@@ -21,7 +21,7 @@ def __start__():
     _connector.close()
 
 
-def __generate__():
+def __generate__(_con):
     pass
 
 
