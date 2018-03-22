@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 //import KafkaConsumer packages
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+//import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

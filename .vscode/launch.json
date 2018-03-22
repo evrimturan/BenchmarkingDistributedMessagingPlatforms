@@ -1,0 +1,81 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ActiveMQ_Consumer<SeniorDesign>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "ActiveMQ_Consumer",
+            "projectName": "SeniorDesign",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ActiveMQ_Producer<SeniorDesign>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "ActiveMQ_Producer",
+            "projectName": "SeniorDesign",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Kafka_Consumer<SeniorDesign>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "Kafka_Consumer",
+            "projectName": "SeniorDesign",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Kafka_Producer<SeniorDesign>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "Kafka_Producer",
+            "projectName": "SeniorDesign",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-RabbitMQ_Consumer<SeniorDesign>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "RabbitMQ_Consumer",
+            "projectName": "SeniorDesign",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-RabbitMQ_Producer<SeniorDesign>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopOnEntry": false,
+            "mainClass": "RabbitMQ_Producer",
+            "projectName": "SeniorDesign",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 0
+        }
+    ]
+}
