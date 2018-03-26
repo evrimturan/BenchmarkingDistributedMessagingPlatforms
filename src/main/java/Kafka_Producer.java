@@ -16,13 +16,14 @@ public class Kafka_Producer {
     public static void main(String[] args){
 
         //Assign topicName to string variable
-        String topicName = "musa";
+        String topicName = "failsafe";
 
         // create instance for properties to access producer configs
         Properties props = new Properties();
 
         //Assign localhost id
         props.put("bootstrap.servers", "159.89.102.49:9092");
+        //props.put("bootstrap.servers", "159.65.120.184:9092");
 
         //Set acknowledgements for producer requests.
         props.put("acks", "all");
@@ -48,7 +49,7 @@ public class Kafka_Producer {
             producer = new KafkaProducer<String, String>(props);
 
             for(int i = 0; i < 10; i++) {
-                producer.send(new ProducerRecord<String, String>(topicName, Integer.toString(i)));
+                producer.send(new ProducerRecord<String, String>(topicName, "Message " + Integer.toString(i + 100)));
                 System.out.println("Message sent successfully");
             }
         }

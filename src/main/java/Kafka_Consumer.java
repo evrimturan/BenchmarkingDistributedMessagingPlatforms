@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 //import KafkaConsumer packages
-//import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -14,7 +14,8 @@ public class Kafka_Consumer {
     public static void main(String[] args){
 
         Properties props = new Properties();
-        props.put("bootstrap.servers", "159.89.102.49:9092");
+        props.put("bootstrap.servers", "159.65.120.184:9092");
+        //props.put("bootstrap.servers", "159.89.102.49:9092");
         props.put("group.id", "group-1");
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
@@ -25,12 +26,12 @@ public class Kafka_Consumer {
         KafkaConsumer<String, String> consumer = null;
         try {
             consumer = new KafkaConsumer<String, String>(props);
-            consumer.subscribe(Arrays.asList("musa"));
+            consumer.subscribe(Arrays.asList("failsafe"));
             while (true) {
                 Thread.sleep(2000);
                 ConsumerRecords<String, String> records = consumer.poll(100);
                 for (ConsumerRecord<String, String> record : records) {
-                    System.out.println("value = " + record.value());
+                    System.out.println("Received = " + record.value());
                 }
                 System.out.println("Here");
             }
