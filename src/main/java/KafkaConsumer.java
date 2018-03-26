@@ -9,7 +9,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 
-public class Kafka_Consumer {
+public class KafkaConsumer {
 
     public static void main(String[] args){
 
@@ -23,9 +23,9 @@ public class Kafka_Consumer {
         props.put("session.timeout.ms", "30000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        KafkaConsumer<String, String> consumer = null;
+        org.apache.kafka.clients.consumer.KafkaConsumer<String, String> consumer = null;
         try {
-            consumer = new KafkaConsumer<String, String>(props);
+            consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<String, String>(props);
             consumer.subscribe(Arrays.asList("failsafe"));
             while (true) {
                 Thread.sleep(2000);

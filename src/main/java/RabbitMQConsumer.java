@@ -2,7 +2,7 @@ import com.rabbitmq.client.*;
 
 import java.io.IOException;
 
-public class RabbitMQ_Consumer {
+public class RabbitMQConsumer {
 
     private final static String QUEUE_NAME = "hello";
 

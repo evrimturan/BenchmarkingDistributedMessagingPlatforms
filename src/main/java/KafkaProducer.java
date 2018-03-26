@@ -11,7 +11,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 //Create java class named “SimpleProducer”
-public class Kafka_Producer {
+public class KafkaProducer {
 
     public static void main(String[] args){
 
@@ -46,7 +46,7 @@ public class Kafka_Producer {
 
         Producer<String, String> producer = null;
         try {
-            producer = new KafkaProducer<String, String>(props);
+            producer = new org.apache.kafka.clients.producer.KafkaProducer<String, String>(props);
 
             for(int i = 0; i < 10; i++) {
                 producer.send(new ProducerRecord<String, String>(topicName, "Message " + Integer.toString(i + 100)));

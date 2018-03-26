@@ -2,7 +2,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-public class RabbitMQ_Producer {
+public class RabbitMQProducer {
 
     private final static String QUEUE_NAME = "hello";
 

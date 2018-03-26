@@ -2,7 +2,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 
-public class ActiveMQ_Producer {
+public class ActiveMQProducer {
     public static void main(String[] args) {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://ubuntu-s-1vcpu-1gb-fra1-01:61616");
         try{

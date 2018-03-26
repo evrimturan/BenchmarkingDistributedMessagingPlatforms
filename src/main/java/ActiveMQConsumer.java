@@ -3,7 +3,7 @@ import org.apache.activemq.command.ActiveMQTextMessage;
 
 import javax.jms.*;
 
-public class ActiveMQ_Consumer {
+public class ActiveMQConsumer {
     public static void main(String[] args) {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://ubuntu-s-1vcpu-1gb-fra1-05:61616");
         try{
