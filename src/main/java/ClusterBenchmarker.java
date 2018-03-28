@@ -1,8 +1,3 @@
-import org.apache.kafka.common.Cluster;
-
-import javax.security.auth.login.AppConfigurationEntry;
-import javax.security.auth.login.Configuration;
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,7 +39,7 @@ public class ClusterBenchmarker {
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello producer:)");
             long start = System.currentTimeMillis();
-            
+
 
             long finish = System.currentTimeMillis();
         }
