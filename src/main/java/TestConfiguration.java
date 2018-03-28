@@ -13,6 +13,7 @@ public class TestConfiguration {
     private double messageSize;
     private int topicNum;
     private boolean persistent;
+    private double dataSize;
     private Configuration conf;
 
     public TestConfiguration(String Filename){
@@ -24,12 +25,14 @@ public class TestConfiguration {
             topicNum = conf.getInt("topic.amount");
             persistent = conf.getBoolean("persistent");
             messageSize = conf.getDouble("message.size");
+            dataSize = conf.getDouble("data.size");
 
         } catch (ConfigurationException e) {
             Logger.getLogger(TestConfiguration.class.toString()).log(Level.SEVERE, e.toString());
             System.exit(1);
         } catch(ConversionException ex){
             messageSize = (double)conf.getInt("message.size");
+            dataSize = (double)conf.getInt("data.size");
         }
     }
 
