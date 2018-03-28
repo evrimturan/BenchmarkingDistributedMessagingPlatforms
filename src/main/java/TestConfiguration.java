@@ -1,14 +1,15 @@
-
-public class Configuration {
+//import org.apache.commons.configuration.
+public class TestConfiguration {
     private int brokerNum;
     private int pubNum;
     private int subNum;
     private double messageSize;
     private int topicNum;
     private boolean persistent;
+    //private Configurations conf;
 
-    public Configuration(String Filename){
-        
+    public TestConfiguration(String Filename){
+
     }
 
     public int getBrokerNum() {
