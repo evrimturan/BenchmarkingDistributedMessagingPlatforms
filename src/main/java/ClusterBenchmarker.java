@@ -27,7 +27,7 @@ public class ClusterBenchmarker {
 
         @Override
         public void run(){
-
+            System.out.println(Thread.currentThread().getId()+" says hello :)");
         }
 
         public Producer(){
@@ -57,12 +57,24 @@ public class ClusterBenchmarker {
                 folder.mkdir();
             }
         }
+
+        for(Producer p : pList){
+            p.run();
+        }
         /* TODO: subNum kadar thread daha oluşturulacak
         *  TODO: tüm thread ler run edilecek
         *  TODO: producer thread'inde klasör sonuna geldiği anlaşılacak ve ondan sonra data memory'e alınacak
         *  TODO: System.getmillis ile zaman ölçülecek ve consumer thread ları bittikten sonra zaman alınıp farkı alınacak
         *
         */
+        for(Producer p : pList){
+            try {
+                p.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("All threads finished.");
     }
 
     private Producer createProducer(){
