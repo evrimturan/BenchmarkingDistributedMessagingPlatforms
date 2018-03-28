@@ -38,7 +38,7 @@ public class ClusterBenchmarker {
     public static void main(String[] args) {
 
         ClusterBenchmarker init = new ClusterBenchmarker();
-        TestConfiguration config = new TestConfiguration(args[1]);
+        TestConfiguration config = new TestConfiguration(args[0]);
         int brokerNum = config.getBrokerNum();
         int pubNum = config.getPubNum();
         int subNum = config.getSubNum();
@@ -50,10 +50,11 @@ public class ClusterBenchmarker {
         for(int i=0; i<pubNum;i++){
             Producer p = init.createProducer();
             pList.add(p);
-            Path path = Paths.get("ProducerFolder");
+            Path path = Paths.get("ProducerFolder"+"-"+i);
 
             if (!Files.exists(path)) {
-                File folder = new File("ProducerFolder");
+                File folder = new File("ProducerFolder"+"-"+i);
+                folder.mkdir();
             }
         }
 
