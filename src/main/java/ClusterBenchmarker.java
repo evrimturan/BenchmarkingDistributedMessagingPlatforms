@@ -44,7 +44,7 @@ public class ClusterBenchmarker {
         int subNum = config.getSubNum();
         double messageSize = config.getMessageSize();
         int topicNum = config.getTopicNum();
-        List<Producer> pList = new ArrayList<Producer>();
+        List<Producer> pList = new ArrayList<>();
 
 
         for(int i=0; i<pubNum;i++){
@@ -57,7 +57,12 @@ public class ClusterBenchmarker {
                 folder.mkdir();
             }
         }
-
+        /* TODO: subNum kadar thread daha oluşturulacak
+        *  TODO: tüm thread ler run edilecek
+        *  TODO: producer thread'inde klasör sonuna geldiği anlaşılacak ve ondan sonra data memory'e alınacak
+        *  TODO: System.getmillis ile zaman ölçülecek ve consumer thread ları bittikten sonra zaman alınıp farkı alınacak
+        *
+        */
     }
 
     private Producer createProducer(){
