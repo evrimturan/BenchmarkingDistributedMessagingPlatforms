@@ -29,23 +29,12 @@ public class ClusterBenchmarker {
         @Override
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello producer:)");
-            DataGenerator dgenerator = new DataGenerator();
-            dgenerator.start();
-            
+
+
 
         }
 
         public Producer(){
-
-        }
-    }
-    private class DataGenerator extends Thread{
-
-        public void run(){
-
-        }
-
-        public DataGenerator(){
 
         }
     }
@@ -62,14 +51,6 @@ public class ClusterBenchmarker {
         int topicNum = config.getTopicNum();
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
-        DataGenerator dGenerator2 = init.createDataGenerator();
-        dGenerator2.start();
-
-        try {
-            dGenerator2.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         for(int i=0; i<pubNum; i++){
             Producer p = init.createProducer();
@@ -119,5 +100,4 @@ public class ClusterBenchmarker {
         return new Producer();
     }
     private Consumer createConsumer() { return new Consumer(); }
-    private DataGenerator createDataGenerator(){ return new DataGenerator(); }
 }
