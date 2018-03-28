@@ -13,10 +13,19 @@ import java.util.List;
 public class ClusterBenchmarker {
 
     private class Consumer extends Thread{
+        private long totalTimeEllapsed;
+
+        public long getTotalTimeEllapsed() {
+            return totalTimeEllapsed;
+        }
 
         @Override
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello consumer:)");
+            long start = System.currentTimeMillis();
+
+
+            long finish = System.currentTimeMillis();
         }
 
         public Consumer(){
@@ -25,13 +34,19 @@ public class ClusterBenchmarker {
     }
 
     private class Producer extends Thread{
+        private long totalTimeEllapsed;
+
+        public long getTotalTimeEllapsed() {
+            return totalTimeEllapsed;
+        }
 
         @Override
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello producer:)");
+            long start = System.currentTimeMillis();
+            
 
-
-
+            long finish = System.currentTimeMillis();
         }
 
         public Producer(){
