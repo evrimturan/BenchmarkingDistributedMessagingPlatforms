@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 sshpass -p "$1" ssh root@ubuntu-s-1vcpu-1gb-fra1-02 "cd kafka_2.11-1.0.1/;bin/zookeeper-server-start.sh -daemon config/zookeeper.properties;bin/kafka-server-start.sh -daemon config/server.properties"
 echo "Broker 2 finished"
 sshpass -p "$1" ssh root@ubuntu-s-1vcpu-1gb-fra1-01 "cd kafka_2.11-1.0.1/;bin/kafka-server-start.sh -daemon config/server.properties"
