@@ -60,4 +60,8 @@ public class TestConfiguration {
         return persistent;
     }
 
+    public double getDataSize(){
+        return dataSize;
+    }
+
 }
