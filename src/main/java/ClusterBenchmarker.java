@@ -1,17 +1,31 @@
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.io.InputStream;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSession;
+import org.apache.activemq.BlobMessage;
+import org.apache.activemq.command.ActiveMQBytesMessage;
+
+import javax.jms.*;
 
 public class ClusterBenchmarker {
 
     private class Consumer extends Thread{
         private int tNum;
         private String folderName;
+        private String platform;
         private long totalTimeEllapsed;
+        private int queueNum;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -20,15 +34,39 @@ public class ClusterBenchmarker {
         @Override
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello consumer :)");
-            long start = System.currentTimeMillis();
+            //long start = System.currentTimeMillis();
+            if(platform.equals("activemq")){
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://ubuntu-s-1vcpu-1gb-fra1-01:61616");
+                try{
+                    FileOutputStream fos = new FileOutputStream(folderName+"/consumer.data-"+queueNum);
+                    Connection connection = connectionFactory.createConnection("admin","admin");
+                    connection.start();
+        
+                    // Create a Session
+                    Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    
+                    Queue dest = session.createQueue("queue-"+queueNum);
+    
+                    MessageConsumer consume = session.createConsumer(dest);
+                    byte[] buffer = new byte[1024];
+                    BytesMessage bm = session.createBytesMessage();
+                    while((bm.readBytes(buffer)) != -1){
+                        fos.write(buffer);
+                    }
+                    fos.close();
 
-
-            long finish = System.currentTimeMillis();
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+            //long finish = System.currentTimeMillis();
         }
 
-        public Consumer(int tNum,String folderName){
+        public Consumer(int tNum,String folderName,String platform,int queueNum){
             this.tNum = tNum;
             this.folderName = folderName;
+            this.platform = platform;
+            this.queueNum = queueNum;
         }
     }
 
@@ -36,7 +74,10 @@ public class ClusterBenchmarker {
         private double mSize;
         private double dSize;
         private int tNum;
+        private String platform;
         private long totalTimeEllapsed;
+        private int queueNum;
+        private String folderName;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -45,16 +86,47 @@ public class ClusterBenchmarker {
         @Override
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello producer :)");
-            long start = System.currentTimeMillis();
+            //long start = System.currentTimeMillis();
+            if(platform.equals("activemq")){
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://ubuntu-s-1vcpu-1gb-fra1-01:61616");
+                connectionFactory.setProducerWindowSize((int)dSize);
+                try{
+                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+queueNum));
+                    Connection connection = connectionFactory.createConnection("admin","admin");
+                    connection.start();
 
+                    // Create a Session
+                    ActiveMQSession session = (ActiveMQSession)connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            long finish = System.currentTimeMillis();
+                    Queue dest = session.createQueue("queue-"+queueNum);
+                    MessageProducer producer = session.createProducer(dest);
+
+                    byte[] buffer = new byte[1024];
+                    BytesMessage bMessage = session.createBytesMessage();
+                    int content;
+                    System.out.println("Started writing to file");
+                    while((content = in.read(buffer)) != -1){
+                        bMessage.writeBytes(buffer);
+                    }
+                    in.close();
+                    // Clean up
+                    session.close();
+                    connection.close();
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+            
+            //long finish = System.currentTimeMillis();
         }
 
-        public Producer(double mSize, double dSize, int tNum){
+        public Producer(double mSize, double dSize, int tNum,String folderName,String platform,int queueNum){
             this.mSize = mSize;
             this.dSize = dSize;
             this.tNum = tNum;
+            this.platform = platform;
+            this.queueNum = queueNum;
+            this.folderName = folderName;
         }
     }
 
@@ -96,7 +168,14 @@ public class ClusterBenchmarker {
         }
         
         for(int i=0; i<pubNum; i++){
-            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum);
+            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum,("ProducerFolder-"+i),config.getPlatform(),i);
+
+            Path path = Paths.get("ProducerFolder"+"-"+i);
+
+            if (!Files.exists(path)) {
+                File folder = new File("ProducerFolder"+"-"+i);
+                folder.mkdir();
+            }
             pList.add(p);
         }
 
@@ -112,7 +191,7 @@ public class ClusterBenchmarker {
                 folder.mkdir();
             }
 
-            Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i));
+            Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i);
             cList.add(c);
 
         }
@@ -139,9 +218,10 @@ public class ClusterBenchmarker {
                 e.printStackTrace();
             }
         }
+        
         System.out.println("All threads finished.");
     }
 
-    private Producer createProducer(double mSize,double dSize,int tNum) {  return new Producer(mSize,dSize,tNum); }
-    private Consumer createConsumer(int tNum,String folderName) {  return new Consumer(tNum,folderName); }
+    private Producer createProducer(double mSize,double dSize,int tNum,String folderName,String platform,int queueNum) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum); }
+    private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum) {  return new Consumer(tNum,folderName,platform,queueNum); }
 }

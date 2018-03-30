@@ -6,5 +6,6 @@ for brokerNumber in $(eval echo "{1..$2}")
 do
     sshpass -p "$1" ssh "$hostName$brokerNumber" "cd apache-activemq-5.15.3/bin/;chmod +x activemq;./activemq start"
     echo "Broker $brokerNumber Finished"
+    sleep 1
 done
 

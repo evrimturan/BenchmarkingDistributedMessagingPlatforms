@@ -11,4 +11,5 @@ do
         sshpass -p "$1" ssh "$hostName$brokerNumber" "cd kafka_2.11-1.0.1/;bin/kafka-server-stop.sh"
     fi
     echo "Broker $brokerNumber Finished"
+    sleep 1
 done
