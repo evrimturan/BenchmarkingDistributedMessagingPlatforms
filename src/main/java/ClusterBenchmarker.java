@@ -48,6 +48,7 @@ public class ClusterBenchmarker {
                     Queue dest = session.createQueue("queue-"+queueNum);
     
                     MessageConsumer consume = session.createConsumer(dest);
+                    consume.receive(1000);
                     byte[] buffer = new byte[1024];
                     BytesMessage bm = session.createBytesMessage();
                     while((bm.readBytes(buffer)) != -1){
@@ -103,11 +104,13 @@ public class ClusterBenchmarker {
 
                     byte[] buffer = new byte[1024];
                     BytesMessage bMessage = session.createBytesMessage();
+                    
                     int content;
-                    System.out.println("Started writing to file");
+                    System.out.println("--------------------------\nStarted writing to file\n-----------------------");
                     while((content = in.read(buffer)) != -1){
                         bMessage.writeBytes(buffer);
                     }
+                    producer.send(bMessage);
                     in.close();
                     // Clean up
                     session.close();
@@ -161,6 +164,7 @@ public class ClusterBenchmarker {
                     break;
             }
             broker.waitFor();
+            System.out.println("Brokers started.");
 
         }catch(IOException | InterruptedException ex){
             ex.printStackTrace();
