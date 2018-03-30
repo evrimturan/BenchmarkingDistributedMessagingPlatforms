@@ -15,6 +15,7 @@ public class TestConfiguration {
     private boolean persistent;
     private double dataSize;
     private Configuration conf;
+    private String platform;
 
     public TestConfiguration(String Filename){
         try {
@@ -24,6 +25,7 @@ public class TestConfiguration {
             subNum = conf.getInt("subscriber.amount");
             topicNum = conf.getInt("topic.amount");
             persistent = conf.getBoolean("persistent");
+            platform = conf.getString("platform.type");
             messageSize = conf.getDouble("message.size");
             dataSize = conf.getDouble("data.size");
 
@@ -62,6 +64,10 @@ public class TestConfiguration {
 
     public double getDataSize(){
         return dataSize;
+    }
+
+    public String getPlatform(){
+        return platform;
     }
 
 }

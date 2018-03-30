@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +9,8 @@ import java.util.List;
 public class ClusterBenchmarker {
 
     private class Consumer extends Thread{
+        private int tNum;
+        private String folderName;
         private long totalTimeEllapsed;
 
         public long getTotalTimeEllapsed() {
@@ -16,19 +19,23 @@ public class ClusterBenchmarker {
 
         @Override
         public void run(){
-            System.out.println(Thread.currentThread().getId()+" says hello consumer:)");
+            System.out.println(Thread.currentThread().getId()+" says hello consumer :)");
             long start = System.currentTimeMillis();
 
 
             long finish = System.currentTimeMillis();
         }
 
-        public Consumer(){
-
+        public Consumer(int tNum,String folderName){
+            this.tNum = tNum;
+            this.folderName = folderName;
         }
     }
 
     private class Producer extends Thread{
+        private double mSize;
+        private double dSize;
+        private int tNum;
         private long totalTimeEllapsed;
 
         public long getTotalTimeEllapsed() {
@@ -37,15 +44,17 @@ public class ClusterBenchmarker {
 
         @Override
         public void run(){
-            System.out.println(Thread.currentThread().getId()+" says hello producer:)");
+            System.out.println(Thread.currentThread().getId()+" says hello producer :)");
             long start = System.currentTimeMillis();
 
 
             long finish = System.currentTimeMillis();
         }
 
-        public Producer(){
-
+        public Producer(double mSize, double dSize, int tNum){
+            this.mSize = mSize;
+            this.dSize = dSize;
+            this.tNum = tNum;
         }
     }
 
@@ -62,23 +71,50 @@ public class ClusterBenchmarker {
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
 
-        for(int i=0; i<pubNum; i++){
-            Producer p = init.createProducer();
-            pList.add(p);
-            Path path = Paths.get("ProducerFolder"+"-"+i);
-
-            if (!Files.exists(path)) {
-                File folder = new File("ProducerFolder"+"-"+i);
-                folder.mkdir();
+        try{
+            Process broker = null;
+            switch(config.getPlatform()){
+                case "activemq":
+                    broker = Runtime.getRuntime().exec("sh -c \"scripts/start-activemq-brokers.sh 123456mem " + brokerNum + "\"");
+                    break;
+                case "rabbitmq":
+                    broker = Runtime.getRuntime().exec("sh -c \"scripts/start-rabbitmq-brokers.sh 123456mem " + brokerNum + "\"");
+                    break;
+                case "kafka":
+                    broker = Runtime.getRuntime().exec("sh -c \"scripts/start-kafka-brokers.sh 123456mem " + brokerNum + "\"");
+                    break;
+                default:
+                    System.err.println("Platform mismatch.");
+                    System.exit(1);
+                    break;
             }
+            broker.waitFor();
+
+        }catch(IOException | InterruptedException ex){
+            ex.printStackTrace();
+            System.exit(1);
         }
+        
+        for(int i=0; i<pubNum; i++){
+            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum);
+            pList.add(p);
+        }
+
         for(Producer p : pList){
             p.run();
         }
 
         for(int i=0; i<subNum; i++){
-            Consumer c = init.createConsumer();
+            Path path = Paths.get("ConsumerFolder"+"-"+i);
+
+            if (!Files.exists(path)) {
+                File folder = new File("ConsumerFolder"+"-"+i);
+                folder.mkdir();
+            }
+
+            Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i));
             cList.add(c);
+
         }
         for(Consumer c : cList){
             c.run();
@@ -106,8 +142,6 @@ public class ClusterBenchmarker {
         System.out.println("All threads finished.");
     }
 
-    private Producer createProducer(){
-        return new Producer();
-    }
-    private Consumer createConsumer() { return new Consumer(); }
+    private Producer createProducer(double mSize,double dSize,int tNum) {  return new Producer(mSize,dSize,tNum); }
+    private Consumer createConsumer(int tNum,String folderName) {  return new Consumer(tNum,folderName); }
 }
