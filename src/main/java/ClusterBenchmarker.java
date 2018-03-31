@@ -56,6 +56,8 @@ public class ClusterBenchmarker {
                         fos.write(buffer);
                     }
                     fos.close();
+                    session.close();
+                    connection.close();
 
                 }catch(Exception ex){
                     ex.printStackTrace();
