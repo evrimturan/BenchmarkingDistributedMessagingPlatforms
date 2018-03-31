@@ -12,7 +12,7 @@ wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/e
 sudo dpkg --install esl-erlang_20.3-1~ubuntu~xenial_amd64.deb
 sudo apt-get -f install
 sudo dpkg --install esl-erlang_20.3-1~ubuntu~xenial_amd64.deb
-wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc |sudo apt-key add -
+wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install rabbitmq-server
 

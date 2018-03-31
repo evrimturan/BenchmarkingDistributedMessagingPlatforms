@@ -1,4 +1,3 @@
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,13 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.io.InputStream;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
-import org.apache.activemq.BlobMessage;
 import org.apache.activemq.command.ActiveMQBytesMessage;
 
 import javax.jms.*;
@@ -24,11 +20,11 @@ public class ClusterBenchmarker {
         private int tNum;
         private String folderName;
         private String platform;
-        private long totalTimeEllapsed;
+        private long totalTimeElapsed;
         private int queueNum;
 
-        public long getTotalTimeEllapsed() {
-            return totalTimeEllapsed;
+        public long getTotalTimeElapsed() {
+            return totalTimeElapsed;
         }
 
         @Override
@@ -51,8 +47,8 @@ public class ClusterBenchmarker {
                     long start = System.currentTimeMillis();
                     ActiveMQBytesMessage rc =  (ActiveMQBytesMessage)consume.receive(100);
                     long end = System.currentTimeMillis();
-                    totalTimeEllapsed = end-start;
-                    System.out.println("Consumed in "+totalTimeEllapsed+" ms");
+                    totalTimeElapsed = end-start;
+                    System.out.println("Consumed in "+ totalTimeElapsed +" ms");
                     System.out.println("LO LO LO bitti");
                     byte[] buffer = new byte[81920];
                     
