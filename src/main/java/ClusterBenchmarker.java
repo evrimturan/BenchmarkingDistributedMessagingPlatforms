@@ -49,7 +49,7 @@ public class ClusterBenchmarker {
                     MessageConsumer consume = session.createConsumer(dest);
                     System.out.println("LO LO LO");
                     long start = System.currentTimeMillis();
-                    ActiveMQBytesMessage rc =  (ActiveMQBytesMessage)consume.receive(0);
+                    ActiveMQBytesMessage rc =  (ActiveMQBytesMessage)consume.receive(100);
                     long end = System.currentTimeMillis();
                     totalTimeEllapsed = end-start;
                     System.out.println("Consumed in "+totalTimeEllapsed+" ms");
