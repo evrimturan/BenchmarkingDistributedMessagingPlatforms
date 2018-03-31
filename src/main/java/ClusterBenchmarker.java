@@ -34,7 +34,6 @@ public class ClusterBenchmarker {
         @Override
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello consumer :)");
-            //long start = System.currentTimeMillis();
             if(platform.equals("activemq")){
                 ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://ubuntu-s-1vcpu-1gb-fra1-01:61616");
                 try{
@@ -48,9 +47,14 @@ public class ClusterBenchmarker {
                     Queue dest = session.createQueue("queue-"+queueNum);
     
                     MessageConsumer consume = session.createConsumer(dest);
-                    ActiveMQBytesMessage rc =  (ActiveMQBytesMessage)consume.receive(1000);
-
-                    byte[] buffer = new byte[1024];
+                    System.out.println("LO LO LO");
+                    long start = System.currentTimeMillis();
+                    ActiveMQBytesMessage rc =  (ActiveMQBytesMessage)consume.receive(0);
+                    long end = System.currentTimeMillis();
+                    totalTimeEllapsed = end-start;
+                    System.out.println("Consumed in "+totalTimeEllapsed+" ms");
+                    System.out.println("LO LO LO bitti");
+                    byte[] buffer = new byte[81920];
                     
                     while((rc.readBytes(buffer)) != -1){
                         fos.write(buffer);
@@ -105,7 +109,7 @@ public class ClusterBenchmarker {
                     Queue dest = session.createQueue("queue-"+queueNum);
                     MessageProducer producer = session.createProducer(dest);
 
-                    byte[] buffer = new byte[1024];
+                    byte[] buffer = new byte[81920];
                     BytesMessage bMessage = session.createBytesMessage();
                     
                     int content;
@@ -202,6 +206,15 @@ public class ClusterBenchmarker {
             cList.add(c);
 
         }
+
+        for(Producer p : pList){
+            try {
+                p.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         for(Consumer c : cList){
             c.run();
         }
@@ -211,13 +224,6 @@ public class ClusterBenchmarker {
         *  TODO: System.getmillis ile zaman ölçülecek ve consumer thread ları bittikten sonra zaman alınıp farkı alınacak
         *
         */
-        for(Producer p : pList){
-            try {
-                p.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         for(Consumer c : cList){
             try {
                 c.join();
