@@ -48,10 +48,11 @@ public class ClusterBenchmarker {
                     Queue dest = session.createQueue("queue-"+queueNum);
     
                     MessageConsumer consume = session.createConsumer(dest);
-                    consume.receive(1000);
+                    ActiveMQBytesMessage rc =  (ActiveMQBytesMessage)consume.receive(1000);
+
                     byte[] buffer = new byte[1024];
-                    BytesMessage bm = session.createBytesMessage();
-                    while((bm.readBytes(buffer)) != -1){
+                    
+                    while((rc.readBytes(buffer)) != -1){
                         fos.write(buffer);
                     }
                     fos.close();

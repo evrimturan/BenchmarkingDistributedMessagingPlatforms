@@ -29,7 +29,7 @@ public class ActiveMQConsumer {
             } else {
                 System.out.println("Received: " + message);
             }*/
-
+            
             MessageListener listener = new MessageListener() {
                 public void onMessage(Message message) {
                     if (message instanceof TextMessage) {
