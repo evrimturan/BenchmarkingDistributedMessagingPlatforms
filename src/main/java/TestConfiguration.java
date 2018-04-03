@@ -5,6 +5,8 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 
 public class TestConfiguration {
     private int brokerNum;
@@ -14,12 +16,24 @@ public class TestConfiguration {
     private int topicNum;
     private boolean persistent;
     private double dataSize;
-    private Configuration conf;
+    private PropertiesConfiguration conf, brokerConf;
     private String platform;
+    private List<BrokerInfo> bInfo;
 
     public TestConfiguration(String Filename){
         try {
             conf = new PropertiesConfiguration(Filename);
+            brokerConf = new PropertiesConfiguration();
+            brokerConf.setDelimiterParsingDisabled(true);
+            brokerConf.load("broker.config");
+            int i = 1;
+            bInfo = new ArrayList<>();
+            while(brokerConf.containsKey("broker." + i)){
+                System.out.println(brokerConf.getString("broker."+i));
+                bInfo.add(new BrokerInfo(i, brokerConf.getString("broker." +i).split(",")[0], brokerConf.getString("broker." +i).split(",")[1]));
+                i++;
+            }
+            //binfo.add(new BrokerInfo());
             brokerNum = conf.getInt("broker.amount");
             pubNum = conf.getInt("publisher.amount");
             subNum = conf.getInt("subscriber.amount");
@@ -70,4 +84,31 @@ public class TestConfiguration {
         return platform;
     }
 
+    public List getBInfo(){
+        return bInfo;
+    }
+
+    protected class BrokerInfo{
+        private int id;
+        private String ip;
+        private String name;
+
+        public BrokerInfo(int id, String ip, String name){
+            this.id = id;
+            this.ip= ip;
+            this.name= name;
+        }
+
+        public int getId(){
+            return id;
+        }
+
+        public String getIp(){
+            return ip;
+        }
+
+        public String getName(){
+            return name;
+        } 
+    }
 }

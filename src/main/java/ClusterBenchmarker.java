@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Arrays;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -32,6 +33,7 @@ public class ClusterBenchmarker {
         private String platform;
         private long totalTimeElapsed;
         private int queueNum;
+        private String brokerIp;
         private final static String QUEUE_NAME = "hello";
 
         public long getTotalTimeElapsed() {
@@ -42,7 +44,7 @@ public class ClusterBenchmarker {
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello consumer :)");
             if(platform.equals("activemq")){
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://ubuntu-s-1vcpu-1gb-fra1-01:61616");
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
                 try{
                     FileOutputStream fos = new FileOutputStream(folderName+"/consumer.data-"+queueNum);
                     javax.jms.Connection connection = connectionFactory.createConnection("admin","admin");
@@ -60,7 +62,7 @@ public class ClusterBenchmarker {
                     long end = System.currentTimeMillis();
                     totalTimeElapsed = end-start;
                     System.out.println("Consumed in "+ totalTimeElapsed +" ms");
-                    //System.out.println("LO LO LO bitti");
+                    System.out.println("CONSUMING FROM "+brokerIp);
                     byte[] buffer = new byte[81920];
                     
                     while((rc.readBytes(buffer)) != -1){
@@ -79,7 +81,7 @@ public class ClusterBenchmarker {
                     factory.setUsername("admin");
                     factory.setPassword("admin");
                     factory.setPort(5672);
-                    factory.setHost("159.65.120.184");
+                    factory.setHost(brokerIp);
                     com.rabbitmq.client.Connection connection = factory.newConnection();
                     Channel channel = connection.createChannel();
 
@@ -92,6 +94,7 @@ public class ClusterBenchmarker {
                         throws IOException {
                             String message = new String(body, "UTF-8");
                             System.out.println(" [x] Received '" + message + "'");
+                            System.out.println("CONSUMING FROM "+brokerIp);
                         }
                     };
                     channel.basicConsume(QUEUE_NAME, true, consumer);   
@@ -100,7 +103,7 @@ public class ClusterBenchmarker {
                 }
             }else if (platform.equals("kafka")){
                 Properties props = new Properties();
-                props.put("bootstrap.servers", "159.65.120.184:9092");
+                props.put("bootstrap.servers", brokerIp+":9092");
                 //props.put("bootstrap.servers", "159.89.102.49:9092");
                 props.put("group.id", "group-1");
                 props.put("enable.auto.commit", "true");
@@ -115,7 +118,8 @@ public class ClusterBenchmarker {
                     consumer.subscribe(Arrays.asList("failsafe"));
                     ConsumerRecords<String, String> records = consumer.poll(100);
                     for (ConsumerRecord<String, String> record : records) {
-                        System.out.println("Received = " + record.value());
+                        System.out.println("Received = " + record.value());                    
+                        System.out.println("CONSUMING FROM "+brokerIp);
                     }
                 }catch (Exception e) {
                     e.printStackTrace();
@@ -124,11 +128,12 @@ public class ClusterBenchmarker {
             //long finish = System.currentTimeMillis();
         }
 
-        public Consumer(int tNum,String folderName,String platform,int queueNum){
+        public Consumer(int tNum,String folderName,String platform,int queueNum, String brokerIp){
             this.tNum = tNum;
             this.folderName = folderName;
             this.platform = platform;
             this.queueNum = queueNum;
+            this.brokerIp = brokerIp;
         }
     }
 
@@ -141,6 +146,7 @@ public class ClusterBenchmarker {
         private int queueNum;
         private String folderName;
         private final static String QUEUE_NAME = "hello";
+        private String brokerIp;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -151,14 +157,13 @@ public class ClusterBenchmarker {
             System.out.println(Thread.currentThread().getId()+" says hello producer :)");
             //long start = System.currentTimeMillis();
             if(platform.equals("activemq")){
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://ubuntu-s-1vcpu-1gb-fra1-01:61616");
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
                 connectionFactory.setProducerWindowSize((int)dSize);
                 try{
                     FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+queueNum));
                     javax.jms.Connection connection = connectionFactory.createConnection("admin","admin");
                     connection.start();
-
-                    // Create a Session
+                    
                     ActiveMQSession session = (ActiveMQSession)connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
                     Queue dest = session.createQueue("queue-"+queueNum);
@@ -173,8 +178,9 @@ public class ClusterBenchmarker {
                         bMessage.writeBytes(buffer);
                     }
                     producer.send(bMessage);
+                    System.out.println("PRODUCED TO:  "+brokerIp);
                     in.close();
-                    // Clean up
+
                     session.close();
                     connection.close();
                 }catch(Exception ex){
@@ -186,7 +192,7 @@ public class ClusterBenchmarker {
                     factory.setUsername("admin");
                     factory.setPassword("admin");
                     factory.setPort(5672);
-                    factory.setHost("159.89.102.49");
+                    factory.setHost(brokerIp);
                     com.rabbitmq.client.Connection connection = factory.newConnection();
                     Channel channel = connection.createChannel();
 
@@ -194,7 +200,7 @@ public class ClusterBenchmarker {
                     String message = "Hello World!";
                     channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
                     System.out.println(" [x] Sent '" + message + "'");
-
+                    System.out.println("PRODUCED TO:  "+brokerIp);
                     channel.close();
                     connection.close();
                 }catch(Exception e){
@@ -203,7 +209,7 @@ public class ClusterBenchmarker {
             }else if(platform.equals("kafka")){
                 String topicName = "failsafe";
                 Properties props = new Properties();
-                props.put("bootstrap.servers", "159.89.102.49:9092");
+                props.put("bootstrap.servers", brokerIp +":9092");
                 //props.put("bootstrap.servers", "159.65.120.184:9092");
                 props.put("acks", "all");
                 props.put("retries", 0);
@@ -223,6 +229,7 @@ public class ClusterBenchmarker {
                         producer.send(new ProducerRecord<String, String>(topicName, "Message " + Integer.toString(i + 100)));
                         System.out.println("Message sent successfully");
                     }
+                    System.out.println("PRODUCED TO:  "+brokerIp);
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -236,13 +243,14 @@ public class ClusterBenchmarker {
             //long finish = System.currentTimeMillis();
         }
 
-        public Producer(double mSize, double dSize, int tNum,String folderName,String platform,int queueNum){
+        public Producer(double mSize, double dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp){
             this.mSize = mSize;
             this.dSize = dSize;
             this.tNum = tNum;
             this.platform = platform;
             this.queueNum = queueNum;
             this.folderName = folderName;
+            this.brokerIp = brokerIp;
         }
     }
 
@@ -256,6 +264,7 @@ public class ClusterBenchmarker {
         double messageSize = config.getMessageSize();
         double dataSize = config.getDataSize();
         int topicNum = config.getTopicNum();
+        List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
 
@@ -285,7 +294,11 @@ public class ClusterBenchmarker {
         }
         
         for(int i=0; i<pubNum; i++){
-            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum,("ProducerFolder-"+i),config.getPlatform(),i);
+            Random r = new Random();
+            int bId = r.nextInt(brokerNum - 0);
+            String bIp = bInfo.get(bId).getIp();
+
+            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum,("ProducerFolder-"+i),config.getPlatform(),i, bIp);
 
             Path path = Paths.get("ProducerFolder"+"-"+i);
 
@@ -308,7 +321,11 @@ public class ClusterBenchmarker {
                 folder.mkdir();
             }
 
-            Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i);
+            Random r = new Random();
+            int bId = r.nextInt(brokerNum - 0);
+            String bIp = bInfo.get(bId).getIp();
+           
+            Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
             cList.add(c);
 
         }
@@ -341,6 +358,6 @@ public class ClusterBenchmarker {
         System.out.println("All threads finished.");
     }
 
-    private Producer createProducer(double mSize,double dSize,int tNum,String folderName,String platform,int queueNum) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum); }
-    private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum) {  return new Consumer(tNum,folderName,platform,queueNum); }
+    private Producer createProducer(double mSize,double dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp); }
+    private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Consumer(tNum,folderName,platform,queueNum,brokerIp); }
 }
