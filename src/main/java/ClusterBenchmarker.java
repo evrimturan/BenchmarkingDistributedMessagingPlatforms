@@ -368,13 +368,13 @@ public class ClusterBenchmarker {
             Process broker = null;
             switch(config.getPlatform()){
                 case "activemq":
-                    broker = Runtime.getRuntime().exec("sh -c \"scripts/start-activemq-brokers.sh 123456mem " + brokerNum + "\"");
+                    broker = Runtime.getRuntime().exec("scripts/start-activemq-brokers.sh 123456mem " + brokerNum );
                     break;
                 case "rabbitmq":
-                    broker = Runtime.getRuntime().exec("sh -c \"scripts/start-rabbitmq-brokers.sh 123456mem " + brokerNum + "\"");
+                    broker = Runtime.getRuntime().exec("scripts/start-rabbitmq-brokers.sh 123456mem " + brokerNum);
                     break;
                 case "kafka":
-                    broker = Runtime.getRuntime().exec("sh -c \"scripts/start-kafka-brokers.sh 123456mem " + brokerNum + "\"");
+                    broker = Runtime.getRuntime().exec("scripts/start-kafka-brokers.sh 123456mem " + brokerNum);
                     break;
                 default:
                     System.err.println("Platform mismatch.");
@@ -404,8 +404,8 @@ public class ClusterBenchmarker {
             }
 
             try {
-                Process process = Runtime.getRuntime().exec("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "ProducerFolder-"+i+"\"");
-                System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
+                Process process = Runtime.getRuntime().exec("scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "ProducerFolder-"+i);
+                //System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
