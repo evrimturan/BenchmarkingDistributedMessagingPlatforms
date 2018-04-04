@@ -209,10 +209,8 @@ public class ClusterBenchmarker {
                     e.printStackTrace();
                 }
             }else if(platform.equals("kafka")){
-                String topicName = "failsafe";
                 Properties props = new Properties();
                 props.put("bootstrap.servers", brokerIp +":9092");
-                //props.put("bootstrap.servers", "159.65.120.184:9092");
                 props.put("acks", "all");
                 props.put("retries", 0);
                 props.put("batch.size", 16384);
@@ -223,7 +221,7 @@ public class ClusterBenchmarker {
 
                 props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 
-                org.apache.kafka.clients.producer.Producer<String, String> producer = null;
+                org.apache.kafka.clients.producer.Producer<String, byte[]> producer = null;
                 try {
                     producer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
 
@@ -238,18 +236,12 @@ public class ClusterBenchmarker {
                             outputStream.write(buffer);
                         }
 
-                        producer.send(new ProducerRecord<String, String>(topicName, buffer));
+                        producer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, buffer));
 
                         System.out.println("Kafka PRODUCED TO:  "+brokerIp);
                         in.close();
                     }
 
-                    for(int i = 0; i < 10; i++) {
-                        producer.send(new ProducerRecord<String, String>(topicName, buf));
-                        producer.send(new ProducerRecord<String, String>())
-                        System.out.println("Message sent successfully");
-                    }
-                    System.out.println("PRODUCED TO:  "+brokerIp);
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
