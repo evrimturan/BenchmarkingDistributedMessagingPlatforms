@@ -194,8 +194,8 @@ public class ClusterBenchmarker {
 
 
     private class Producer extends Thread{
-        private double mSize;
-        private double dSize;
+        private long mSize;
+        private long dSize;
         private int tNum;
         private String platform;
         private long totalTimeEllapsed;
@@ -314,7 +314,7 @@ public class ClusterBenchmarker {
             //long finish = System.currentTimeMillis();
         }
 
-        public Producer(double mSize, double dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp){
+        public Producer(long mSize, long dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp){
             this.mSize = mSize;
             this.dSize = dSize;
             this.tNum = tNum;
@@ -357,8 +357,8 @@ public class ClusterBenchmarker {
         int brokerNum = config.getBrokerNum();
         int pubNum = config.getPubNum();
         int subNum = config.getSubNum();
-        double messageSize = config.getMessageSize();
-        double dataSize = config.getDataSize();
+        long messageSize = config.getMessageSize();
+        long dataSize = config.getDataSize();
         int topicNum = config.getTopicNum();
         List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
         List<Producer> pList = new ArrayList<>();
@@ -404,7 +404,8 @@ public class ClusterBenchmarker {
             }
 
             try {
-                Process process = Runtime.getRuntime().exec("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "ProducerFolder-"+i);
+                Process process = Runtime.getRuntime().exec("chmod +x scripts/data-generator.sh;sh -c \"scripts/data-generator.sh " + (int)(p.dSize/p.mSize) + " " + (int)p.mSize + " " +  "ProducerFolder-"+i+"\"");
+                System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "ProducerFolder-"+i+"\"");
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -416,7 +417,7 @@ public class ClusterBenchmarker {
             p.run();
         }
 
-        for(int i=0; i<subNum; i++){
+        /*for(int i=0; i<subNum; i++){
             Path path = Paths.get("ConsumerFolder"+"-"+i);
 
             if (!Files.exists(path)) {
@@ -431,7 +432,7 @@ public class ClusterBenchmarker {
             Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
             cList.add(c);
 
-        }
+        }*/
 
         for(Producer p : pList){
             try {
@@ -441,26 +442,21 @@ public class ClusterBenchmarker {
             }
         }
 
-        for(Consumer c : cList){
+        /*for(Consumer c : cList){
             c.run();
         }
-        /* TODO: subNum kadar thread daha oluşturulacak
-        *  TODO: tüm thread ler run edilecek
-        *  TODO: producer thread'inde klasör sonuna geldiği anlaşılacak ve ondan sonra data memory'e alınacak
-        *  TODO: System.getmillis ile zaman ölçülecek ve consumer thread ları bittikten sonra zaman alınıp farkı alınacak
-        *
-        */
+
         for(Consumer c : cList){
             try {
                 c.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         
         System.out.println("All threads finished.");
     }
 
-    private Producer createProducer(double mSize,double dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp); }
+    private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp); }
     private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Consumer(tNum,folderName,platform,queueNum,brokerIp); }
 }

@@ -89,7 +89,7 @@ public class TestConfiguration {
         return subNum;
     }
 
-    public double getMessageSize() {
+    public long getMessageSize() {
         return messageSize;
     }
 
