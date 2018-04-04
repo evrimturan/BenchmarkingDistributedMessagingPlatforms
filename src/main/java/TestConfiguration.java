@@ -12,10 +12,10 @@ public class TestConfiguration {
     private int brokerNum;
     private int pubNum;
     private int subNum;
-    private double messageSize;
+    private long messageSize;
     private int topicNum;
     private boolean persistent;
-    private double dataSize;
+    private long dataSize;
     private PropertiesConfiguration conf, brokerConf;
     private String platform;
     private List<BrokerInfo> bInfo;
@@ -40,15 +40,40 @@ public class TestConfiguration {
             topicNum = conf.getInt("topic.amount");
             persistent = conf.getBoolean("persistent");
             platform = conf.getString("platform.type");
-            messageSize = conf.getDouble("message.size");
-            dataSize = conf.getDouble("data.size");
+            //messageSize = conf.getDouble("message.size");
+            String strMessage =conf.getString("message.size");
+            if(strMessage.contains("KB")){
+                strMessage = strMessage.substring(0,strMessage.indexOf("KB"));
+                messageSize = Long.parseLong(strMessage) * 1024;
+            }else if(strMessage.contains("MB")){
+                strMessage = strMessage.substring(0,strMessage.indexOf("MB"));
+                messageSize = Long.parseLong(strMessage) * 1024 * 1024;
+            }else if(strMessage.contains("GB")){
+                strMessage = strMessage.substring(0,strMessage.indexOf("GB"));
+                messageSize = Long.parseLong(strMessage) * 1024 * 1024 * 1024;
+            }else{
+                System.err.println("Message size no identifier !");
+                System.exit(1);
+            }
+            String strData = conf.getString("data.size");
+            if(strData.contains("KB")){
+                strData = strData.substring(0,strData.indexOf("KB"));
+                dataSize = Long.parseLong(strData) * 1024;
+            }else if(strData.contains("MB")){
+                strData = strData.substring(0,strData.indexOf("MB"));
+                dataSize = Long.parseLong(strData) * 1024 * 1024;
+            }else if(strData.contains("GB")){
+                strData = strData.substring(0,strData.indexOf("GB"));
+                dataSize = Long.parseLong(strData) * 1024 * 1024 * 1024;
+            }else{
+                System.err.println("Data size no identifier !");
+                System.exit(1);
+            }
+            //dataSize = conf.getDouble("data.size");
 
         } catch (ConfigurationException e) {
             Logger.getLogger(TestConfiguration.class.toString()).log(Level.SEVERE, e.toString());
             System.exit(1);
-        } catch(ConversionException ex){
-            messageSize = (double)conf.getInt("message.size");
-            dataSize = (double)conf.getInt("data.size");
         }
     }
 
@@ -76,7 +101,7 @@ public class TestConfiguration {
         return persistent;
     }
 
-    public double getDataSize(){
+    public long getDataSize(){
         return dataSize;
     }
 
@@ -84,7 +109,7 @@ public class TestConfiguration {
         return platform;
     }
 
-    public List getBInfo(){
+    public List<BrokerInfo> getBInfo(){
         return bInfo;
     }
 
