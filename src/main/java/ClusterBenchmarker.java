@@ -405,7 +405,7 @@ public class ClusterBenchmarker {
 
             try {
                 Process process = Runtime.getRuntime().exec("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "ProducerFolder-"+i+"\"");
-                System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "$(pwd)/ProducerFolder-"+i+"\"");
+                System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "$(pwd)/scripts/ProducerFolder-"+i+"\"");
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
