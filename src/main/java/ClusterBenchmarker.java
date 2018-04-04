@@ -24,115 +24,174 @@ import javax.jms.*;
 
 public class ClusterBenchmarker {
 
-    private class Consumer extends Thread{
+    private class Consumer extends Thread {
         private int tNum;
         private String folderName;
         private String platform;
         private long totalTimeElapsed;
         private int queueNum;
         private String brokerIp;
-        private final static String QUEUE_NAME = "hello";
+        private javax.jms.Connection activemqConnection;
+        private ActiveMQSession activemqSession;
+        private com.rabbitmq.client.Connection rabbitmqConnection;
+        private Channel rabbitmqChannel;
+        private int fileNumber = 0;
 
         public long getTotalTimeElapsed() {
             return totalTimeElapsed;
         }
 
         @Override
-        public void run(){
-            System.out.println(Thread.currentThread().getId()+" says hello consumer :)");
-            if(platform.equals("activemq")){
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
-                try{
-                    FileOutputStream fos = new FileOutputStream(folderName+"/consumer.data-"+queueNum);
-                    javax.jms.Connection connection = connectionFactory.createConnection("admin","admin");
-                    connection.start();
-        
-                    // Create a Session
-                    Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-    
-                    Queue dest = session.createQueue("queue-"+queueNum);
-    
-                    MessageConsumer consume = session.createConsumer(dest);
+        public void run() {
+            System.out.println(Thread.currentThread().getId() + " says hello consumer :)");
+            if (platform.equals("activemq")) {
+                try {
+                    FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
+
+                    Queue dest = activemqSession.createQueue("queue-" + queueNum);
+
+                    MessageConsumer consumer = activemqSession.createConsumer(dest);
                     //System.out.println("LO LO LO");
+                    System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp);
                     long start = System.currentTimeMillis();
-                    ActiveMQBytesMessage rc =  (ActiveMQBytesMessage)consume.receive(100);
+                    ActiveMQBytesMessage rc = (ActiveMQBytesMessage) consumer.receive(100);
                     long end = System.currentTimeMillis();
-                    totalTimeElapsed = end-start;
-                    System.out.println("Consumed in "+ totalTimeElapsed +" ms");
-                    System.out.println("CONSUMING FROM "+brokerIp);
+                    totalTimeElapsed = end - start;
+                    System.out.println("Consumed in " + totalTimeElapsed + " ms");
                     byte[] buffer = new byte[81920];
-                    
-                    while((rc.readBytes(buffer)) != -1){
+
+                    while ((rc.readBytes(buffer)) != -1) {
                         fos.write(buffer);
                     }
                     fos.close();
-                    session.close();
-                    connection.close();
 
-                }catch(Exception ex){
-                    ex.printStackTrace();
-                }
-            }else if (platform.equals("rabbitmq")){
-                try{
-                    com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
-                    factory.setUsername("admin");
-                    factory.setPassword("admin");
-                    factory.setPort(5672);
-                    factory.setHost(brokerIp);
-                    com.rabbitmq.client.Connection connection = factory.newConnection();
-                    Channel channel = connection.createChannel();
+                    activemqSession.close();
+                    activemqConnection.close();
 
-                    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-                    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-
-                    com.rabbitmq.client.Consumer consumer = new DefaultConsumer(channel) {
-                    @Override
-                    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-                        throws IOException {
-                            String message = new String(body, "UTF-8");
-                            System.out.println(" [x] Received '" + message + "'");
-                            System.out.println("CONSUMING FROM "+brokerIp);
+                    /*MessageListener listener = new MessageListener() {
+                        public void onMessage(Message message) {
+                            if (message instanceof ActiveMQBytesMessage) {
+                                ActiveMQBytesMessage byteMessage = (ActiveMQBytesMessage) message;
+                                try {
+                                    FileOutputStream fos2 = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
+                                    byte[] buffer2 = new byte[81920];
+                                    while ((byteMessage.readBytes(buffer2)) != -1) {
+                                        fos2.write(buffer2);
+                                    }
+                                    fos2.close();
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     };
-                    channel.basicConsume(QUEUE_NAME, true, consumer);   
-                }catch(Exception ex){
-                    ex.printStackTrace();
+                    consumer.setMessageListener(listener);*/
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }else if (platform.equals("kafka")){
+            } else if (platform.equals("rabbitmq")) {
+                try {
+
+                    rabbitmqChannel.queueDeclare("queue-" + queueNum, false, false, false, null);
+                    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+
+                    com.rabbitmq.client.Consumer consumer = new DefaultConsumer(rabbitmqChannel) {
+                        @Override
+                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+                                throws IOException {
+
+                            System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
+
+                            FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
+                            fileNumber++;
+
+                            byte[] buffer = new byte[81920];
+
+                            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
+                            while(byteArrayInputStream.read(buffer) != -1) {
+                                fos.write(buffer);
+                            }
+                            fos.close();
+
+                        }
+                    };
+                    rabbitmqChannel.basicConsume("queue-" + queueNum, true, consumer);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (platform.equals("kafka")) {
                 Properties props = new Properties();
-                props.put("bootstrap.servers", brokerIp+":9092");
-                //props.put("bootstrap.servers", "159.89.102.49:9092");
+                props.put("bootstrap.servers", brokerIp + ":9092");
                 props.put("group.id", "group-1");
                 props.put("enable.auto.commit", "true");
                 props.put("auto.commit.interval.ms", "1000");
                 props.put("auto.offset.reset", "earliest");
                 props.put("session.timeout.ms", "30000");
                 props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-                props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-                org.apache.kafka.clients.consumer.KafkaConsumer<String, String> consumer = null;
+                props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+                org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]> consumer = null;
                 try {
-                    consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<String, String>(props);
-                    consumer.subscribe(Arrays.asList("failsafe"));
-                    ConsumerRecords<String, String> records = consumer.poll(100);
-                    for (ConsumerRecord<String, String> record : records) {
-                        System.out.println("Received = " + record.value());                    
-                        System.out.println("CONSUMING FROM "+brokerIp);
+                    consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]>(props);
+                    consumer.subscribe(Arrays.asList("queue-" + queueNum));
+                    ConsumerRecords<String, byte[]> records = consumer.poll(100);
+                    for (ConsumerRecord<String, byte[]> record : records) {
+                        System.out.println("CONSUMING FROM " + brokerIp);
+
+                        FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
+                        fileNumber++;
+
+                        byte[] buffer = new byte[81920];
+
+                        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(record.value());
+                        while(byteArrayInputStream.read(buffer) != -1) {
+                            fos.write(buffer);
+                        }
+                        fos.close();
+
                     }
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             //long finish = System.currentTimeMillis();
         }
 
-        public Consumer(int tNum,String folderName,String platform,int queueNum, String brokerIp){
+        public Consumer(int tNum, String folderName, String platform, int queueNum, String brokerIp) {
             this.tNum = tNum;
             this.folderName = folderName;
             this.platform = platform;
             this.queueNum = queueNum;
             this.brokerIp = brokerIp;
+
+            if (platform.equals("activemq")) {
+                try {
+                    ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
+                    this.activemqConnection = connectionFactory.createConnection("admin", "admin");
+                    activemqConnection.start();
+                    this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (platform.equals("rabbitmq")) {
+                try {
+                    com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
+                    factory.setUsername("admin");
+                    factory.setPassword("admin");
+                    factory.setPort(5672);
+                    factory.setHost(brokerIp);
+                    this.rabbitmqConnection = factory.newConnection();
+                    this.rabbitmqChannel = rabbitmqConnection.createChannel();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
+
 
     private class Producer extends Thread{
         private double mSize;
@@ -174,7 +233,7 @@ public class ClusterBenchmarker {
                             bMessage.writeBytes(buffer);
                         }
                         producer.send(bMessage);
-                        System.out.println("ActiveMQ PRODUCED TO:  "+brokerIp);
+                        System.out.println("ACTIVEMQ PRODUCED TO:  "+brokerIp);
                         in.close();
                     }
 
@@ -199,7 +258,7 @@ public class ClusterBenchmarker {
                             outputStream.write(buffer);
                         }
                         rabbitmqChannel.basicPublish("", "queue-"+queueNum, null, outputStream.toByteArray());
-                        System.out.println("RabbitMQ PRODUCED TO:  "+brokerIp);
+                        System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
                         in.close();
                     }
 
@@ -238,7 +297,7 @@ public class ClusterBenchmarker {
 
                         producer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, buffer));
 
-                        System.out.println("Kafka PRODUCED TO:  "+brokerIp);
+                        System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                         in.close();
                     }
 
@@ -265,9 +324,9 @@ public class ClusterBenchmarker {
             this.brokerIp = brokerIp;
 
             if(platform.equals("activemq")){
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
-                connectionFactory.setProducerWindowSize((int)Math.pow(2, dSize));
                 try{
+                    ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
+                    connectionFactory.setProducerWindowSize((int)Math.pow(2, dSize));
                     this.activemqConnection = connectionFactory.createConnection("admin","admin");
                     activemqConnection.start();
                     this.activemqSession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -282,14 +341,11 @@ public class ClusterBenchmarker {
                     factory.setPassword("admin");
                     factory.setPort(5672);
                     factory.setHost(brokerIp);
-                    rabbitmqConnection = factory.newConnection();
-                    rabbitmqChannel = rabbitmqConnection.createChannel();
+                    this.rabbitmqConnection = factory.newConnection();
+                    this.rabbitmqChannel = rabbitmqConnection.createChannel();
                 }catch(Exception e){
                     e.printStackTrace();
                 }
-            }
-            else if(platform.equals("kafka")) {
-
             }
         }
     }
