@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -145,8 +142,11 @@ public class ClusterBenchmarker {
         private long totalTimeEllapsed;
         private int queueNum;
         private String folderName;
-        private final static String QUEUE_NAME = "hello";
         private String brokerIp;
+        private javax.jms.Connection activemqConnection;
+        private ActiveMQSession activemqsession;
+        private com.rabbitmq.client.Connection rabbitmqConnection;
+        private Channel rabbitmqChannel;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -157,54 +157,56 @@ public class ClusterBenchmarker {
             System.out.println(Thread.currentThread().getId()+" says hello producer :)");
             //long start = System.currentTimeMillis();
             if(platform.equals("activemq")){
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
-                connectionFactory.setProducerWindowSize((int)dSize);
                 try{
-                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+queueNum));
-                    javax.jms.Connection connection = connectionFactory.createConnection("admin","admin");
-                    connection.start();
-                    
-                    ActiveMQSession session = (ActiveMQSession)connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                    Queue dest = activemqsession.createQueue("queue-"+queueNum);
+                    MessageProducer producer = activemqsession.createProducer(dest);
 
-                    Queue dest = session.createQueue("queue-"+queueNum);
-                    MessageProducer producer = session.createProducer(dest);
+                    for (int i=0; i<Math.pow(2, dSize-mSize); i++) {
+                        FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
 
-                    byte[] buffer = new byte[81920];
-                    BytesMessage bMessage = session.createBytesMessage();
-                    
-                    int content;
-                    System.out.println("--------------------------\nStarted writing to file\n-----------------------");
-                    while((content = in.read(buffer)) != -1){
-                        bMessage.writeBytes(buffer);
+
+                        byte[] buffer = new byte[81920];
+                        BytesMessage bMessage = activemqsession.createBytesMessage();
+
+                        int content;
+                        System.out.println("--------------------------\nStarted writing to file\n-----------------------");
+                        while((content = in.read(buffer)) != -1){
+                            bMessage.writeBytes(buffer);
+                        }
+                        producer.send(bMessage);
+                        System.out.println("ActiveMQ PRODUCED TO:  "+brokerIp);
+                        in.close();
                     }
-                    producer.send(bMessage);
-                    System.out.println("PRODUCED TO:  "+brokerIp);
-                    in.close();
 
-                    session.close();
-                    connection.close();
-                }catch(Exception ex){
-                    ex.printStackTrace();
+                    activemqsession.close();
+                    activemqConnection.close();
+                }catch(Exception e){
+                    e.printStackTrace();
                 }
             }else if (platform.equals("rabbitmq")){
                 try{
-                    com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
-                    factory.setUsername("admin");
-                    factory.setPassword("admin");
-                    factory.setPort(5672);
-                    factory.setHost(brokerIp);
-                    com.rabbitmq.client.Connection connection = factory.newConnection();
-                    Channel channel = connection.createChannel();
 
-                    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-                    String message = "Hello World!";
-                    channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
-                    System.out.println(" [x] Sent '" + message + "'");
-                    System.out.println("PRODUCED TO:  "+brokerIp);
-                    channel.close();
-                    connection.close();
+                    rabbitmqChannel.queueDeclare("queue-"+queueNum, false, false, false, null);
+
+                    for (int i=0; i<Math.pow(2, dSize-mSize); i++) {
+                        FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
+
+
+                        byte[] buffer = new byte[81920];
+
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        while(in.read(buffer) != -1) {
+                            outputStream.write(buffer);
+                        }
+                        rabbitmqChannel.basicPublish("", "queue-"+queueNum, null, outputStream.toByteArray());
+                        System.out.println("RabbitMQ PRODUCED TO:  "+brokerIp);
+                        in.close();
+                    }
+
+                    rabbitmqChannel.close();
+                    rabbitmqConnection.close();
                 }catch(Exception e){
-
+                    e.printStackTrace();
                 }
             }else if(platform.equals("kafka")){
                 String topicName = "failsafe";
@@ -219,14 +221,32 @@ public class ClusterBenchmarker {
 
                 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-                props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+                props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 
                 org.apache.kafka.clients.producer.Producer<String, String> producer = null;
                 try {
-                    producer = new org.apache.kafka.clients.producer.KafkaProducer<String, String>(props);
+                    producer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
+
+                    for (int i=0; i<Math.pow(2, dSize-mSize); i++) {
+                        FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
+
+
+                        byte[] buffer = new byte[81920];
+
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        while(in.read(buffer) != -1) {
+                            outputStream.write(buffer);
+                        }
+
+                        producer.send(new ProducerRecord<String, String>(topicName, buffer));
+
+                        System.out.println("Kafka PRODUCED TO:  "+brokerIp);
+                        in.close();
+                    }
 
                     for(int i = 0; i < 10; i++) {
-                        producer.send(new ProducerRecord<String, String>(topicName, "Message " + Integer.toString(i + 100)));
+                        producer.send(new ProducerRecord<String, String>(topicName, buf));
+                        producer.send(new ProducerRecord<String, String>())
                         System.out.println("Message sent successfully");
                     }
                     System.out.println("PRODUCED TO:  "+brokerIp);
@@ -251,6 +271,34 @@ public class ClusterBenchmarker {
             this.queueNum = queueNum;
             this.folderName = folderName;
             this.brokerIp = brokerIp;
+
+            if(platform.equals("activemq")){
+                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
+                connectionFactory.setProducerWindowSize((int)Math.pow(2, dSize));
+                try{
+                    this.activemqConnection = connectionFactory.createConnection("admin","admin");
+                    activemqConnection.start();
+                    this.activemqsession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+            else if(platform.equals("rabbitmq")) {
+                try{
+                    com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
+                    factory.setUsername("admin");
+                    factory.setPassword("admin");
+                    factory.setPort(5672);
+                    factory.setHost(brokerIp);
+                    rabbitmqConnection = factory.newConnection();
+                    rabbitmqChannel = rabbitmqConnection.createChannel();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+            else if(platform.equals("kafka")) {
+
+            }
         }
     }
 
@@ -305,6 +353,13 @@ public class ClusterBenchmarker {
             if (!Files.exists(path)) {
                 File folder = new File("ProducerFolder"+"-"+i);
                 folder.mkdir();
+            }
+
+            try {
+                Process process = Runtime.getRuntime().exec("sh -c \"scripts/data-generator.sh " + Math.pow(2, (p.dSize-p.mSize)) + " " + p.mSize);
+                process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
             pList.add(p);
         }
