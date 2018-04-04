@@ -8,6 +8,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Arrays;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.command.ActiveMQBytesMessage;
@@ -459,4 +460,6 @@ public class ClusterBenchmarker {
 
     private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp, String type) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp,type); }
     private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Consumer(tNum,folderName,platform,queueNum,brokerIp); }
+
+    //TODO: server patliyor, consumer listener mi olacak, topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek.
 }
