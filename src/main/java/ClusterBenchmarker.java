@@ -220,7 +220,7 @@ public class ClusterBenchmarker {
                     Queue dest = activemqSession.createQueue("queue-"+queueNum);
                     MessageProducer producer = activemqSession.createProducer(dest);
 
-                    for (int i=0; i<Math.pow(2, dSize-mSize); i++) {
+                    for (int i=0; i<dSize/mSize; i++) {
                         FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
 
 
@@ -247,7 +247,7 @@ public class ClusterBenchmarker {
 
                     rabbitmqChannel.queueDeclare("queue-"+queueNum, false, false, false, null);
 
-                    for (int i=0; i<Math.pow(2, dSize-mSize); i++) {
+                    for (int i=0; i<dSize/mSize; i++) {
                         FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
 
 
@@ -284,7 +284,7 @@ public class ClusterBenchmarker {
                 try {
                     producer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
 
-                    for (int i=0; i<Math.pow(2, dSize-mSize); i++) {
+                    for (int i=0; i<dSize/mSize; i++) {
                         FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
 
 
@@ -326,7 +326,7 @@ public class ClusterBenchmarker {
             if(platform.equals("activemq")){
                 try{
                     ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
-                    connectionFactory.setProducerWindowSize((int)Math.pow(2, dSize));
+                    connectionFactory.setProducerWindowSize((int)dSize);
                     this.activemqConnection = connectionFactory.createConnection("admin","admin");
                     activemqConnection.start();
                     this.activemqSession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -404,7 +404,7 @@ public class ClusterBenchmarker {
             }
 
             try {
-                Process process = Runtime.getRuntime().exec("sh -c \"scripts/data-generator.sh " + Math.pow(2, (p.dSize-p.mSize)) + " " + p.mSize);
+                Process process = Runtime.getRuntime().exec("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "ProducerFolder-"+i);
                 process.waitFor();
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
