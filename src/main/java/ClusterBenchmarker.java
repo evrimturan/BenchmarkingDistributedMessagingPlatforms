@@ -144,7 +144,7 @@ public class ClusterBenchmarker {
         private String folderName;
         private String brokerIp;
         private javax.jms.Connection activemqConnection;
-        private ActiveMQSession activemqsession;
+        private ActiveMQSession activemqSession;
         private com.rabbitmq.client.Connection rabbitmqConnection;
         private Channel rabbitmqChannel;
 
@@ -158,15 +158,15 @@ public class ClusterBenchmarker {
             //long start = System.currentTimeMillis();
             if(platform.equals("activemq")){
                 try{
-                    Queue dest = activemqsession.createQueue("queue-"+queueNum);
-                    MessageProducer producer = activemqsession.createProducer(dest);
+                    Queue dest = activemqSession.createQueue("queue-"+queueNum);
+                    MessageProducer producer = activemqSession.createProducer(dest);
 
                     for (int i=0; i<Math.pow(2, dSize-mSize); i++) {
                         FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
 
 
                         byte[] buffer = new byte[81920];
-                        BytesMessage bMessage = activemqsession.createBytesMessage();
+                        BytesMessage bMessage = activemqSession.createBytesMessage();
 
                         int content;
                         System.out.println("--------------------------\nStarted writing to file\n-----------------------");
@@ -178,7 +178,7 @@ public class ClusterBenchmarker {
                         in.close();
                     }
 
-                    activemqsession.close();
+                    activemqSession.close();
                     activemqConnection.close();
                 }catch(Exception e){
                     e.printStackTrace();
@@ -270,7 +270,7 @@ public class ClusterBenchmarker {
                 try{
                     this.activemqConnection = connectionFactory.createConnection("admin","admin");
                     activemqConnection.start();
-                    this.activemqsession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                    this.activemqSession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
                 }catch(Exception ex){
                     ex.printStackTrace();
                 }
