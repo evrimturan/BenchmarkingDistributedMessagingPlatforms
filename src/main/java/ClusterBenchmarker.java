@@ -8,6 +8,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Arrays;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.command.ActiveMQBytesMessage;
@@ -202,6 +203,7 @@ public class ClusterBenchmarker {
         private ActiveMQSession activemqSession;
         private com.rabbitmq.client.Connection rabbitmqConnection;
         private Channel rabbitmqChannel;
+        private String type;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -216,21 +218,21 @@ public class ClusterBenchmarker {
                     Queue dest = activemqSession.createQueue("queue-"+queueNum);
                     MessageProducer producer = activemqSession.createProducer(dest);
 
+                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+
+                    byte[] buffer = new byte[81920];
+                    BytesMessage bMessage = activemqSession.createBytesMessage();
+
+                    int content;
+                    System.out.println("--------------------------\nStarted writing to file\n-----------------------");
+                    while((content = in.read(buffer)) != -1){
+                        bMessage.writeBytes(buffer);
+                    }
+                    in.close();
+
                     for (int i=0; i<dSize/mSize; i++) {
-                        FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
-
-
-                        byte[] buffer = new byte[81920];
-                        BytesMessage bMessage = activemqSession.createBytesMessage();
-
-                        int content;
-                        System.out.println("--------------------------\nStarted writing to file\n-----------------------");
-                        while((content = in.read(buffer)) != -1){
-                            bMessage.writeBytes(buffer);
-                        }
                         producer.send(bMessage);
                         System.out.println("ACTIVEMQ PRODUCED TO:  "+brokerIp);
-                        in.close();
                     }
 
                     activemqSession.close();
@@ -243,19 +245,19 @@ public class ClusterBenchmarker {
 
                     rabbitmqChannel.queueDeclare("queue-"+queueNum, false, false, false, null);
 
+                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+
+                    byte[] buffer = new byte[81920];
+
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while(in.read(buffer) != -1) {
+                        outputStream.write(buffer);
+                    }
+                    in.close();
+
                     for (int i=0; i<dSize/mSize; i++) {
-                        FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
-
-
-                        byte[] buffer = new byte[81920];
-
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        while(in.read(buffer) != -1) {
-                            outputStream.write(buffer);
-                        }
                         rabbitmqChannel.basicPublish("", "queue-"+queueNum, null, outputStream.toByteArray());
                         System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
-                        in.close();
                     }
 
                     rabbitmqChannel.close();
@@ -280,21 +282,19 @@ public class ClusterBenchmarker {
                 try {
                     producer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
 
+                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+
+                    byte[] buffer = new byte[81920];
+
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while(in.read(buffer) != -1) {
+                        outputStream.write(buffer);
+                    }
+                    in.close();
+
                     for (int i=0; i<dSize/mSize; i++) {
-                        FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+i));
-
-
-                        byte[] buffer = new byte[81920];
-
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        while(in.read(buffer) != -1) {
-                            outputStream.write(buffer);
-                        }
-
                         producer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, buffer));
-
                         System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
-                        in.close();
                     }
 
                 }catch (Exception e) {
@@ -310,7 +310,7 @@ public class ClusterBenchmarker {
             //long finish = System.currentTimeMillis();
         }
 
-        public Producer(long mSize, long dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp){
+        public Producer(long mSize, long dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp, String type){
             this.mSize = mSize;
             this.dSize = dSize;
             this.tNum = tNum;
@@ -318,6 +318,7 @@ public class ClusterBenchmarker {
             this.queueNum = queueNum;
             this.folderName = folderName;
             this.brokerIp = brokerIp;
+            this.type = type;
 
             if(platform.equals("activemq")){
                 try{
@@ -390,7 +391,7 @@ public class ClusterBenchmarker {
             int bId = r.nextInt(brokerNum - 0);
             String bIp = bInfo.get(bId).getIp();
 
-            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum,("ProducerFolder-"+i),config.getPlatform(),i, bIp);
+            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum,("ProducerFolder-"+i),config.getPlatform(),i, bIp, config.getType());
 
             Path path = Paths.get("ProducerFolder"+"-"+i);
 
@@ -453,6 +454,8 @@ public class ClusterBenchmarker {
         System.out.println("All threads finished.");
     }
 
-    private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp); }
+    private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp, String type) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp,type); }
     private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Consumer(tNum,folderName,platform,queueNum,brokerIp); }
+
+    //TODO: server patliyor, consumer listener mi olacak, topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek.
 }

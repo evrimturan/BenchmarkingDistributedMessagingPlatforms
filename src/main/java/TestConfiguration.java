@@ -19,6 +19,7 @@ public class TestConfiguration {
     private PropertiesConfiguration conf, brokerConf;
     private String platform;
     private List<BrokerInfo> bInfo;
+    private String type;
 
     public TestConfiguration(String Filename){
         try {
@@ -42,6 +43,7 @@ public class TestConfiguration {
             platform = conf.getString("platform.type");
             //messageSize = conf.getDouble("message.size");
             String strMessage =conf.getString("message.size");
+            type = strMessage;
             if(strMessage.contains("KB")){
                 strMessage = strMessage.substring(0,strMessage.indexOf("KB"));
                 messageSize = Long.parseLong(strMessage) * 1024;
@@ -112,6 +114,8 @@ public class TestConfiguration {
     public List<BrokerInfo> getBInfo(){
         return bInfo;
     }
+
+    public String getType() {return type;}
 
     protected class BrokerInfo{
         private int id;
