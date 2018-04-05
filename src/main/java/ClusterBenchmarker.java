@@ -46,38 +46,37 @@ public class ClusterBenchmarker {
                 try {
                     Queue dest = activemqSession.createQueue("queue-" + queueNum);
                     MessageConsumer consumer = activemqSession.createConsumer(dest);
-
-                    MessageListener listener = new MessageListener() {
-                        public void onMessage(Message message) {
-                            try{
-                                
-                                FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
-                                //System.out.println("LO LO LO");
+                    System.out.println("queue-"+queueNum);
+                    MessageListener listener = message -> {
+                        try{
+                            //System.out.println("LO LO LO");
+                            if(message instanceof BytesMessage){
+                                //FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
                                 System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp);
-                                long start = System.currentTimeMillis();
-                                ActiveMQBytesMessage rc = (ActiveMQBytesMessage) consumer.receive(100);
+                                /*long start = System.currentTimeMillis();
+
                                 long end = System.currentTimeMillis();
                                 totalTimeElapsed = end - start;
-                                System.out.println("Consumed in " + totalTimeElapsed + " ms");
-                                byte[] buffer = new byte[81920];
+                                System.out.println("Consumed in " + totalTimeElapsed + " ms");*/
+                                /*byte[] buffer = new byte[81920];
 
-                                while ((rc.readBytes(buffer)) != -1) {
+                                while ((((BytesMessage) message).readBytes(buffer)) != -1) {
                                     fos.write(buffer);
-                                }
-                                fos.close();
-
-                                activemqSession.close();
-                                activemqConnection.close();
-
-                            }catch(Exception e){
-                                e.printStackTrace();
+                                }*/
+                                //fos.close();
                             }
+
+                        }catch(Exception e){
+                            e.printStackTrace();
                         }
                     };
                     consumer.setMessageListener(listener);
                     while(true){
                         synchronized(finish){
                             if(finish.get(queueNum)){
+                                System.out.println("FINISHED CONSUMER");
+                                activemqSession.close();
+                                activemqConnection.close();
                                 break;
                             }
                         }
@@ -361,6 +360,9 @@ public class ClusterBenchmarker {
         List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
+        for(int i = 0;i<10;i++){
+            init.finish.add(i,false);
+        }
 
         try{
             Process broker = null;
@@ -428,12 +430,17 @@ public class ClusterBenchmarker {
 
         }
 
-        for(Producer p : pList){
-            p.run();
+
+
+        for(Producer p : pList) {
+            p.start();
+            //System.out.println("YAPIYOM");
         }
 
+        System.out.println("BURAYA GELDI");
+
         for(Consumer c : cList){
-            c.run();
+            c.start();
         }
 
         for(Producer p : pList){
