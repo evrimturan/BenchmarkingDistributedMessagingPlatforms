@@ -411,11 +411,7 @@ public class ClusterBenchmarker {
             pList.add(p);
         }
 
-        for(Producer p : pList){
-            p.run();
-        }
-
-        /*for(int i=0; i<subNum; i++){
+        for(int i=0; i<subNum; i++){
             Path path = Paths.get("ConsumerFolder"+"-"+i);
 
             if (!Files.exists(path)) {
@@ -426,11 +422,19 @@ public class ClusterBenchmarker {
             Random r = new Random();
             int bId = r.nextInt(brokerNum - 0);
             String bIp = bInfo.get(bId).getIp();
-           
+
             Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
             cList.add(c);
 
-        }*/
+        }
+
+        for(Producer p : pList){
+            p.run();
+        }
+
+        for(Consumer c : cList){
+            c.run();
+        }
 
         for(Producer p : pList){
             try {
@@ -440,17 +444,13 @@ public class ClusterBenchmarker {
             }
         }
 
-        /*for(Consumer c : cList){
-            c.run();
-        }
-
         for(Consumer c : cList){
             try {
                 c.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
         
         System.out.println("All threads finished.");
     }
