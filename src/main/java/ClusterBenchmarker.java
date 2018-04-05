@@ -20,6 +20,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import javax.jms.*;
 
 public class ClusterBenchmarker {
+    private List<Boolean> finish;
 
     private class Consumer extends Thread {
         private int tNum;
@@ -43,48 +44,45 @@ public class ClusterBenchmarker {
             System.out.println(Thread.currentThread().getId() + " says hello consumer :)");
             if (platform.equals("activemq")) {
                 try {
-                    FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
-
                     Queue dest = activemqSession.createQueue("queue-" + queueNum);
-
                     MessageConsumer consumer = activemqSession.createConsumer(dest);
-                    //System.out.println("LO LO LO");
-                    System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp);
-                    long start = System.currentTimeMillis();
-                    ActiveMQBytesMessage rc = (ActiveMQBytesMessage) consumer.receive(100);
-                    long end = System.currentTimeMillis();
-                    totalTimeElapsed = end - start;
-                    System.out.println("Consumed in " + totalTimeElapsed + " ms");
-                    byte[] buffer = new byte[81920];
 
-                    while ((rc.readBytes(buffer)) != -1) {
-                        fos.write(buffer);
-                    }
-                    fos.close();
-
-                    activemqSession.close();
-                    activemqConnection.close();
-
-                    /*MessageListener listener = new MessageListener() {
+                    MessageListener listener = new MessageListener() {
                         public void onMessage(Message message) {
-                            if (message instanceof ActiveMQBytesMessage) {
-                                ActiveMQBytesMessage byteMessage = (ActiveMQBytesMessage) message;
-                                try {
-                                    FileOutputStream fos2 = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
-                                    byte[] buffer2 = new byte[81920];
-                                    while ((byteMessage.readBytes(buffer2)) != -1) {
-                                        fos2.write(buffer2);
-                                    }
-                                    fos2.close();
+                            try{
+                                
+                                FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
+                                //System.out.println("LO LO LO");
+                                System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp);
+                                long start = System.currentTimeMillis();
+                                ActiveMQBytesMessage rc = (ActiveMQBytesMessage) consumer.receive(100);
+                                long end = System.currentTimeMillis();
+                                totalTimeElapsed = end - start;
+                                System.out.println("Consumed in " + totalTimeElapsed + " ms");
+                                byte[] buffer = new byte[81920];
+
+                                while ((rc.readBytes(buffer)) != -1) {
+                                    fos.write(buffer);
                                 }
-                                catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                fos.close();
+
+                                activemqSession.close();
+                                activemqConnection.close();
+
+                            }catch(Exception e){
+                                e.printStackTrace();
                             }
                         }
                     };
-                    consumer.setMessageListener(listener);*/
-
+                    consumer.setMessageListener(listener);
+                    while(true){
+                        synchronized(finish){
+                            if(finish.get(queueNum)==true){
+                                break;
+                            }
+                        }
+                    }
+                    
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -234,7 +232,9 @@ public class ClusterBenchmarker {
                         producer.send(bMessage);
                         System.out.println("ACTIVEMQ PRODUCED TO:  "+brokerIp);
                     }
-
+                    synchronized(finish){
+                        finish.get(queueNum) = true;
+                    }
                     activemqSession.close();
                     activemqConnection.close();
                 }catch(Exception e){
@@ -360,6 +360,7 @@ public class ClusterBenchmarker {
         List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
+        finish = new Arraylist<>();
 
         try{
             Process broker = null;
@@ -457,5 +458,5 @@ public class ClusterBenchmarker {
     private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp, String type) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp,type); }
     private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Consumer(tNum,folderName,platform,queueNum,brokerIp); }
 
-    //TODO: server patliyor, consumer listener mi olacak, topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek.
+    //TODO: server patliyor, consumer listener mi olacak, topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek,broker connection refuse olunca başka brokera bağlanmayı denesin.
 }
