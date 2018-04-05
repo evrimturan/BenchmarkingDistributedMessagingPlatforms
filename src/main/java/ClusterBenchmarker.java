@@ -21,6 +21,7 @@ import javax.jms.*;
 
 public class ClusterBenchmarker {
     private final List<Boolean> finish = new ArrayList<>();
+    private static int sentData = 0;
 
     private class Consumer extends Thread {
         private int tNum;
@@ -98,7 +99,7 @@ public class ClusterBenchmarker {
                                 throws IOException {
 
                             System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
-
+                            /*
                             FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
                             fileNumber++;
 
@@ -109,10 +110,21 @@ public class ClusterBenchmarker {
                                 fos.write(buffer);
                             }
                             fos.close();
-
+                            */
                         }
                     };
                     rabbitmqChannel.basicConsume("queue-" + queueNum, true, consumer);
+                    while(true){
+                        synchronized(finish){
+                            if(finish.get(queueNum)){
+                                System.out.println("FINISHED CONSUMER");
+                                rabbitmqChannel.close();
+                                rabbitmqConnection.close();
+                                break;
+                            }
+                        }
+                        Thread.sleep(3000);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -128,24 +140,41 @@ public class ClusterBenchmarker {
                 props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
                 org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]> consumer = null;
                 try {
-                    consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]>(props);
+                    consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
                     consumer.subscribe(Arrays.asList("queue-" + queueNum));
-                    ConsumerRecords<String, byte[]> records = consumer.poll(100);
-                    for (ConsumerRecord<String, byte[]> record : records) {
-                        System.out.println("CONSUMING FROM " + brokerIp);
+                    Thread.sleep(1000);
+                    while(true){
+                        ConsumerRecords<String, byte[]> records = consumer.poll(100);
+                        for (ConsumerRecord<String, byte[]> record : records) {
+                            System.out.println("CONSUMING FROM " + brokerIp);
 
-                        FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
-                        fileNumber++;
+                            /*FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
+                            fileNumber++;
 
-                        byte[] buffer = new byte[81920];
+                            byte[] buffer = new byte[81920];
 
-                        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(record.value());
-                        while(byteArrayInputStream.read(buffer) != -1) {
-                            fos.write(buffer);
+                            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(record.value());
+                            while(byteArrayInputStream.read(buffer) != -1) {
+                                fos.write(buffer);
+                            }
+                            fos.close();
+                            */
+                            /*synchronized(finish){
+                                if(finish.get(queueNum)){
+                                    System.out.println("FINISHED CONSUMER");
+                                    consumer.unsubscribe();
+                                    break;
+                                }
+                            }*/
+                            sentData++;
                         }
-                        fos.close();
+                        if(sentData >= 30){
+                            consumer.unsubscribe();
+                            break;
+                        }
 
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -255,11 +284,13 @@ public class ClusterBenchmarker {
                     }
                     in.close();
 
-                    for (int i=0; i<dSize/mSize; i++) {
+                    for (int i=0; i<30/*dSize/mSize*/; i++) {
                         rabbitmqChannel.basicPublish("", "queue-"+queueNum, null, outputStream.toByteArray());
                         System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
                     }
-
+                    synchronized (finish){
+                        finish.set(queueNum,true);
+                    }
                     rabbitmqChannel.close();
                     rabbitmqConnection.close();
                 }catch(Exception e){
@@ -292,17 +323,17 @@ public class ClusterBenchmarker {
                     }
                     in.close();
 
-                    for (int i=0; i<dSize/mSize; i++) {
+                    for (int i=0; i<30/*dSize/mSize*/; i++) {
                         producer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, buffer));
                         System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                     }
+                    synchronized (finish){
+                        finish.set(queueNum,true);
+                    }
+                    producer.close();
 
                 }catch (Exception e) {
                     e.printStackTrace();
-                }
-
-                finally {
-                    producer.close();
                 }
 
             }
@@ -465,5 +496,5 @@ public class ClusterBenchmarker {
     private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp, String type) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp,type); }
     private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Consumer(tNum,folderName,platform,queueNum,brokerIp); }
 
-    //TODO: server patliyor, consumer listener mi olacak, topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek,broker connection refuse olunca başka brokera bağlanmayı denesin.
+    //TODO: topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek,broker connection refuse olunca başka brokera bağlanmayı denesin, kafka consumer global olsun
 }
