@@ -20,7 +20,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import javax.jms.*;
 
 public class ClusterBenchmarker {
-    private List<Boolean> finish;
+    private final List<Boolean> finish = new ArrayList<>();
 
     private class Consumer extends Thread {
         private int tNum;
@@ -77,10 +77,11 @@ public class ClusterBenchmarker {
                     consumer.setMessageListener(listener);
                     while(true){
                         synchronized(finish){
-                            if(finish.get(queueNum)==true){
+                            if(finish.get(queueNum)){
                                 break;
                             }
                         }
+                        Thread.sleep(3000);
                     }
                     
                 } catch (Exception e) {
@@ -233,7 +234,7 @@ public class ClusterBenchmarker {
                         System.out.println("ACTIVEMQ PRODUCED TO:  "+brokerIp);
                     }
                     synchronized(finish){
-                        finish.get(queueNum) = true;
+                        finish.set(queueNum,true);
                     }
                     activemqSession.close();
                     activemqConnection.close();
@@ -360,7 +361,6 @@ public class ClusterBenchmarker {
         List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
-        finish = new Arraylist<>();
 
         try{
             Process broker = null;
