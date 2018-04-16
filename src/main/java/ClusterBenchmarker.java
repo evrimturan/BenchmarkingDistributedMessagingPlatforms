@@ -414,6 +414,7 @@ public class ClusterBenchmarker {
                     break;
             }
             broker.waitFor();
+            Thread.sleep(15000);
             System.out.println("Brokers started.");
 
         }catch(IOException | InterruptedException ex){
@@ -468,8 +469,7 @@ public class ClusterBenchmarker {
             p.start();
             //System.out.println("YAPIYOM");
         }
-
-        System.out.println("BURAYA GELDI");
+        //System.out.println("BURAYA GELDI");
 
         for(Consumer c : cList){
             c.start();
@@ -490,7 +490,7 @@ public class ClusterBenchmarker {
                 e.printStackTrace();
             }
         }
-        
+
         System.out.println("All threads finished.");
     }
 
