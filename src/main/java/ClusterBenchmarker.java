@@ -244,6 +244,7 @@ public class ClusterBenchmarker {
                 try{
                     Queue dest = activemqSession.createQueue("queue-"+queueNum);
                     MessageProducer producer = activemqSession.createProducer(dest);
+                    producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
                     FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
 
