@@ -286,7 +286,7 @@ public class ClusterBenchmarker {
                     in.close();
 
                     for (int i=0; i<30/*dSize/mSize*/; i++) {
-                        rabbitmqChannel.basicPublish("", "queue-"+queueNum, null, outputStream.toByteArray());
+                        rabbitmqChannel.basicPublish("", "queue-"+queueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, outputStream.toByteArray());
                         System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
                     }
                     synchronized (finish){
@@ -311,6 +311,7 @@ public class ClusterBenchmarker {
                 props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 
                 org.apache.kafka.clients.producer.Producer<String, byte[]> producer = null;
+
                 try {
                     producer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
 
