@@ -34,6 +34,7 @@ public class ClusterBenchmarker {
         private int fileNumber = 0;
         private MessageConsumer activemqConsumer;
         private com.rabbitmq.client.Consumer rabbitmqConsumer;
+        private org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]> kafkaConsumer;
 
         public long getTotalTimeElapsed() {
             return totalTimeElapsed;
@@ -135,19 +136,9 @@ public class ClusterBenchmarker {
                     e.printStackTrace();
                 }
             } else if (platform.equals("kafka")) {
-                Properties props = new Properties();
-                props.put("bootstrap.servers", brokerIp + ":9092");
-                props.put("group.id", "group-1");
-                props.put("enable.auto.commit", "true");
-                props.put("auto.commit.interval.ms", "1000");
-                props.put("auto.offset.reset", "earliest");
-                props.put("session.timeout.ms", "30000");
-                props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-                props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
-                org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]> consumer = null;
+
                 try {
-                    consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
-                    consumer.subscribe(Arrays.asList("queue-" + queueNum));
+
                     //Thread.sleep(1000);
                     final boolean[] exit = {false};
                     Thread thread = new Thread(new Runnable(){
@@ -170,7 +161,7 @@ public class ClusterBenchmarker {
                     });
                     thread.start();
                     while(true){
-                        ConsumerRecords<String, byte[]> records = consumer.poll(100);
+                        ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
                         for (ConsumerRecord<String, byte[]> record : records) {
                             System.out.println("CONSUMING FROM " + brokerIp);
 
@@ -198,7 +189,7 @@ public class ClusterBenchmarker {
                             break;
                         }
                     }
-                    consumer.unsubscribe();
+                    kafkaConsumer.unsubscribe();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -262,6 +253,28 @@ public class ClusterBenchmarker {
 
 
                 } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            else if (platform.equals("kafka")) {
+                Properties props = new Properties();
+                props.put("bootstrap.servers", brokerIp + ":9092");
+                props.put("group.id", "group-1");
+                props.put("enable.auto.commit", "true");
+                props.put("auto.commit.interval.ms", "1000");
+                props.put("auto.offset.reset", "earliest");
+                props.put("session.timeout.ms", "30000");
+                props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+                props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+                kafkaConsumer = null;
+
+                try {
+                    kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
+                    kafkaConsumer.subscribe(Arrays.asList("queue-" + queueNum));
+                }
+
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }
