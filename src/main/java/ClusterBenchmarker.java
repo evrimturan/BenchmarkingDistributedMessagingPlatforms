@@ -422,11 +422,16 @@ public class ClusterBenchmarker {
                     p.run();
                     return null;
                 };
-                try {
-                    ex.invokeAll(Arrays.asList(call),2,TimeUnit.MINUTES);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ex.invokeAll(Arrays.asList(call),2,TimeUnit.MINUTES);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
                 /*final Future handler = ex.submit(call);
                 ex.schedule(() -> {
                     handler.cancel(true); // bura sıkıntılı
