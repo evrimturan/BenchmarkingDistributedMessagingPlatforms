@@ -215,6 +215,7 @@ public class ClusterBenchmarker {
         private byte[] rabbitByteArray;
         private byte[] kafkaByteArray;
         private org.apache.kafka.clients.producer.Producer<String, byte[]> kafkaProducer;
+        private int counter;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -227,6 +228,7 @@ public class ClusterBenchmarker {
                 try{
                     while(true){
                         producer.send(bMessage);
+                        counter++;
                         System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
                     }
 
@@ -242,6 +244,7 @@ public class ClusterBenchmarker {
                 try{
                     while(true) {
                         rabbitmqChannel.basicPublish("", "queue-"+queueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                        counter++;
                         System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
                     }
 
@@ -261,6 +264,7 @@ public class ClusterBenchmarker {
                 try {
                     while(true) {
                         kafkaProducer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, kafkaByteArray));
+                        counter++;
                         System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                     }
 
