@@ -212,6 +212,9 @@ public class ClusterBenchmarker {
         private Queue dest;
         private MessageProducer producer;
         private BytesMessage bMessage;
+        private byte[] rabbitByteArray;
+        private byte[] kafkaByteArray;
+        private org.apache.kafka.clients.producer.Producer<String, byte[]> kafkaProducer;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -237,64 +240,38 @@ public class ClusterBenchmarker {
                 }
             }else if (platform.equals("rabbitmq")){
                 try{
-
-                    rabbitmqChannel.queueDeclare("queue-"+queueNum, true, false, false, null);
-
-                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
-
-                    byte[] buffer = new byte[81920];
-
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    while(in.read(buffer) != -1) {
-                        outputStream.write(buffer);
-                    }
-                    in.close();
-
-                    for (int i=0; i<30/*dSize/mSize*/; i++) {
-                        rabbitmqChannel.basicPublish("", "queue-"+queueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, outputStream.toByteArray());
+                    while(true) {
+                        rabbitmqChannel.basicPublish("", "queue-"+queueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
                         System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
                     }
-                    rabbitmqChannel.close();
-                    rabbitmqConnection.close();
+
                 }catch(Exception e){
                     e.printStackTrace();
+                    try {
+                        rabbitmqChannel.close();
+                        rabbitmqConnection.close();
+                    }
+                    catch (Exception ex) {
+                        e.printStackTrace();
+                    }
                 }
             }else if(platform.equals("kafka")){
-                Properties props = new Properties();
-                props.put("bootstrap.servers", brokerIp +":9092");
-                props.put("acks", "all");
-                props.put("retries", 0);
-                props.put("batch.size", 16384);
-                props.put("linger.ms", 1);
-                props.put("buffer.memory", 33554432);
 
-                props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-                props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
-
-                org.apache.kafka.clients.producer.Producer<String, byte[]> producer = null;
 
                 try {
-                    producer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
-
-                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
-
-                    byte[] buffer = new byte[81920];
-
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    while(in.read(buffer) != -1) {
-                        outputStream.write(buffer);
-                    }
-                    in.close();
-
-                    for (int i=0; i<30/*dSize/mSize*/; i++) {
-                        producer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, buffer));
+                    while(true) {
+                        kafkaProducer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, kafkaByteArray));
                         System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                     }
-                    producer.close();
 
                 }catch (Exception e) {
                     e.printStackTrace();
+                    try {
+                        producer.close();
+                    }
+                    catch (Exception ex) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
@@ -348,7 +325,56 @@ public class ClusterBenchmarker {
                     factory.setHost(brokerIp);
                     this.rabbitmqConnection = factory.newConnection();
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
+
+                    rabbitmqChannel.queueDeclare("queue-"+queueNum, true, false, false, null);
+
+                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+
+                    byte[] buffer = new byte[81920];
+
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while(in.read(buffer) != -1) {
+                        outputStream.write(buffer);
+                    }
+                    in.close();
+                    rabbitByteArray = outputStream.toByteArray();
+                    outputStream.close();
+
                 }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            else if(platform.equals("kafka")) {
+                Properties props = new Properties();
+                props.put("bootstrap.servers", brokerIp +":9092");
+                props.put("acks", "all");
+                props.put("retries", 0);
+                props.put("batch.size", 16384);
+                props.put("linger.ms", 1);
+                props.put("buffer.memory", 33554432);
+
+                props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+                props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+
+                kafkaProducer = null;
+
+                try {
+                    kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
+
+                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+
+                    byte[] buffer = new byte[81920];
+
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while(in.read(buffer) != -1) {
+                        outputStream.write(buffer);
+                    }
+                    in.close();
+                    kafkaByteArray = outputStream.toByteArray();
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }
