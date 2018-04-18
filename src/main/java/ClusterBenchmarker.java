@@ -209,6 +209,9 @@ public class ClusterBenchmarker {
         private com.rabbitmq.client.Connection rabbitmqConnection;
         private Channel rabbitmqChannel;
         private String type;
+        private Queue dest;
+        private MessageProducer producer;
+        private BytesMessage bMessage;
 
         public long getTotalTimeEllapsed() {
             return totalTimeEllapsed;
@@ -219,34 +222,18 @@ public class ClusterBenchmarker {
             //long start = System.currentTimeMillis();
             if(platform.equals("activemq")){
                 try{
-                    Queue dest = activemqSession.createQueue("queue-"+queueNum);
-                    MessageProducer producer = activemqSession.createProducer(dest);
-                    producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-
-                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
-
-                    byte[] buffer = new byte[81920];
-                    BytesMessage bMessage = activemqSession.createBytesMessage();
-
-                    //System.out.println("--------------------------\nStarted writing to file\n-----------------------");
-                    while(in.read(buffer) != -1){
-                        bMessage.writeBytes(buffer);
-                    }
-                    in.close();
-
                     while(true){
                         producer.send(bMessage);
                         System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
                     }
-                    /*
-                    for (int i=0; i<dSize/mSize; i++) {
-                    }
 
-                    activemqSession.close();
-                    activemqConnection.close();
-                    */
                 }catch(Exception e){
-                    e.printStackTrace();
+                    //e.printStackTrace();
+                    try{
+                        activemqSession.close();
+                        activemqConnection.close();
+                    }catch(Exception ex){ /*unimportant*/ }
+
                 }
             }else if (platform.equals("rabbitmq")){
                 try{
@@ -332,6 +319,22 @@ public class ClusterBenchmarker {
                     this.activemqConnection = connectionFactory.createConnection("admin","admin");
                     activemqConnection.start();
                     this.activemqSession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+                    dest = activemqSession.createQueue("queue-"+queueNum);
+                    producer = activemqSession.createProducer(dest);
+                    producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
+                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+
+                    byte[] buffer = new byte[81920];
+                    bMessage = activemqSession.createBytesMessage();
+
+                    //System.out.println("--------------------------\nStarted writing to file\n-----------------------");
+                    while(in.read(buffer) != -1){
+                        bMessage.writeBytes(buffer);
+                    }
+                    in.close();
+
                 }catch(Exception ex){
                     ex.printStackTrace();
                 }
@@ -416,28 +419,41 @@ public class ClusterBenchmarker {
                 pList.add(p);
             }
             ScheduledExecutorService ex = Executors.newScheduledThreadPool(pList.size());
+            List<Thread> threadList = new ArrayList<>();
             for(Producer p : pList) {
                 Callable<Void> call = () -> {
                     System.out.println("Running producer AGAIN");
                     p.run();
                     return null;
                 };
-                new Thread(new Runnable() {
+                Thread temp = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            ex.invokeAll(Arrays.asList(call),2,TimeUnit.MINUTES);
+                            ex.invokeAll(Arrays.asList(call),10,TimeUnit.SECONDS);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                }).start();
+                });
+                threadList.add(temp);
+                temp.start();
+
                 /*final Future handler = ex.submit(call);
                 ex.schedule(() -> {
                     handler.cancel(true); // bura sıkıntılı
                 },10,TimeUnit.SECONDS);*/
                 System.out.println("--------------------------------");
             }
+
+            for(Thread e : threadList){
+                try {
+                    e.join();
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            ex.shutdown();
         }else if(config.getPubOrSub().equals("consumer")){
             for(int i=0; i<subNum; i++){
                 Path path = Paths.get("ConsumerFolder"+"-"+i);
