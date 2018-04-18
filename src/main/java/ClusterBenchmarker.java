@@ -32,6 +32,8 @@ public class ClusterBenchmarker {
         private com.rabbitmq.client.Connection rabbitmqConnection;
         private Channel rabbitmqChannel;
         private int fileNumber = 0;
+        private MessageConsumer activemqConsumer;
+        private com.rabbitmq.client.Consumer rabbitmqConsumer;
 
         public long getTotalTimeElapsed() {
             return totalTimeElapsed;
@@ -41,8 +43,7 @@ public class ClusterBenchmarker {
             System.out.println(Thread.currentThread().getId() + " says hello consumer :)");
             if (platform.equals("activemq")) {
                 try {
-                    Queue dest = activemqSession.createQueue("queue-" + queueNum);
-                    MessageConsumer consumer = activemqSession.createConsumer(dest);
+
                     System.out.println("queue-"+queueNum);
                     MessageListener listener = message -> {
                         try{
@@ -67,7 +68,7 @@ public class ClusterBenchmarker {
                             e.printStackTrace();
                         }
                     };
-                    consumer.setMessageListener(listener);
+                    activemqConsumer.setMessageListener(listener);
 
                     Thread thread = new Thread(new Runnable(){
                         int time = 0;
@@ -100,30 +101,10 @@ public class ClusterBenchmarker {
             } else if (platform.equals("rabbitmq")) {
                 try {
 
-                    rabbitmqChannel.queueDeclare("queue-" + queueNum, false, false, false, null);
+
                     System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
-                    com.rabbitmq.client.Consumer consumer = new DefaultConsumer(rabbitmqChannel) {
-                        @Override
-                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-                                throws IOException {
-
-                            System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
-                            /*
-                            FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
-                            fileNumber++;
-
-                            byte[] buffer = new byte[81920];
-
-                            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
-                            while(byteArrayInputStream.read(buffer) != -1) {
-                                fos.write(buffer);
-                            }
-                            fos.close();
-                            */
-                        }
-                    };
-                    rabbitmqChannel.basicConsume("queue-" + queueNum, true, consumer);
+                    rabbitmqChannel.basicConsume("queue-" + queueNum, true, rabbitmqConsumer);
 
                     Thread thread = new Thread(new Runnable(){
                         int time = 0;
@@ -240,6 +221,9 @@ public class ClusterBenchmarker {
                     activemqConnection.start();
                     this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
+                    Queue dest = activemqSession.createQueue("queue-" + queueNum);
+                    activemqConsumer = activemqSession.createConsumer(dest);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -252,6 +236,30 @@ public class ClusterBenchmarker {
                     factory.setHost(brokerIp);
                     this.rabbitmqConnection = factory.newConnection();
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
+
+                    rabbitmqChannel.queueDeclare("queue-" + queueNum, true, false, false, null);
+
+                    rabbitmqConsumer = new DefaultConsumer(rabbitmqChannel) {
+                        @Override
+                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+                                throws IOException {
+
+                            System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
+                            /*
+                            FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
+                            fileNumber++;
+
+                            byte[] buffer = new byte[81920];
+
+                            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
+                            while(byteArrayInputStream.read(buffer) != -1) {
+                                fos.write(buffer);
+                            }
+                            fos.close();
+                            */
+                        }
+                    };
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
