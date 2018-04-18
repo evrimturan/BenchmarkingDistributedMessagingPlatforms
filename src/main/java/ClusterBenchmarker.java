@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Arrays;
+import java.util.concurrent.*;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
-import org.apache.activemq.command.ActiveMQBytesMessage;
+//import org.apache.activemq.command.ActiveMQBytesMessage;
 import com.rabbitmq.client.*;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -20,10 +20,10 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import javax.jms.*;
 
 public class ClusterBenchmarker {
-    private final List<Boolean> finish = new ArrayList<>();
+    //private final List<Boolean> finish = new ArrayList<>();
     private static int sentData = 0;
 
-    private class Consumer extends Thread {
+    private class Consumer{
         private int tNum;
         private String folderName;
         private String platform;
@@ -40,7 +40,6 @@ public class ClusterBenchmarker {
             return totalTimeElapsed;
         }
 
-        @Override
         public void run() {
             System.out.println(Thread.currentThread().getId() + " says hello consumer :)");
             if (platform.equals("activemq")) {
@@ -72,17 +71,6 @@ public class ClusterBenchmarker {
                         }
                     };
                     consumer.setMessageListener(listener);
-                    while(true){
-                        synchronized(finish){
-                            if(finish.get(queueNum)){
-                                System.out.println("FINISHED CONSUMER");
-                                activemqSession.close();
-                                activemqConnection.close();
-                                break;
-                            }
-                        }
-                        Thread.sleep(3000);
-                    }
                     
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -114,17 +102,7 @@ public class ClusterBenchmarker {
                         }
                     };
                     rabbitmqChannel.basicConsume("queue-" + queueNum, true, consumer);
-                    while(true){
-                        synchronized(finish){
-                            if(finish.get(queueNum)){
-                                System.out.println("FINISHED CONSUMER");
-                                rabbitmqChannel.close();
-                                rabbitmqConnection.close();
-                                break;
-                            }
-                        }
-                        Thread.sleep(3000);
-                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -217,7 +195,7 @@ public class ClusterBenchmarker {
     }
 
 
-    private class Producer extends Thread{
+    private class Producer {
         private long mSize;
         private long dSize;
         private int tNum;
@@ -236,7 +214,6 @@ public class ClusterBenchmarker {
             return totalTimeEllapsed;
         }
 
-        @Override
         public void run(){
             System.out.println(Thread.currentThread().getId()+" says hello producer :)");
             //long start = System.currentTimeMillis();
@@ -251,29 +228,30 @@ public class ClusterBenchmarker {
                     byte[] buffer = new byte[81920];
                     BytesMessage bMessage = activemqSession.createBytesMessage();
 
-                    int content;
-                    System.out.println("--------------------------\nStarted writing to file\n-----------------------");
-                    while((content = in.read(buffer)) != -1){
+                    //System.out.println("--------------------------\nStarted writing to file\n-----------------------");
+                    while(in.read(buffer) != -1){
                         bMessage.writeBytes(buffer);
                     }
                     in.close();
 
-                    for (int i=0; i<dSize/mSize; i++) {
+                    while(true){
                         producer.send(bMessage);
-                        System.out.println("ACTIVEMQ PRODUCED TO:  "+brokerIp);
+                        System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
                     }
-                    synchronized(finish){
-                        finish.set(queueNum,true);
+                    /*
+                    for (int i=0; i<dSize/mSize; i++) {
                     }
+
                     activemqSession.close();
                     activemqConnection.close();
+                    */
                 }catch(Exception e){
                     e.printStackTrace();
                 }
             }else if (platform.equals("rabbitmq")){
                 try{
 
-                    rabbitmqChannel.queueDeclare("queue-"+queueNum, false, false, false, null);
+                    rabbitmqChannel.queueDeclare("queue-"+queueNum, true, false, false, null);
 
                     FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
 
@@ -288,9 +266,6 @@ public class ClusterBenchmarker {
                     for (int i=0; i<30/*dSize/mSize*/; i++) {
                         rabbitmqChannel.basicPublish("", "queue-"+queueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, outputStream.toByteArray());
                         System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
-                    }
-                    synchronized (finish){
-                        finish.set(queueNum,true);
                     }
                     rabbitmqChannel.close();
                     rabbitmqConnection.close();
@@ -328,9 +303,6 @@ public class ClusterBenchmarker {
                     for (int i=0; i<30/*dSize/mSize*/; i++) {
                         producer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, buffer));
                         System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
-                    }
-                    synchronized (finish){
-                        finish.set(queueNum,true);
                     }
                     producer.close();
 
@@ -393,9 +365,6 @@ public class ClusterBenchmarker {
         List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
-        for(int i = 0;i<10;i++){
-            init.finish.add(i,false);
-        }
 
         try{
             Process broker = null;
@@ -415,84 +384,82 @@ public class ClusterBenchmarker {
                     break;
             }
             broker.waitFor();
-            Thread.sleep(15000);
+            Thread.sleep(20000); //wait for brokers to complete setup
             System.out.println("Brokers started.");
 
         }catch(IOException | InterruptedException ex){
             ex.printStackTrace();
             System.exit(1);
         }
-        
-        for(int i=0; i<pubNum; i++){
-            Random r = new Random();
-            int bId = r.nextInt(brokerNum - 0);
-            String bIp = bInfo.get(bId).getIp();
+        if(config.getPubOrSub().equals("producer")){
+            for(int i=0; i<pubNum; i++) {
+                Random r = new Random();
+                int bId = r.nextInt(brokerNum - 0);
+                String bIp = bInfo.get(bId).getIp();
 
-            Producer p = init.createProducer(messageSize,dataSize/pubNum,topicNum,("ProducerFolder-"+i),config.getPlatform(),i, bIp, config.getType());
+                Producer p = init.createProducer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + i), config.getPlatform(), i, bIp, config.getType());
 
-            Path path = Paths.get("ProducerFolder"+"-"+i);
+                Path path = Paths.get("ProducerFolder" + "-" + i);
 
-            if (!Files.exists(path)) {
-                File folder = new File("ProducerFolder"+"-"+i);
-                folder.mkdir();
+                if (!Files.exists(path)) {
+                    File folder = new File("ProducerFolder" + "-" + i);
+                    folder.mkdir();
+                }
+
+                try {
+                    Process process = Runtime.getRuntime().exec("scripts/data-generator.sh " + p.dSize / p.mSize + " " + p.mSize + " " + "ProducerFolder-" + i);
+                    //System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
+                    process.waitFor();
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+                pList.add(p);
             }
-
-            try {
-                Process process = Runtime.getRuntime().exec("scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  "ProducerFolder-"+i);
-                //System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
-                process.waitFor();
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+            ScheduledExecutorService ex = Executors.newScheduledThreadPool(pList.size());
+            for(Producer p : pList) {
+                Callable<Void> call = () -> {
+                    System.out.println("Running producer AGAIN");
+                    p.run();
+                    return null;
+                };
+                try {
+                    ex.invokeAll(Arrays.asList(call),2,TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                /*final Future handler = ex.submit(call);
+                ex.schedule(() -> {
+                    handler.cancel(true); // bura sıkıntılı
+                },10,TimeUnit.SECONDS);*/
+                System.out.println("--------------------------------");
             }
-            pList.add(p);
+        }else if(config.getPubOrSub().equals("consumer")){
+            for(int i=0; i<subNum; i++){
+                Path path = Paths.get("ConsumerFolder"+"-"+i);
+
+                if (!Files.exists(path)) {
+                    File folder = new File("ConsumerFolder"+"-"+i);
+                    folder.mkdir();
+                }
+
+                Random r = new Random();
+                int bId = r.nextInt(brokerNum - 0);
+                String bIp = bInfo.get(bId).getIp();
+
+                Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
+                cList.add(c);
+
+            }
+            /*
+            for(Consumer c : cList){
+                c.start();
+            }
+            */
         }
 
-        for(int i=0; i<subNum; i++){
-            Path path = Paths.get("ConsumerFolder"+"-"+i);
 
-            if (!Files.exists(path)) {
-                File folder = new File("ConsumerFolder"+"-"+i);
-                folder.mkdir();
-            }
-
-            Random r = new Random();
-            int bId = r.nextInt(brokerNum - 0);
-            String bIp = bInfo.get(bId).getIp();
-
-            Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
-            cList.add(c);
-
-        }
-
-
-
-        for(Producer p : pList) {
-            p.start();
-            //System.out.println("YAPIYOM");
-        }
         //System.out.println("BURAYA GELDI");
-
-        for(Consumer c : cList){
-            c.start();
-        }
-
-        for(Producer p : pList){
-            try {
-                p.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        for(Consumer c : cList){
-            try {
-                c.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        System.out.println("All threads finished.");
+        //System.out.println("All threads finished.");
     }
 
     private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp, String type) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp,type); }

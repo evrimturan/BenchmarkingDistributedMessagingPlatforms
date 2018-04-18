@@ -1,6 +1,4 @@
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 import java.util.logging.Level;
@@ -20,6 +18,7 @@ public class TestConfiguration {
     private String platform;
     private List<BrokerInfo> bInfo;
     private String type;
+    private String pubOrSub;
 
     public TestConfiguration(String Filename){
         try {
@@ -35,6 +34,7 @@ public class TestConfiguration {
                 i++;
             }
             //binfo.add(new BrokerInfo());
+            pubOrSub = conf.getString("type");
             brokerNum = conf.getInt("broker.amount");
             pubNum = conf.getInt("publisher.amount");
             subNum = conf.getInt("subscriber.amount");
@@ -116,6 +116,8 @@ public class TestConfiguration {
     }
 
     public String getType() {return type;}
+
+    public String getPubOrSub() {return pubOrSub;}
 
     protected class BrokerInfo{
         private int id;
