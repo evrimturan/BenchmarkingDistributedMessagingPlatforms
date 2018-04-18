@@ -217,6 +217,7 @@ public class ClusterBenchmarker {
                             break;
                         }
                     }
+                    consumer.unsubscribe();
 
                 } catch (Exception e) {
                     e.printStackTrace();
