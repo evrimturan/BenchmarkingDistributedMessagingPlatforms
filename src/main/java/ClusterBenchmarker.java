@@ -297,7 +297,7 @@ public class ClusterBenchmarker {
         private Channel rabbitmqChannel;
         private String type;
         private Queue dest;
-        private MessageProducer producer;
+        private MessageProducer activemqProducer;
         private BytesMessage bMessage;
         private byte[] rabbitByteArray;
         private byte[] kafkaByteArray;
@@ -309,12 +309,12 @@ public class ClusterBenchmarker {
         }
 
         public void run(){
-            System.out.println(Thread.currentThread().getId()+" says hello producer :)");
+            System.out.println(Thread.currentThread().getId()+" says hello activemqProducer :)");
             //long start = System.currentTimeMillis();
             if(platform.equals("activemq")){
                 try{
                     while(true){
-                        producer.send(bMessage);
+                        activemqProducer.send(bMessage);
                         counter++;
                         System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
                     }
@@ -389,10 +389,10 @@ public class ClusterBenchmarker {
                     this.activemqSession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
                     dest = activemqSession.createQueue("queue-"+queueNum);
-                    producer = activemqSession.createProducer(dest);
-                    producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+                    activemqProducer = activemqSession.createProducer(dest);
+                    activemqProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
-                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+                    FileInputStream in = new FileInputStream(new File(folderName+"/activemqProducer.data-"+type));
 
                     byte[] buffer = new byte[81920];
                     bMessage = activemqSession.createBytesMessage();
@@ -419,7 +419,7 @@ public class ClusterBenchmarker {
 
                     rabbitmqChannel.queueDeclare("queue-"+queueNum, true, false, false, null);
 
-                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+                    FileInputStream in = new FileInputStream(new File(folderName+"/activemqProducer.data-"+type));
 
                     byte[] buffer = new byte[81920];
 
@@ -454,7 +454,7 @@ public class ClusterBenchmarker {
                 try {
                     kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
 
-                    FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+                    FileInputStream in = new FileInputStream(new File(folderName+"/activemqProducer.data-"+type));
 
                     byte[] buffer = new byte[81920];
 
@@ -511,7 +511,7 @@ public class ClusterBenchmarker {
             ex.printStackTrace();
             System.exit(1);
         }
-        if(config.getPubOrSub().equals("producer")){
+        if(config.getPubOrSub().equals("activemqProducer")){
             for(int i=0; i<pubNum; i++) {
                 Random r = new Random();
                 int bId = r.nextInt(brokerNum - 0);
@@ -539,7 +539,7 @@ public class ClusterBenchmarker {
             List<Thread> threadList = new ArrayList<>();
             for(Producer p : pList) {
                 Callable<Void> call = () -> {
-                    System.out.println("Running producer AGAIN");
+                    System.out.println("Running activemqProducer AGAIN");
                     p.run();
                     return null;
                 };
