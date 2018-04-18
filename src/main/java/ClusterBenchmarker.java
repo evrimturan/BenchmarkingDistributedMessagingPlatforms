@@ -2,11 +2,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -18,6 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import javax.jms.*;
+import javax.jms.Queue;
 
 public class ClusterBenchmarker {
     //private final List<Boolean> finish = new ArrayList<>();
@@ -71,6 +68,31 @@ public class ClusterBenchmarker {
                         }
                     };
                     consumer.setMessageListener(listener);
+
+                    Thread thread = new Thread(new Runnable(){
+                        int time = 0;
+                        @Override
+                        public void run() {
+                            while(true){
+                                time++;
+                                try{
+                                    Thread.sleep(1000);
+                                }catch(InterruptedException ex){
+                                    ex.printStackTrace();
+                                }
+                                if(time >= 120){
+                                    break;
+                                }
+                            }
+                            try{
+                                activemqConnection.close();
+                                activemqSession.close();
+                            }catch(Exception ex){
+
+                            }
+                        }
+                    });
+                    thread.start();
                     
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -103,6 +125,31 @@ public class ClusterBenchmarker {
                     };
                     rabbitmqChannel.basicConsume("queue-" + queueNum, true, consumer);
 
+                    Thread thread = new Thread(new Runnable(){
+                        int time = 0;
+                        @Override
+                        public void run() {
+                            while(true){
+                                time++;
+                                try{
+                                    Thread.sleep(1000);
+                                }catch(InterruptedException ex){
+                                    ex.printStackTrace();
+                                }
+                                if(time >= 120){
+                                    break;
+                                }
+                            }
+                            try{
+                                rabbitmqChannel.close();
+                                rabbitmqConnection.close();
+                            }catch(Exception ex){
+
+                            }
+                        }
+                    });
+                    thread.start();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -120,7 +167,27 @@ public class ClusterBenchmarker {
                 try {
                     consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
                     consumer.subscribe(Arrays.asList("queue-" + queueNum));
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
+                    final boolean[] exit = {false};
+                    Thread thread = new Thread(new Runnable(){
+                        int time = 0;
+                        @Override
+                        public void run() {
+                            while(true){
+                                time++;
+                                try{
+                                    Thread.sleep(1000);
+                                }catch(InterruptedException ex){
+                                    ex.printStackTrace();
+                                }
+                                if(time >= 120){
+                                    break;
+                                }
+                            }
+                            exit[0] = true;
+                        }
+                    });
+                    thread.start();
                     while(true){
                         ConsumerRecords<String, byte[]> records = consumer.poll(100);
                         for (ConsumerRecord<String, byte[]> record : records) {
@@ -144,13 +211,11 @@ public class ClusterBenchmarker {
                                     break;
                                 }
                             }*/
-                            sentData++;
-                        }
-                        if(sentData >= 30){
-                            consumer.unsubscribe();
-                            break;
                         }
 
+                        if(exit[0]){
+                            break;
+                        }
                     }
 
                 } catch (Exception e) {
