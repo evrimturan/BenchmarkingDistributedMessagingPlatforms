@@ -267,7 +267,7 @@ public class ClusterBenchmarker {
                 }catch (Exception e) {
                     e.printStackTrace();
                     try {
-                        producer.close();
+                        kafkaProducer.close();
                     }
                     catch (Exception ex) {
                         e.printStackTrace();
