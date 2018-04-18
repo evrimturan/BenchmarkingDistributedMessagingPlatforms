@@ -431,7 +431,7 @@ public class ClusterBenchmarker {
                             e.printStackTrace();
                         }
                     }
-                });
+                }).start();
                 /*final Future handler = ex.submit(call);
                 ex.schedule(() -> {
                     handler.cancel(true); // bura sıkıntılı
