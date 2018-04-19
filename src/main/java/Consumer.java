@@ -63,31 +63,6 @@ public class Consumer {
                 };
                 activemqConsumer.setMessageListener(listener);
 
-                Thread thread = new Thread(new Runnable(){
-                    int time = 0;
-                    @Override
-                    public void run() {
-                        while(true){
-                            time++;
-                            try{
-                                Thread.sleep(1000);
-                            }catch(InterruptedException ex){
-                                ex.printStackTrace();
-                            }
-                            if(time >= 120){
-                                break;
-                            }
-                        }
-                        try{
-                            activemqConnection.close();
-                            activemqSession.close();
-                        }catch(Exception ex){
-
-                        }
-                    }
-                });
-                thread.start();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -99,59 +74,12 @@ public class Consumer {
 
                 rabbitmqChannel.basicConsume("queue-" + queueNum, true, rabbitmqConsumer);
 
-                Thread thread = new Thread(new Runnable(){
-                    int time = 0;
-                    @Override
-                    public void run() {
-                        while(true){
-                            time++;
-                            try{
-                                Thread.sleep(1000);
-                            }catch(InterruptedException ex){
-                                ex.printStackTrace();
-                            }
-                            if(time >= 120){
-                                break;
-                            }
-                        }
-                        try{
-                            rabbitmqChannel.close();
-                            rabbitmqConnection.close();
-                        }catch(Exception ex){
-
-                        }
-                    }
-                });
-                thread.start();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (platform.equals("kafka")) {
 
             try {
-
-                //Thread.sleep(1000);
-                final boolean[] exit = {false};
-                Thread thread = new Thread(new Runnable(){
-                    int time = 0;
-                    @Override
-                    public void run() {
-                        while(true){
-                            time++;
-                            try{
-                                Thread.sleep(1000);
-                            }catch(InterruptedException ex){
-                                ex.printStackTrace();
-                            }
-                            if(time >= 120){
-                                break;
-                            }
-                        }
-                        exit[0] = true;
-                    }
-                });
-                thread.start();
                 while(true){
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
                     for (ConsumerRecord<String, byte[]> record : records) {
@@ -176,12 +104,8 @@ public class Consumer {
                                 }
                             }*/
                     }
-
-                    if(exit[0]){
-                        break;
-                    }
                 }
-                kafkaConsumer.unsubscribe();
+                //kafkaConsumer.unsubscribe();
 
             } catch (Exception e) {
                 e.printStackTrace();
