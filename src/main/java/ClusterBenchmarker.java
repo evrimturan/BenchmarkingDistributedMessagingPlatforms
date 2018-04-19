@@ -9,7 +9,6 @@ public class ClusterBenchmarker {
 
     public static void main(String[] args) {
 
-        ClusterBenchmarker init = new ClusterBenchmarker();
         TestConfiguration config = new TestConfiguration(args[0]);
         int brokerNum = config.getBrokerNum();
         int pubNum = config.getPubNum();
