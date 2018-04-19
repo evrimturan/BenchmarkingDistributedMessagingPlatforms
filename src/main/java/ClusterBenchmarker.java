@@ -52,7 +52,7 @@ public class ClusterBenchmarker {
                 int bId = r.nextInt(brokerNum - 0);
                 String bIp = bInfo.get(bId).getIp();
 
-                Producer p = init.createProducer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + i), config.getPlatform(), i, bIp, config.getType());
+                Producer p = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + i), config.getPlatform(), i, bIp, config.getType());
 
                 Path path = Paths.get("ProducerFolder" + "-" + i);
 
@@ -119,7 +119,7 @@ public class ClusterBenchmarker {
                 int bId = r.nextInt(brokerNum - 0);
                 String bIp = bInfo.get(bId).getIp();
 
-                Consumer c = init.createConsumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
+                Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
                 cList.add(c);
 
             }
@@ -134,9 +134,6 @@ public class ClusterBenchmarker {
         //System.out.println("BURAYA GELDI");
         //System.out.println("All threads finished.");
     }
-
-    private Producer createProducer(long mSize,long dSize,int tNum,String folderName,String platform,int queueNum, String brokerIp, String type) {  return new Producer(mSize,dSize,tNum,folderName,platform,queueNum,brokerIp,type); }
-    private Consumer createConsumer(int tNum,String folderName,String platform,int queueNum, String brokerIp) {  return new Consumer(tNum,folderName,platform,queueNum,brokerIp); }
 
     //TODO: topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek,broker connection refuse olunca başka brokera bağlanmayı denesin, kafka consumer global olsun
 }
