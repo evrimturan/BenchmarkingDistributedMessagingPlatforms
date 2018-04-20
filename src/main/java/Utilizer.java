@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,11 +34,25 @@ public class Utilizer implements Runnable{
                 //output = new String(bArray);
                 String[] split = output.split("\n");
                 String fin = split[1];
-                for(int i = 1;i<fin.length();i++){
 
+                StringTokenizer tokenizer = new StringTokenizer(fin, " ");
+
+                if(tokenizer.hasMoreTokens()) {
+                    cpuUtil = Double.parseDouble(tokenizer.nextToken());
                 }
-                cpuUtil=0;
-                memUtil=0;
+                else {
+                    cpuUtil = 0.0;
+                }
+
+                if(tokenizer.hasMoreTokens()) {
+                    memUtil = Double.parseDouble(tokenizer.nextToken());
+                }
+                else {
+                    memUtil = 0.0;
+                }
+
+
+
 
                 System.out.println("CPU %" + cpuUtil + " MEM %" + memUtil);
                 Thread.sleep(1000);
