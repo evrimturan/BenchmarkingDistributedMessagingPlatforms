@@ -37,7 +37,7 @@ public class Producer {
     }
 
     public void run(){
-        System.out.println(Thread.currentThread().getId()+" says hello activemqProducer :)");
+        System.out.println(Thread.currentThread().getId()+" says hello Producer :)");
         //long start = System.currentTimeMillis();
         if(platform.equals("activemq")){
             try{
@@ -120,7 +120,7 @@ public class Producer {
                 activemqProducer = activemqSession.createProducer(dest);
                 activemqProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
-                FileInputStream in = new FileInputStream(new File(folderName+"/activemqProducer.data-"+type));
+                FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
 
                 byte[] buffer = new byte[81920];
                 bMessage = activemqSession.createBytesMessage();

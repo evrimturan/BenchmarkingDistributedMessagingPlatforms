@@ -76,7 +76,7 @@ public class ClusterBenchmarker {
             List<Thread> threadList = new ArrayList<>();
             for(Producer p : pList) {
                 Callable<Void> call = () -> {
-                    System.out.println("Running activemqProducer AGAIN");
+                    System.out.println("Running producer AGAIN");
                     p.run();
                     return null;
                 };
