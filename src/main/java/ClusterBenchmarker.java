@@ -53,8 +53,8 @@ public class ClusterBenchmarker {
             System.exit(1);
         }
 
-        for(int rep=0; rep<3; rep++) {
-            if(config.getPubOrSub().equals("producer")){
+        if(config.getPubOrSub().equals("producer")){
+            for(int j = 0;j<3;j++){
                 for(int i=0; i<pubNum; i++) {
                     Random r = new Random();
                     int bId = r.nextInt(brokerNum - 0);
@@ -132,7 +132,28 @@ public class ClusterBenchmarker {
                 finalCPU += avgCPU;
                 finalMem += avgMem;
 
-            }else if(config.getPubOrSub().equals("consumer")){
+                pList.clear();
+                cList.clear();
+            }
+
+            finalAvgCPU = finalCPU / 3;
+            finalAvgMem = finalMem / 3;
+
+            String testResult = "PRODUCER --> Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem;
+
+            System.out.println(testResult);
+
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream("util.log", false);
+                fileOutputStream.write(testResult.getBytes());
+                fileOutputStream.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }else if(config.getPubOrSub().equals("consumer")){
+            for(int j = 0;j<3;j++){
                 for(int i=0; i<subNum; i++){
                     Path path = Paths.get("ConsumerFolder"+"-"+i);
 
@@ -150,9 +171,10 @@ public class ClusterBenchmarker {
                 }
                 ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
                 List<Thread> threadList = new ArrayList<>();
+
                 for(Consumer c : cList) {
                     Callable<Void> call = () -> {
-                        System.out.println("Running activemqConsumer AGAIN");
+                        System.out.println("Running Consumer AGAIN");
                         c.run();
                         return null;
                     };
@@ -201,35 +223,31 @@ public class ClusterBenchmarker {
 
                 finalCPU += avgCPU;
                 finalMem += avgMem;
-                //HTTP request final
+            }
+
+            finalAvgCPU = finalCPU / 3;
+            finalAvgMem = finalMem / 3;
+
+            String testResult = "CONSUMER --> Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem;
+
+            System.out.println(testResult);
+
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream("util.log", false);
+                fileOutputStream.write(testResult.getBytes());
+                fileOutputStream.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            //HTTP request final
             /*
             for(Consumer c : cList){
                 c.start();
             }
             */
 
-            }
-
-            pList.clear();
-            cList.clear();
         }
-
-        finalAvgCPU = finalCPU / 3;
-        finalAvgMem = finalMem / 3;
-
-        String testResult = "Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem;
-
-        System.out.println(testResult);
-
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream("util.log", false);
-            fileOutputStream.write(testResult.getBytes());
-            fileOutputStream.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
         //System.out.println("BURAYA GELDI");
         //System.out.println("All threads finished.");
 

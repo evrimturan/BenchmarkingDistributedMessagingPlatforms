@@ -34,13 +34,12 @@ public class Consumer {
 
     public void run() {
         System.out.println(Thread.currentThread().getId() + " says hello consumer :)");
+        int count = 0;
         if (platform.equals("activemq")) {
             try {
-
                 System.out.println("queue-"+queueNum);
                 MessageListener listener = message -> {
                     try{
-                        //System.out.println("LO LO LO");
                         if(message instanceof BytesMessage){
                             //FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
                             System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp);
@@ -62,13 +61,19 @@ public class Consumer {
                     }
                 };
                 activemqConsumer.setMessageListener(listener);
+                while(count < 120){
+                    count++;
+                    Thread.sleep(1000);
+                }
+                activemqConsumer.close();
+                activemqSession.close();
+                activemqConnection.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (platform.equals("rabbitmq")) {
             try {
-
 
                 System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
@@ -78,7 +83,6 @@ public class Consumer {
                 e.printStackTrace();
             }
         } else if (platform.equals("kafka")) {
-
             try {
                 while(true){
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
@@ -106,7 +110,6 @@ public class Consumer {
                     }
                 }
                 //kafkaConsumer.unsubscribe();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
