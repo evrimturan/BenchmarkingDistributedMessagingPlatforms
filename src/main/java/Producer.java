@@ -118,7 +118,7 @@ public class Producer {
 
                 dest = activemqSession.createQueue("queue-"+queueNum);
                 activemqProducer = activemqSession.createProducer(dest);
-                activemqProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+                activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
                 FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
 
