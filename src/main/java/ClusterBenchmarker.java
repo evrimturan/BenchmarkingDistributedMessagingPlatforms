@@ -1,3 +1,5 @@
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
@@ -127,6 +129,11 @@ public class ClusterBenchmarker {
                 }
                 double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
 
+                System.out.println("Average TEST: " + avgCPU + " " + avgMem);
+
+                finalCPU += avgCPU;
+                finalMem += avgMem;
+
             }else if(config.getPubOrSub().equals("consumer")){
                 for(int i=0; i<subNum; i++){
                     Path path = Paths.get("ConsumerFolder"+"-"+i);
@@ -191,6 +198,8 @@ public class ClusterBenchmarker {
                     ex1.printStackTrace();
                 }
                 double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+
+                System.out.println("Average TEST: " + avgCPU + " " + avgMem);
 
                 finalCPU += avgCPU;
                 finalMem += avgMem;
