@@ -113,6 +113,13 @@ public class ClusterBenchmarker {
             }
             ex.shutdown();
             u.setStop(true);
+            try{
+                uThread.join();
+            }catch (InterruptedException ex1){
+                ex1.printStackTrace();
+            }
+            double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+
         }else if(config.getPubOrSub().equals("consumer")){
             for(int i=0; i<subNum; i++){
                 Path path = Paths.get("ConsumerFolder"+"-"+i);
@@ -171,6 +178,13 @@ public class ClusterBenchmarker {
             }
             ex.shutdown();
             u.setStop(true);
+            try{
+                uThread.join();
+            }catch (InterruptedException ex1){
+                ex1.printStackTrace();
+            }
+            double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+            //HTTP request final
             /*
             for(Consumer c : cList){
                 c.start();
