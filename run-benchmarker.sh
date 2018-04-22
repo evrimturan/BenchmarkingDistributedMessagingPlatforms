@@ -1,5 +1,9 @@
 #!/bin/bash
 
-mvn package
+mvn clean compile assembly:single
 
-java -cp $HOME/.m2/repository/commons-configuration/commons-configuration/1.6/commons-configuration-1.6.jar
+cp target/SeniorDesign-1.0-jar-with-dependencies.jar $( pwd )
+
+mv SeniorDesign-1.0-jar-with-dependencies.jar SeniorDesign-1.0.jar
+
+java -jar SeniorDesign-1.0.jar "test.config"
