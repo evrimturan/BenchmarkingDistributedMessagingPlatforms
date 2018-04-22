@@ -2,13 +2,20 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import sun.tools.tree.BooleanExpression;
 
 import javax.jms.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.Buffer;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -132,6 +139,32 @@ public class Consumer {
         this.queueNum = queueNum;
         this.brokerIp = brokerIp;
 
+
+        ServerSocket ss = null;
+        ServerSocket ss2 = null;
+        Socket clientSocket = null;
+        Socket clientSocket2 = null;
+        BufferedReader rd1 = null;
+        BufferedReader rd2 = null;
+        String msg = "Oldu";
+        Boolean run = false;
+        Boolean run2 = false;
+
+        try{
+            ss = new ServerSocket(10001);
+            ss2 = new ServerSocket(10002);
+            clientSocket = ss.accept();
+            clientSocket2 = ss2.accept();
+            rd1 = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            rd2 = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
+
+
+        }catch (Exception e){
+            System.out.println(e);
+            System.exit(1);
+        }
+
+
         if (platform.equals("activemq")) {
             try {
                 ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
@@ -141,6 +174,16 @@ public class Consumer {
 
                 Queue dest = activemqSession.createQueue("queue-" + queueNum);
                 activemqConsumer = activemqSession.createConsumer(dest);
+
+                if(rd1.readLine().equals(msg)){
+                    run = true;
+                }
+                if (rd2.readLine().equals(msg)){
+                    run2 = true;
+                }
+                if (!run && !run2){
+                    System.exit(1);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -177,7 +220,15 @@ public class Consumer {
                             */
                     }
                 };
-
+                if(rd1.readLine().equals(msg)){
+                    run = true;
+                }
+                if (rd2.readLine().equals(msg)){
+                    run2 = true;
+                }
+                if (!run && !run2){
+                    System.exit(1);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -199,6 +250,16 @@ public class Consumer {
             try {
                 kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
                 kafkaConsumer.subscribe(Arrays.asList("queue-" + queueNum));
+
+                if(rd1.readLine().equals(msg)){
+                    run = true;
+                }
+                if (rd2.readLine().equals(msg)){
+                    run2 = true;
+                }
+                if (!run && !run2){
+                    System.exit(1);
+                }
             }
 
             catch (Exception e) {
