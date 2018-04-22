@@ -23,7 +23,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>SeniorDesign.ClusterBenchmarker</mainClass>
+                            <mainClass>ClusterBenchmarker</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
