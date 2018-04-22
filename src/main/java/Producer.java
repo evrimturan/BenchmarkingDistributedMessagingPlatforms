@@ -30,7 +30,7 @@ public class Producer {
     private byte[] rabbitByteArray;
     private byte[] kafkaByteArray;
     private org.apache.kafka.clients.producer.Producer<String, byte[]> kafkaProducer;
-    private int counter;
+    private int counter = 0;
 
     public long getTotalTimeEllapsed() {
         return totalTimeEllapsed;
@@ -43,7 +43,7 @@ public class Producer {
             try{
                 while(true){
                     activemqProducer.send(bMessage);
-                    counter++;
+                    counter = getCounter() + 1;
                     System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
                 }
 
@@ -59,7 +59,7 @@ public class Producer {
             try{
                 while(true) {
                     rabbitmqChannel.basicPublish("", "queue-"+queueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
-                    counter++;
+                    counter = getCounter() + 1;
                     System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
                 }
 
@@ -79,7 +79,7 @@ public class Producer {
             try {
                 while(true) {
                     kafkaProducer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, kafkaByteArray));
-                    counter++;
+                    counter = getCounter() + 1;
                     System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                 }
 
@@ -192,6 +192,7 @@ public class Producer {
                 }
                 in.close();
                 kafkaByteArray = outputStream.toByteArray();
+
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -213,5 +214,9 @@ public class Producer {
 
     public void setdSize(long dSize) {
         this.dSize = dSize;
+    }
+
+    public int getCounter() {
+        return counter;
     }
 }

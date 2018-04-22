@@ -48,6 +48,15 @@ public class ClusterBenchmarker {
             Thread.sleep(20000); //wait for brokers to complete setup
             System.out.println("Brokers started.");
 
+
+            try {
+                Process process = Runtime.getRuntime().exec("scripts/data-generator.sh " + dataSize / messageSize + " " + messageSize + " " + "ProducerFolder-" + 0);
+                //System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
+                process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }catch(IOException | InterruptedException ex){
             ex.printStackTrace();
             System.exit(1);
@@ -59,14 +68,6 @@ public class ClusterBenchmarker {
                     Random r = new Random();
                     int bId = r.nextInt(brokerNum - 0);
                     String bIp = bInfo.get(bId).getIp();
-
-                    try {
-                        Process process = Runtime.getRuntime().exec("scripts/data-generator.sh " + dataSize / messageSize + " " + messageSize + " " + "ProducerFolder-" + i);
-                        //System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
-                        process.waitFor();
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
                     Producer p = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + i), config.getPlatform(), i, bIp, config.getType());
 

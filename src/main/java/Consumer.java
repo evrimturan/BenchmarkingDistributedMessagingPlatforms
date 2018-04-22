@@ -61,8 +61,9 @@ public class Consumer {
                     }
                 };
                 activemqConsumer.setMessageListener(listener);
-                while(count < 120){
+                while(count < 20){
                     count++;
+                    System.out.println("Waiting consumer...");
                     Thread.sleep(1000);
                 }
                 activemqConsumer.close();
@@ -70,7 +71,14 @@ public class Consumer {
                 activemqConnection.close();
 
             } catch (Exception e) {
-                e.printStackTrace();
+                try{
+                    activemqConsumer.close();
+                    activemqSession.close();
+                    activemqConnection.close();
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+                //e.printStackTrace();
             }
         } else if (platform.equals("rabbitmq")) {
             try {
