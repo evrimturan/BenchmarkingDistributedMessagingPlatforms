@@ -107,7 +107,9 @@ public class Producer {
         this.folderName = folderName;
         this.brokerIp = brokerIp;
         this.type = type;
-
+// normal socket aç
+// bağlan connect consumer 
+       
         if(platform.equals("activemq")){
             try{
                 ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
@@ -130,6 +132,7 @@ public class Producer {
                     bMessage.writeBytes(buffer);
                 }
                 in.close();
+                //Consumer mesaj socket write utf/println
 
             }catch(Exception ex){
                 ex.printStackTrace();
@@ -158,6 +161,7 @@ public class Producer {
                 in.close();
                 rabbitByteArray = outputStream.toByteArray();
                 outputStream.close();
+                //COnsumer socketine yasz
 
             }catch(Exception e){
                 e.printStackTrace();
@@ -192,7 +196,7 @@ public class Producer {
                 }
                 in.close();
                 kafkaByteArray = outputStream.toByteArray();
-
+                //consumer socket yaz
             }
             catch (Exception e) {
                 e.printStackTrace();
