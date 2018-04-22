@@ -21,6 +21,12 @@ public class ClusterBenchmarker {
         List<Producer> pList = new ArrayList<>();
         List<Consumer> cList = new ArrayList<>();
 
+        double finalCPU = 0;
+        double finalMem = 0;
+
+        double finalAvgCPU = 0;
+        double finalAvgMem = 0;
+
         try{
             Process broker = null;
             switch(config.getPlatform()){
@@ -47,149 +53,174 @@ public class ClusterBenchmarker {
             System.exit(1);
         }
 
-        if(config.getPubOrSub().equals("producer")){
-            for(int i=0; i<pubNum; i++) {
-                Random r = new Random();
-                int bId = r.nextInt(brokerNum - 0);
-                String bIp = bInfo.get(bId).getIp();
+        for(int rep=0; rep<3; rep++) {
+            if(config.getPubOrSub().equals("producer")){
+                for(int i=0; i<pubNum; i++) {
+                    Random r = new Random();
+                    int bId = r.nextInt(brokerNum - 0);
+                    String bIp = bInfo.get(bId).getIp();
 
-                try {
-                    Process process = Runtime.getRuntime().exec("scripts/data-generator.sh " + dataSize / messageSize + " " + messageSize + " " + "ProducerFolder-" + i);
-                    //System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
-                    process.waitFor();
-                } catch (IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                Producer p = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + i), config.getPlatform(), i, bIp, config.getType());
-
-                Path path = Paths.get("ProducerFolder" + "-" + i);
-
-                if (!Files.exists(path)) {
-                    File folder = new File("ProducerFolder" + "-" + i);
-                    folder.mkdir();
-                }
-                
-                pList.add(p);
-            }
-            ScheduledExecutorService ex = Executors.newScheduledThreadPool(pList.size());
-            List<Thread> threadList = new ArrayList<>();
-            for(Producer p : pList) {
-                Callable<Void> call = () -> {
-                    System.out.println("Running producer AGAIN");
-                    p.run();
-                    return null;
-                };
-                Thread temp = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ex.invokeAll(Arrays.asList(call),10,TimeUnit.SECONDS);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        Process process = Runtime.getRuntime().exec("scripts/data-generator.sh " + dataSize / messageSize + " " + messageSize + " " + "ProducerFolder-" + i);
+                        //System.out.println("sh -c \"scripts/data-generator.sh " + p.dSize/p.mSize + " " + p.mSize + " " +  System.getProperty("user.dir")+"/scripts/ProducerFolder-"+i+"\"");
+                        process.waitFor();
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
                     }
-                });
-                threadList.add(temp);
-                temp.start();
+
+                    Producer p = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + i), config.getPlatform(), i, bIp, config.getType());
+
+                    Path path = Paths.get("ProducerFolder" + "-" + i);
+
+                    if (!Files.exists(path)) {
+                        File folder = new File("ProducerFolder" + "-" + i);
+                        folder.mkdir();
+                    }
+
+                    pList.add(p);
+                }
+                ScheduledExecutorService ex = Executors.newScheduledThreadPool(pList.size());
+                List<Thread> threadList = new ArrayList<>();
+                for(Producer p : pList) {
+                    Callable<Void> call = () -> {
+                        System.out.println("Running producer AGAIN");
+                        p.run();
+                        return null;
+                    };
+                    Thread temp = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ex.invokeAll(Arrays.asList(call),10,TimeUnit.SECONDS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    threadList.add(temp);
+                    temp.start();
 
                 /*final Future handler = ex.submit(call);
                 ex.schedule(() -> {
                     handler.cancel(true); // bura sıkıntılı
                 },10,TimeUnit.SECONDS);*/
-                System.out.println("--------------------------------");
-            }
-            Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
-            Utilizer u = new Utilizer(pId);
-            Thread uThread = new Thread(u);
-            uThread.start();
-
-            for(Thread e : threadList){
-                try {
-                    e.join();
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    System.out.println("--------------------------------");
                 }
-            }
-            ex.shutdown();
-            u.setStop(true);
-            try{
-                uThread.join();
-            }catch (InterruptedException ex1){
-                ex1.printStackTrace();
-            }
-            double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+                Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+                Utilizer u = new Utilizer(pId);
+                Thread uThread = new Thread(u);
+                uThread.start();
 
-        }else if(config.getPubOrSub().equals("consumer")){
-            for(int i=0; i<subNum; i++){
-                Path path = Paths.get("ConsumerFolder"+"-"+i);
-
-                if (!Files.exists(path)) {
-                    File folder = new File("ConsumerFolder"+"-"+i);
-                    folder.mkdir();
-                }
-
-                Random r = new Random();
-                int bId = r.nextInt(brokerNum - 0);
-                String bIp = bInfo.get(bId).getIp();
-
-                Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
-                cList.add(c);
-            }
-            ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
-            List<Thread> threadList = new ArrayList<>();
-            for(Consumer c : cList) {
-                Callable<Void> call = () -> {
-                    System.out.println("Running activemqConsumer AGAIN");
-                    c.run();
-                    return null;
-                };
-                Thread temp = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ex.invokeAll(Arrays.asList(call),10,TimeUnit.SECONDS);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                for(Thread e : threadList){
+                    try {
+                        e.join();
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
                     }
-                });
-                threadList.add(temp);
-                temp.start();
+                }
+                ex.shutdown();
+                u.setStop(true);
+                try{
+                    uThread.join();
+                }catch (InterruptedException ex1){
+                    ex1.printStackTrace();
+                }
+                double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+
+            }else if(config.getPubOrSub().equals("consumer")){
+                for(int i=0; i<subNum; i++){
+                    Path path = Paths.get("ConsumerFolder"+"-"+i);
+
+                    if (!Files.exists(path)) {
+                        File folder = new File("ConsumerFolder"+"-"+i);
+                        folder.mkdir();
+                    }
+
+                    Random r = new Random();
+                    int bId = r.nextInt(brokerNum - 0);
+                    String bIp = bInfo.get(bId).getIp();
+
+                    Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
+                    cList.add(c);
+                }
+                ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
+                List<Thread> threadList = new ArrayList<>();
+                for(Consumer c : cList) {
+                    Callable<Void> call = () -> {
+                        System.out.println("Running activemqConsumer AGAIN");
+                        c.run();
+                        return null;
+                    };
+                    Thread temp = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                ex.invokeAll(Arrays.asList(call),10,TimeUnit.SECONDS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    threadList.add(temp);
+                    temp.start();
 
                 /*final Future handler = ex.submit(call);
                 ex.schedule(() -> {
                     handler.cancel(true); // bura sıkıntılı
                 },10,TimeUnit.SECONDS);*/
-                System.out.println("--------------------------------");
-            }
-
-            Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
-            Utilizer u = new Utilizer(pId);
-            Thread uThread = new Thread(u);
-            uThread.start();
-
-            for(Thread e : threadList){
-                try {
-                    e.join();
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    System.out.println("--------------------------------");
                 }
-            }
-            ex.shutdown();
-            u.setStop(true);
-            try{
-                uThread.join();
-            }catch (InterruptedException ex1){
-                ex1.printStackTrace();
-            }
-            double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
-            //HTTP request final
+
+                Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+                Utilizer u = new Utilizer(pId);
+                Thread uThread = new Thread(u);
+                uThread.start();
+
+                for(Thread e : threadList){
+                    try {
+                        e.join();
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                ex.shutdown();
+                u.setStop(true);
+                try{
+                    uThread.join();
+                }catch (InterruptedException ex1){
+                    ex1.printStackTrace();
+                }
+                double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+
+                finalCPU += avgCPU;
+                finalMem += avgMem;
+                //HTTP request final
             /*
             for(Consumer c : cList){
                 c.start();
             }
             */
+
+            }
+
+            pList.clear();
+            cList.clear();
+        }
+
+        finalAvgCPU = finalCPU / 3;
+        finalAvgMem = finalMem / 3;
+
+        String testResult = "Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem;
+
+        System.out.println(testResult);
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream("util.log", false);
+            fileOutputStream.write(testResult.getBytes());
+            fileOutputStream.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
         //System.out.println("BURAYA GELDI");
