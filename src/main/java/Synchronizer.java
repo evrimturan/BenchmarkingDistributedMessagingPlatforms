@@ -98,8 +98,10 @@ class Synchronizer {
                 System.out.println("Producer "+id +" sent ready message to consumer.");
 
                 String first = readerProducer.readLine();
+                System.out.println("First string read : " + first);
 
                 String second = readerProducer1.readLine();
+                System.out.println("Second string read : "+second);
 
                 System.out.println("Read first : "+first+"\nSecond : "+second);
 
