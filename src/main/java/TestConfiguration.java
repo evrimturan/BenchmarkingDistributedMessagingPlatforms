@@ -19,6 +19,8 @@ public class TestConfiguration {
     private List<BrokerInfo> bInfo;
     private String type;
     private String pubOrSub;
+    private String id;
+    private String test;
 
     public TestConfiguration(String Filename){
         try {
@@ -41,6 +43,8 @@ public class TestConfiguration {
             topicNum = conf.getInt("topic.amount");
             persistent = conf.getBoolean("persistent");
             platform = conf.getString("platform.type");
+            id = conf.getString("id");
+            test = conf.getString("test");
             //messageSize = conf.getDouble("message.size");
             String strMessage =conf.getString("message.size");
             type = strMessage;
@@ -118,6 +122,14 @@ public class TestConfiguration {
     public String getType() {return type;}
 
     public String getPubOrSub() {return pubOrSub;}
+
+    public String getId() {
+        return id;
+    }
+
+    public String getTest() {
+        return test;
+    }
 
     protected class BrokerInfo{
         private int id;
