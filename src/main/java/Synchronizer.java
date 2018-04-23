@@ -52,8 +52,10 @@ class Synchronizer {
                     readerProducer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     readerProducer1 = new BufferedReader(new InputStreamReader(socket1.getInputStream()));
 
+                    Thread.sleep(1000);
+
                     System.out.println("Producer A connected to both consumers.");
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -68,8 +70,10 @@ class Synchronizer {
                     readerProducer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     readerProducer1 = new BufferedReader(new InputStreamReader(socket1.getInputStream()));
 
+                    Thread.sleep(1000);
+
                     System.out.println("Producer B connected to both consumers.");
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
