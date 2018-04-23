@@ -59,9 +59,8 @@ class Synchronizer {
 
             }else if(id.equals("B")){
                 try {
-                    Socket socket = new Socket(CONSUMER_1,10002);
-                    Socket socket1 = new Socket(CONSUMER_2,10002);
-
+                    socket = new Socket(CONSUMER_1,10002);
+                    socket1 = new Socket(CONSUMER_2,10002);
 
                     printProducer = new PrintWriter(socket.getOutputStream());
                     printProducer1 = new PrintWriter(socket1.getOutputStream());
@@ -107,14 +106,13 @@ class Synchronizer {
             try{
                 System.out.printf("Consumer %s is ready to sync.\n",id);
 
-
                 String first = readerConsumer.readLine();
                 String second = readerConsumer1.readLine();
 
                 System.out.println("Read first : "+first+"\nSecond : "+second);
 
                 if(first.equals("READY:PRODUCER")){
-                    if(second.equals("READY:Producer")){
+                    if(second.equals("READY:PRODUCER")){
                         System.out.println("Consumer "+id+" synced with producer.");
                     }
                 }
