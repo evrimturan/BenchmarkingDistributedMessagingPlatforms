@@ -366,6 +366,8 @@ public class ClusterBenchmarker {
                 e.printStackTrace();
             }
 
+            synchronizer.closeConnection();
+
         }else if(config.getPubOrSub().equals("consumer")){
             Synchronizer synchronizer = new Synchronizer(config.getId(),"consumer");
             for(int j = 0;j<3;j++){
@@ -452,6 +454,8 @@ public class ClusterBenchmarker {
             catch (Exception e) {
                 e.printStackTrace();
             }
+
+            synchronizer.closeConnection();
             //HTTP request final
             /*
             for(Consumer c : cList){
