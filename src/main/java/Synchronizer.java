@@ -98,6 +98,7 @@ class Synchronizer {
                 System.out.println("Producer "+id +" sent ready message to consumer.");
 
                 String first = readerProducer.readLine();
+
                 String second = readerProducer1.readLine();
 
                 System.out.println("Read first : "+first+"\nSecond : "+second);
@@ -118,7 +119,13 @@ class Synchronizer {
             try{
                 System.out.printf("Consumer %s is ready to sync.\n",id);
 
+                printConsumer.println("READY:CONSUMER");
+                printConsumer.flush();
+                printConsumer1.println("READY:CONSUMER");
+                printConsumer1.flush();
+
                 String first = readerConsumer.readLine();
+
                 String second = readerConsumer1.readLine();
 
                 System.out.println("Read first : "+first+"\nSecond : "+second);
@@ -128,11 +135,6 @@ class Synchronizer {
                         System.out.println("Consumer "+id+" synced with producers.");
                     }
                 }
-
-                printConsumer.println("READY:CONSUMER");
-                printConsumer.flush();
-                printConsumer1.println("READY:CONSUMER");
-                printConsumer1.flush();
 
                 Thread.sleep(1000);//give them time to start execution
 
