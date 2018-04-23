@@ -72,18 +72,18 @@ public class ClusterBenchmarker {
                     for(int k=0; k<pubNum; k++) {
                         if(config.getId().equals("A")) {
                             if(k < pubNum/2) {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                             }
                             else {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType(),config.getId());
                             }
                         }
                         else if(config.getId().equals("B")) {
                             if(k < pubNum/2) {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType(),config.getId());
                             }
                             else {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType(),config.getId());
                             }
                         }
                         pList.add(producer);
@@ -94,7 +94,7 @@ public class ClusterBenchmarker {
                 else if(config.getTest().equals("topic1")) {
                    if(topicNum == 1) {
                         for(int k=0; k<pubNum; k++) {
-                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                             pList.add(producer);
                         }
                    }
@@ -102,18 +102,18 @@ public class ClusterBenchmarker {
                        for(int k=0; k<pubNum; k++) {
                            if(config.getId().equals("A")) {
                                if(k < pubNum/2) {
-                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                                }
                                else {
-                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType());
+                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType(),config.getId());
                                }
                            }
                            else if(config.getId().equals("B")) {
                                if(k < pubNum/2) {
-                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(0).getIp(), config.getType());
+                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(0).getIp(), config.getType(),config.getId());
                                }
                                else {
-                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(0).getIp(), config.getType());
+                                   producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(0).getIp(), config.getType(),config.getId());
                                }
                            }
                            pList.add(producer);
@@ -130,18 +130,18 @@ public class ClusterBenchmarker {
                         for(int k=0; k<pubNum; k++) {
                             if(config.getId().equals("A")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType(),config.getId());
                                 }
                             }
                             else if(config.getId().equals("B")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType(),config.getId());
                                 }
                             }
                             pList.add(producer);
@@ -152,18 +152,18 @@ public class ClusterBenchmarker {
                         for(int k=0; k<pubNum; k++) {
                             if(config.getId().equals("A")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k, bInfo.get(1).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k, bInfo.get(1).getIp(), config.getType(),config.getId());
                                 }
                             }
                             else if(config.getId().equals("B")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k + 4, bInfo.get(2).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k + 4, bInfo.get(2).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k + 4, bInfo.get(3).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), k + 4, bInfo.get(3).getIp(), config.getType(),config.getId());
                                 }
                             }
                             pList.add(producer);
@@ -180,18 +180,18 @@ public class ClusterBenchmarker {
                         for(int k=0; k<pubNum; k++) {
                             if(config.getId().equals("A")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                             }
                             else if(config.getId().equals("B")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                             }
                             pList.add(producer);
@@ -202,18 +202,18 @@ public class ClusterBenchmarker {
                         for(int k=0; k<pubNum; k++) {
                             if(config.getId().equals("A")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                             }
                             else if(config.getId().equals("B")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(1).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(1).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(1).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(1).getIp(), config.getType(),config.getId());
                                 }
                             }
                             pList.add(producer);
@@ -224,18 +224,18 @@ public class ClusterBenchmarker {
                         for(int k=0; k<pubNum; k++) {
                             if(config.getId().equals("A")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                             }
                             else if(config.getId().equals("B")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(1).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(1).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(2).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(2).getIp(), config.getType(),config.getId());
                                 }
                             }
                             pList.add(producer);
@@ -246,18 +246,18 @@ public class ClusterBenchmarker {
                         for(int k=0; k<pubNum; k++) {
                             if(config.getId().equals("A")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType(),config.getId());
                                 }
                             }
                             else if(config.getId().equals("B")) {
                                 if(k < pubNum/2) {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType(),config.getId());
                                 }
                                 else {
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType());
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType(),config.getId());
                                 }
                             }
                             pList.add(producer);
@@ -269,18 +269,18 @@ public class ClusterBenchmarker {
                     for(int k=0; k<pubNum; k++) {
                         if(config.getId().equals("A")) {
                             if(k < pubNum/2) {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(),config.getId());
                             }
                             else {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 1, bInfo.get(1).getIp(), config.getType(),config.getId());
                             }
                         }
                         else if(config.getId().equals("B")) {
                             if(k < pubNum/2) {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 2, bInfo.get(2).getIp(), config.getType(),config.getId());
                             }
                             else {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType());
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 3, bInfo.get(3).getIp(), config.getType(),config.getId());
                             }
                         }
                         pList.add(producer);

@@ -6,10 +6,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import javax.jms.*;
 import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.Properties;
 
 public class Producer {
@@ -33,6 +30,7 @@ public class Producer {
     private byte[] kafkaByteArray;
     private org.apache.kafka.clients.producer.Producer<String, byte[]> kafkaProducer;
     private int counter = 0;
+    private String id;
 
     public long getTotalTimeEllapsed() {
         return totalTimeEllapsed;
@@ -100,7 +98,7 @@ public class Producer {
         //long finish = System.currentTimeMillis();
     }
 
-    public Producer(long mSize, long dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp, String type){
+    public Producer(long mSize, long dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp, String type,String id){
         this.setmSize(mSize);
         this.setdSize(dSize);
         this.tNum = tNum;
@@ -109,6 +107,7 @@ public class Producer {
         this.folderName = folderName;
         this.brokerIp = brokerIp;
         this.type = type;
+        this.id = id;
 // normal socket aç
 // bağlan connect consumer
         Socket echoSocket = null;
@@ -116,8 +115,13 @@ public class Producer {
         PrintWriter pw = null;
         PrintWriter pw2 = null;
         try{
-            echoSocket = new Socket("ubuntu-s-1vcpu-1gb-fra1-07",10001);
-            echoSocket2 = new Socket("ubuntu-s-1vcpu-1gb-fra1-08",10002);
+            if(id.equals("A")){
+                echoSocket = new Socket("ubuntu-s-1vcpu-1gb-fra1-07",10001);
+                echoSocket2 = new Socket("ubuntu-s-1vcpu-1gb-fra1-08",10001);
+            }else if(id.equals("B")){
+                echoSocket = new Socket("ubuntu-s-1vcpu-1gb-fra1-07",10002);
+                echoSocket2 = new Socket("ubuntu-s-1vcpu-1gb-fra1-08",10002);
+            }
 
             System.out.println("SOCKET ACILDI");
             pw = new PrintWriter(echoSocket.getOutputStream(), true);
