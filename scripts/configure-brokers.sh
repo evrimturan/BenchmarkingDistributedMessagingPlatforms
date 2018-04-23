@@ -30,6 +30,6 @@ echo "138.197.188.213 ubuntu-s-1vcpu-1gb-fra1-04" >> /etc/hosts
 echo "159.65.115.195 ubuntu-s-1vcpu-1gb-fra1-05" >> /etc/hosts
 echo "167.99.134.186 ubuntu-s-1vcpu-1gb-fra1-06" >> /etc/hosts
 echo "207.154.218.150 ubuntu-s-1vcpu-1gb-fra1-07" >> /etc/hosts
-echo "46.101.221.10 ubuntu-s-1vcpu-1gb-fra1-08" >> /etc/hosts
+echo "159.89.110.187 ubuntu-s-1vcpu-1gb-fra1-08" >> /etc/hosts
 echo "DONE"
 
