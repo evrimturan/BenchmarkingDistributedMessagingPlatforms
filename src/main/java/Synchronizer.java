@@ -43,6 +43,9 @@ class Synchronizer {
         }else if(type.equals("producer")){
             if(id.equals("A")){
                 try {
+                    System.out.println("Producer A connecting to "+CONSUMER_1 +" port : "+10001);
+                    System.out.println("Producer A connecting to "+CONSUMER_2 +" port : "+10001);
+
                     socket = new Socket(CONSUMER_1,10001);
                     socket1 = new Socket(CONSUMER_2,10001);
 
@@ -61,6 +64,9 @@ class Synchronizer {
 
             }else if(id.equals("B")){
                 try {
+                    System.out.println("Producer B connecting to "+CONSUMER_1 +" port : "+10002);
+                    System.out.println("Producer B connecting to "+CONSUMER_2 +" port : "+10002);
+
                     socket = new Socket(CONSUMER_1,10002);
                     socket1 = new Socket(CONSUMER_2,10002);
 
@@ -89,7 +95,7 @@ class Synchronizer {
                 printProducer1.println("READY:PRODUCER");
                 printProducer.flush();
 
-                System.out.println("Producer sent ready message to consumer.");
+                System.out.println("Producer "+id +" sent ready message to consumer.");
 
                 String first = readerProducer.readLine();
                 String second = readerProducer1.readLine();
@@ -98,7 +104,7 @@ class Synchronizer {
 
                 if(first.equals("READY:CONSUMER")){
                     if(second.equals("READY:CONSUMER")){
-                        System.out.println("Producer "+id+" synced with consumer.");
+                        System.out.println("Producer "+id+" synced with consumers.");
                     }
                 }
 
@@ -119,7 +125,7 @@ class Synchronizer {
 
                 if(first.equals("READY:PRODUCER")){
                     if(second.equals("READY:PRODUCER")){
-                        System.out.println("Consumer "+id+" synced with producer.");
+                        System.out.println("Consumer "+id+" synced with producers.");
                     }
                 }
 
