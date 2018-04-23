@@ -40,6 +40,7 @@ class Synchronizer {
                     Socket socket1 = new Socket(CONSUMER_2,10001);
                     sockets.add(socket);
                     sockets.add(socket1);
+                    System.out.println("Producer A connected to both consumers.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -50,6 +51,7 @@ class Synchronizer {
                     Socket socket1 = new Socket(CONSUMER_2,10002);
                     sockets.add(socket);
                     sockets.add(socket1);
+                    System.out.println("Producer B connected to both consumers.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
