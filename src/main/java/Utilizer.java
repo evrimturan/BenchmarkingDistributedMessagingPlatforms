@@ -65,7 +65,7 @@ public class Utilizer implements Runnable{
             avgCPU = totalCPU / count;
             avgMem = totalMem / count;
             System.out.println("CPU thread stopped.");
-            //HTTP request to website
+            //TODO: HTTP request to website and live statistics most probably JSON
         }catch(Exception e)
         {
             e.printStackTrace();

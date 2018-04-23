@@ -100,20 +100,19 @@ class Synchronizer {
                 System.out.println("Producer "+id +" sent ready message to consumer.");
 
                 String first = readerProducer.readLine();
-                System.out.println("First string read : " + first);
+                //System.out.println("First string read : " + first);
 
                 String second = readerProducer1.readLine();
-                System.out.println("Second string read : "+second);
-
-                System.out.println("Read first : "+first+"\nSecond : "+second);
+                //System.out.println("Second string read : "+second);
+                //System.out.println("Read first : "+first+"\nSecond : "+second);
 
                 if(first.equals("READY:CONSUMER")){
                     if(second.equals("READY:CONSUMER")){
                         System.out.println("Producer "+id+" synced with consumers.");
+                        Thread.sleep(1000);//Give them time to start execution
                     }
                 }
 
-                Thread.sleep(1000);//Give them time to start execution
 
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
@@ -137,10 +136,9 @@ class Synchronizer {
                 if(first.equals("READY:PRODUCER")){
                     if(second.equals("READY:PRODUCER")){
                         System.out.println("Consumer "+id+" synced with producers.");
+                        Thread.sleep(1000);//give them time to start execution
                     }
                 }
-
-                Thread.sleep(1000);//give them time to start execution
 
             }catch (IOException | InterruptedException ex){
                 ex.printStackTrace();

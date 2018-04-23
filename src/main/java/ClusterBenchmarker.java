@@ -25,6 +25,7 @@ public class ClusterBenchmarker {
         double finalAvgMem;
 
         /* This is redundant right now, maybe enable in the future ?
+        better fix required
         try{
             Process broker = null;
             switch(config.getPlatform()){
@@ -308,7 +309,7 @@ public class ClusterBenchmarker {
                         try {
                             ex.invokeAll(Collections.singletonList(call),10,TimeUnit.SECONDS);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            //e.printStackTrace(); This is redundant
                         }
                     });
                     threadList.add(temp);
@@ -370,10 +371,11 @@ public class ClusterBenchmarker {
         }else if(config.getPubOrSub().equals("consumer")){
             Synchronizer synchronizer = new Synchronizer(config.getId(),"consumer");
             for(int j = 0;j<3;j++){
+                //TODO: consumer'lar nasil handle edilecek onemli onu konusmamiz lazim
                 for(int i=0; i<subNum; i++){
                     /*
-                    * MKDIR removed from consumer because it is redundant, i will check if it creates problems
-                    *
+                    * INFORMATIONAL: MKDIR removed from consumer
+                    * because it is redundant, i will check if it creates problems(no problems)
                     */
                     Random r = new Random();
                     int bId = r.nextInt(brokerNum);
@@ -469,5 +471,4 @@ public class ClusterBenchmarker {
 
     }
 
-    //TODO: topic sayisi ve pubs/subs sayisi degisince hangi queueya message atilip cekilecek,broker connection refuse olunca başka brokera bağlanmayı denesin, kafka consumer global olsun
 }
