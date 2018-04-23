@@ -1,6 +1,5 @@
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.kafka.clients.producer.ProducerRecord;
