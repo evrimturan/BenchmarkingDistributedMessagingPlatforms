@@ -13,9 +13,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 
+@SuppressWarnings("InfiniteLoopStatement")
 public class Consumer {
     private int tNum;
     private String folderName;
@@ -98,7 +99,7 @@ public class Consumer {
             try {
                 while(true){
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
-                    for (ConsumerRecord<String, byte[]> record : records) {
+                    for (ConsumerRecord<String, byte[]> ignored : records) {
                         System.out.println("CONSUMING FROM " + brokerIp);
 
                             /*FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
@@ -129,7 +130,7 @@ public class Consumer {
         //long finish = System.currentTimeMillis();
     }
 
-    public Consumer(int tNum, String folderName, String platform, int queueNum, String brokerIp) {
+    Consumer(int tNum, String folderName, String platform, int queueNum, String brokerIp) {
         this.tNum = tNum;
         this.folderName = folderName;
         this.platform = platform;
@@ -137,10 +138,10 @@ public class Consumer {
         this.brokerIp = brokerIp;
 
 
-        ServerSocket ss = null;
-        ServerSocket ss2 = null;
-        Socket clientSocket = null;
-        Socket clientSocket2 = null;
+        ServerSocket ss;
+        ServerSocket ss2;
+        Socket clientSocket;
+        Socket clientSocket2;
         BufferedReader rd1 = null;
         BufferedReader rd2 = null;
         String msg = "Oldu";
@@ -158,53 +159,55 @@ public class Consumer {
             System.out.println("Connection established with both producers");
 
         }catch (Exception e){
-            System.out.println(e);
+            e.printStackTrace();
             System.exit(1);
         }
 
 
-        if (platform.equals("activemq")) {
-            try {
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
-                this.activemqConnection = connectionFactory.createConnection("admin", "admin");
-                activemqConnection.start();
-                this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        switch (platform) {
+            case "activemq":
+                try {
+                    ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
+                    this.activemqConnection = connectionFactory.createConnection("admin", "admin");
+                    activemqConnection.start();
+                    this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-                Queue dest = activemqSession.createQueue("queue-" + queueNum);
-                activemqConsumer = activemqSession.createConsumer(dest);
+                    Queue dest = activemqSession.createQueue("queue-" + queueNum);
+                    activemqConsumer = activemqSession.createConsumer(dest);
 
-                if(rd1.readLine().equals(msg)){
-                    run = true;
+                    if (rd1.readLine().equals(msg)) {
+                        run = true;
+                    }
+                    if (rd2.readLine().equals(msg)) {
+                        run2 = true;
+                    }
+                    if (!run && !run2) {
+                        System.exit(1);
+                    }
+                    System.out.println("ActiveMQ connection established.");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                if (rd2.readLine().equals(msg)){
-                    run2 = true;
-                }
-                if (!run && !run2){
-                    System.exit(1);
-                }
-                System.out.println("ActiveMQ connection established.");
+                break;
+            case "rabbitmq":
+                try {
+                    com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
+                    factory.setUsername("admin");
+                    factory.setPassword("admin");
+                    factory.setPort(5672);
+                    factory.setHost(brokerIp);
+                    this.rabbitmqConnection = factory.newConnection();
+                    this.rabbitmqChannel = rabbitmqConnection.createChannel();
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (platform.equals("rabbitmq")) {
-            try {
-                com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
-                factory.setUsername("admin");
-                factory.setPassword("admin");
-                factory.setPort(5672);
-                factory.setHost(brokerIp);
-                this.rabbitmqConnection = factory.newConnection();
-                this.rabbitmqChannel = rabbitmqConnection.createChannel();
+                    rabbitmqChannel.queueDeclare("queue-" + queueNum, true, false, false, null);
 
-                rabbitmqChannel.queueDeclare("queue-" + queueNum, true, false, false, null);
+                    rabbitmqConsumer = new DefaultConsumer(rabbitmqChannel) {
+                        @Override
+                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
+                                throws IOException {
 
-                rabbitmqConsumer = new DefaultConsumer(rabbitmqChannel) {
-                    @Override
-                    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-                            throws IOException {
-
-                        System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
+                            System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
                             /*
                             FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
                             fileNumber++;
@@ -217,57 +220,55 @@ public class Consumer {
                             }
                             fos.close();
                             */
+                        }
+                    };
+                    if (rd1.readLine().equals(msg)) {
+                        run = true;
                     }
-                };
-                if(rd1.readLine().equals(msg)){
-                    run = true;
+                    if (rd2.readLine().equals(msg)) {
+                        run2 = true;
+                    }
+                    if (!run && !run2) {
+                        System.exit(1);
+                    }
+
+                    System.out.println("RabbitMQ connection established.");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                if (rd2.readLine().equals(msg)){
-                    run2 = true;
+                break;
+            case "kafka":
+                Properties props = new Properties();
+                props.put("bootstrap.servers", brokerIp + ":9092");
+                props.put("group.id", "group-1");
+                props.put("enable.auto.commit", "true");
+                props.put("auto.commit.interval.ms", "1000");
+                props.put("auto.offset.reset", "earliest");
+                props.put("session.timeout.ms", "30000");
+                props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+                props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+                kafkaConsumer = null;
+
+                try {
+                    kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
+                    kafkaConsumer.subscribe(Collections.singletonList("queue-" + queueNum));
+
+                    if (rd1.readLine().equals(msg)) {
+                        run = true;
+                    }
+                    if (rd2.readLine().equals(msg)) {
+                        run2 = true;
+                    }
+                    if (!run && !run2) {
+                        System.exit(1);
+                    }
+
+                    System.out.println("Kafka connection established.");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                if (!run && !run2){
-                    System.exit(1);
-                }
-
-                System.out.println("RabbitMQ connection established.");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        else if (platform.equals("kafka")) {
-            Properties props = new Properties();
-            props.put("bootstrap.servers", brokerIp + ":9092");
-            props.put("group.id", "group-1");
-            props.put("enable.auto.commit", "true");
-            props.put("auto.commit.interval.ms", "1000");
-            props.put("auto.offset.reset", "earliest");
-            props.put("session.timeout.ms", "30000");
-            props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-            props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
-            kafkaConsumer = null;
-
-            try {
-                kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
-                kafkaConsumer.subscribe(Arrays.asList("queue-" + queueNum));
-
-                if(rd1.readLine().equals(msg)){
-                    run = true;
-                }
-                if (rd2.readLine().equals(msg)){
-                    run2 = true;
-                }
-                if (!run && !run2){
-                    System.exit(1);
-                }
-
-                System.out.println("Kafka connection established.");
-            }
-
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+                break;
         }
     }
 }

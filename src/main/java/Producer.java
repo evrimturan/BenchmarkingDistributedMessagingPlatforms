@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Properties;
 
+@SuppressWarnings("InfiniteLoopStatement")
 public class Producer {
     private long mSize;
     private long dSize;
@@ -78,7 +79,7 @@ public class Producer {
 
             try {
                 while(true) {
-                    kafkaProducer.send(new ProducerRecord<String, byte[]>("queue-"+queueNum, kafkaByteArray));
+                    kafkaProducer.send(new ProducerRecord<>("queue-" + queueNum, kafkaByteArray));
                     counter = getCounter() + 1;
                     System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                 }
@@ -98,9 +99,9 @@ public class Producer {
         //long finish = System.currentTimeMillis();
     }
 
-    public Producer(long mSize, long dSize, int tNum,String folderName,String platform,int queueNum, String brokerIp, String type,String id){
-        this.setmSize(mSize);
-        this.setdSize(dSize);
+    Producer(long mSize, long dSize, int tNum, String folderName, String platform, int queueNum, String brokerIp, String type, String id){
+        this.mSize = mSize;
+        this.dSize=dSize;
         this.tNum = tNum;
         this.platform = platform;
         this.queueNum = queueNum;
@@ -123,135 +124,155 @@ public class Producer {
                 echoSocket2 = new Socket("ubuntu-s-1vcpu-1gb-fra1-08",10002);
             }
 
+            if(echoSocket == null | echoSocket2 == null){
+                System.err.println("Cannot connect to consumers.");
+                System.exit(1);
+            }
+
             System.out.println("SOCKET ACILDI");
             pw = new PrintWriter(echoSocket.getOutputStream(), true);
             pw2 = new PrintWriter(echoSocket2.getOutputStream(), true);
+
         }catch(Exception e){
-            System.out.println(e);
+            e.printStackTrace();
         }
 
-        if(platform.equals("activemq")){
-            try{
-                ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
-                connectionFactory.setProducerWindowSize((int)dSize);
-                this.activemqConnection = connectionFactory.createConnection("admin","admin");
-                activemqConnection.start();
-                this.activemqSession = (ActiveMQSession)activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        switch (platform) {
+            case "activemq":
+                try {
+                    ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
+                    connectionFactory.setProducerWindowSize((int) dSize);
+                    this.activemqConnection = connectionFactory.createConnection("admin", "admin");
+                    activemqConnection.start();
+                    this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-                dest = activemqSession.createQueue("queue-"+queueNum);
-                activemqProducer = activemqSession.createProducer(dest);
-                activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
+                    dest = activemqSession.createQueue("queue-" + queueNum);
+                    activemqProducer = activemqSession.createProducer(dest);
+                    activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
-                FileInputStream in = new FileInputStream(new File(folderName+"/producer.data-"+type));
+                    FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
 
-                byte[] buffer = new byte[81920];
-                bMessage = activemqSession.createBytesMessage();
+                    byte[] buffer = new byte[81920];
+                    bMessage = activemqSession.createBytesMessage();
 
-                //System.out.println("--------------------------\nStarted writing to file\n-----------------------");
-                while(in.read(buffer) != -1){
-                    bMessage.writeBytes(buffer);
+                    //System.out.println("--------------------------\nStarted writing to file\n-----------------------");
+                    while (in.read(buffer) != -1) {
+                        bMessage.writeBytes(buffer);
+                    }
+                    in.close();
+                    //Consumer mesaj socket write utf/println
+
+                    if (pw != null) {
+                        pw.println("Oldu");
+                    }
+                    if (pw2 != null) {
+                        pw2.println("Oldu");
+                    }
+
+                    if (echoSocket != null) {
+                        echoSocket.close();
+                    }
+                    if (echoSocket2 != null) {
+                        echoSocket2.close();
+                    }
+
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                in.close();
-                //Consumer mesaj socket write utf/println
+                break;
+            case "rabbitmq":
+                try {
+                    com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
+                    factory.setUsername("admin");
+                    factory.setPassword("admin");
+                    factory.setPort(5672);
+                    factory.setHost(brokerIp);
+                    this.rabbitmqConnection = factory.newConnection();
+                    this.rabbitmqChannel = rabbitmqConnection.createChannel();
 
-                pw.println("Oldu");
-                pw2.println("Oldu");
+                    rabbitmqChannel.queueDeclare("queue-" + queueNum, true, false, false, null);
 
+                    FileInputStream in = new FileInputStream(new File(folderName + "/activemqProducer.data-" + type));
 
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-        }
-        else if(platform.equals("rabbitmq")) {
-            try{
-                com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
-                factory.setUsername("admin");
-                factory.setPassword("admin");
-                factory.setPort(5672);
-                factory.setHost(brokerIp);
-                this.rabbitmqConnection = factory.newConnection();
-                this.rabbitmqChannel = rabbitmqConnection.createChannel();
+                    byte[] buffer = new byte[81920];
 
-                rabbitmqChannel.queueDeclare("queue-"+queueNum, true, false, false, null);
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while (in.read(buffer) != -1) {
+                        outputStream.write(buffer);
+                    }
+                    in.close();
+                    rabbitByteArray = outputStream.toByteArray();
+                    outputStream.close();
+                    //COnsumer socketine yasz
 
-                FileInputStream in = new FileInputStream(new File(folderName+"/activemqProducer.data-"+type));
+                    if (pw != null) {
+                        pw.println("Oldu");
+                    }
+                    if (pw2 != null) {
+                        pw2.println("Oldu");
+                    }
 
-                byte[] buffer = new byte[81920];
+                    if (echoSocket != null) {
+                        echoSocket.close();
+                    }
+                    if (echoSocket2 != null) {
+                        echoSocket2.close();
+                    }
 
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                while(in.read(buffer) != -1) {
-                    outputStream.write(buffer);
+                } catch (Exception e) {
+                    System.exit(1);
+                    e.printStackTrace();
                 }
-                in.close();
-                rabbitByteArray = outputStream.toByteArray();
-                outputStream.close();
-                //COnsumer socketine yasz
+                break;
+            case "kafka":
+                Properties props = new Properties();
+                props.put("bootstrap.servers", brokerIp + ":9092");
+                props.put("acks", "all");
+                props.put("retries", 0);
+                props.put("batch.size", 16384);
+                props.put("linger.ms", 1);
+                props.put("buffer.memory", 33554432);
 
-                pw.println("Oldu");
-                pw2.println("Oldu");
+                props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
+                props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 
-            }catch(Exception e){
-                System.exit(1);
-                e.printStackTrace();
-            }
-        }
+                kafkaProducer = null;
 
-        else if(platform.equals("kafka")) {
-            Properties props = new Properties();
-            props.put("bootstrap.servers", brokerIp +":9092");
-            props.put("acks", "all");
-            props.put("retries", 0);
-            props.put("batch.size", 16384);
-            props.put("linger.ms", 1);
-            props.put("buffer.memory", 33554432);
+                try {
+                    kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
 
-            props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+                    FileInputStream in = new FileInputStream(new File(folderName + "/activemqProducer.data-" + type));
 
-            props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+                    byte[] buffer = new byte[81920];
 
-            kafkaProducer = null;
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    while (in.read(buffer) != -1) {
+                        outputStream.write(buffer);
+                    }
+                    in.close();
+                    kafkaByteArray = outputStream.toByteArray();
+                    //consumer socket yaz
 
-            try {
-                kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
+                    if (pw != null) {
+                        pw.println("Oldu");
+                    }
+                    if (pw2 != null) {
+                        pw2.println("Oldu");
+                    }
+                    if (echoSocket != null) {
+                        echoSocket.close();
+                    }
+                    if (echoSocket2 != null) {
+                        echoSocket2.close();
+                    }
 
-                FileInputStream in = new FileInputStream(new File(folderName+"/activemqProducer.data-"+type));
-
-                byte[] buffer = new byte[81920];
-
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                while(in.read(buffer) != -1) {
-                    outputStream.write(buffer);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                in.close();
-                kafkaByteArray = outputStream.toByteArray();
-                //consumer socket yaz
-
-                pw.println("Oldu");
-                pw2.println("Oldu");
-
-
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+                break;
         }
-    }
-
-    public long getmSize() {
-        return mSize;
-    }
-
-    public void setmSize(long mSize) {
-        this.mSize = mSize;
-    }
-
-    public long getdSize() {
-        return dSize;
-    }
-
-    public void setdSize(long dSize) {
-        this.dSize = dSize;
     }
 
     public int getCounter() {

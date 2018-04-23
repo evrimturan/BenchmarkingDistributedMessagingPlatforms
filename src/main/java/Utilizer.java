@@ -6,7 +6,7 @@ public class Utilizer implements Runnable{
 
     private long pId;
     //private byte[] bArray;
-    private Boolean stop;
+    private boolean stop;
 
     private double avgCPU;
     private double avgMem;
@@ -72,20 +72,20 @@ public class Utilizer implements Runnable{
         }
     }
 
-    public Utilizer(Long pId) {
+    Utilizer(Long pId) {
         this.pId = pId;
         this.stop = false;
     }
 
-    public void setStop(Boolean halt){
+    void setStop(boolean halt){
         stop = halt;
     }
 
-    public double getAvgCPU() {
+    double getAvgCPU() {
         return avgCPU;
     }
 
-    public double getAvgMem() {
+    double getAvgMem() {
         return avgMem;
     }
 }

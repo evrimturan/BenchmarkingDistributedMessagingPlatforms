@@ -14,7 +14,6 @@ public class TestConfiguration {
     private int topicNum;
     private boolean persistent;
     private long dataSize;
-    private PropertiesConfiguration conf, brokerConf;
     private String platform;
     private List<BrokerInfo> bInfo;
     private String type;
@@ -22,10 +21,10 @@ public class TestConfiguration {
     private String id;
     private String test;
 
-    public TestConfiguration(String Filename){
+    TestConfiguration(String Filename){
         try {
-            conf = new PropertiesConfiguration(Filename);
-            brokerConf = new PropertiesConfiguration();
+            PropertiesConfiguration conf = new PropertiesConfiguration(Filename);
+            PropertiesConfiguration brokerConf = new PropertiesConfiguration();
             brokerConf.setDelimiterParsingDisabled(true);
             brokerConf.load("broker.config");
             int i = 1;
@@ -46,7 +45,7 @@ public class TestConfiguration {
             id = conf.getString("id");
             test = conf.getString("test");
             //messageSize = conf.getDouble("message.size");
-            String strMessage =conf.getString("message.size");
+            String strMessage = conf.getString("message.size");
             type = strMessage;
             if(strMessage.contains("KB")){
                 strMessage = strMessage.substring(0,strMessage.indexOf("KB"));
