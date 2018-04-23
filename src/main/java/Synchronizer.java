@@ -90,8 +90,8 @@ class Synchronizer {
     void sync(){
         if(type.equals("producer")){
             try {
-                System.out.println("Producer connected to : " + socket.getInetAddress() + " to port : "+socket.getPort());
-                System.out.println("Producer connected to : " + socket1.getInetAddress() + " to port :" + socket1.getPort());
+                //System.out.println("Producer connected to : " + socket.getInetAddress() + " to port : "+socket.getPort());
+                //System.out.println("Producer connected to : " + socket1.getInetAddress() + " to port :" + socket1.getPort());
                 printProducer.println("READY:PRODUCER");
                 printProducer.flush();
                 printProducer1.println("READY:PRODUCER");

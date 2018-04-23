@@ -347,7 +347,6 @@ public class ClusterBenchmarker {
                 finalMem += avgMem;
 
                 pList.clear();
-                cList.clear();
             }
 
             finalAvgCPU = finalCPU / 3;
@@ -437,6 +436,7 @@ public class ClusterBenchmarker {
 
                 finalCPU += avgCPU;
                 finalMem += avgMem;
+                cList.clear();
             }
 
             finalAvgCPU = finalCPU / 3;
