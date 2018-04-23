@@ -72,8 +72,17 @@ class Synchronizer {
                 printWriter.println("READY:PRODUCER");
                 printWriter1.println("READY:PRODUCER");
 
-                if(reader.readLine().equals("READY:CONSUMER") && reader1.readLine().equals("READY:CONSUMER")){
-                    System.out.println("Producer synced with consumer.");
+                System.out.println("Producer sent ready message to consumer.");
+
+                String first = reader.readLine();
+                String second = reader1.readLine();
+
+                System.out.println("Read first : "+first+"\nSecond : "+second);
+
+                if(first.equals("READY:CONSUMER")){
+                    if(second.equals("READY:CONSUMER")){
+                        System.out.println("Producer "+id+" synced with consumer.");
+                    }
                 }
 
                 Thread.sleep(1000);//Give them time to start execution
@@ -96,14 +105,23 @@ class Synchronizer {
                 PrintWriter pw = new PrintWriter(s.getOutputStream());
                 PrintWriter pw1 = new PrintWriter(s1.getOutputStream());
 
-                if(reader.readLine().equals("READY:PRODUCER") && reader1.readLine().equals("READY:PRODUCER")){
-                    System.out.println("Consumer is synced with producer.");
+                String first = reader.readLine();
+                String second = reader1.readLine();
+
+                System.out.println("Read first : "+first+"\nSecond : "+second);
+
+                if(first.equals("READY:PRODUCER")){
+                    if(second.equals("READY:Producer")){
+                        System.out.println("Consumer "+id+" synced with producer.");
+                    }
                 }
 
                 pw.println("READY:CONSUMER");
                 pw1.println("READY:CONSUMER");
 
                 Thread.sleep(1000);//give them time to start execution
+                s.close();
+                s1.close();
 
             }catch (IOException | InterruptedException ex){
                 ex.printStackTrace();
