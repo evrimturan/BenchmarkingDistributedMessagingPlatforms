@@ -1,13 +1,16 @@
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import javax.jms.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Properties;
 
 public class Producer {
@@ -108,8 +111,31 @@ public class Producer {
         this.brokerIp = brokerIp;
         this.type = type;
 // normal socket aç
-// bağlan connect consumer 
-       
+// bağlan connect consumer
+        Socket echoSocket = null;
+        Socket echoSocket2 = null;
+        PrintWriter pw = null;
+        PrintWriter pw2 = null;
+        try{
+            InetAddress addr = InetAddress.getByName("207.154.218.150");
+            InetAddress addr2 = InetAddress.getByName("46.101.221.10");
+
+            SocketAddress sAddr = new InetSocketAddress(addr, 10001);
+            SocketAddress sAddr2 = new InetSocketAddress(addr2, 10002);
+
+            echoSocket = new Socket();
+            echoSocket2 = new Socket();
+
+            echoSocket.connect(sAddr);
+            echoSocket2.connect(sAddr2);
+
+            System.out.println("SOCKET ACILDI");
+            pw = new PrintWriter(echoSocket.getOutputStream(), true);
+            pw2 = new PrintWriter(echoSocket2.getOutputStream(), true);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
         if(platform.equals("activemq")){
             try{
                 ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+brokerIp+":61616");
@@ -133,6 +159,10 @@ public class Producer {
                 }
                 in.close();
                 //Consumer mesaj socket write utf/println
+
+                pw.println("Oldu");
+                pw2.println("Oldu");
+
 
             }catch(Exception ex){
                 ex.printStackTrace();
@@ -163,7 +193,12 @@ public class Producer {
                 outputStream.close();
                 //COnsumer socketine yasz
 
+                pw.println("Oldu");
+                pw2.println("Oldu");
+
+
             }catch(Exception e){
+                System.exit(1);
                 e.printStackTrace();
             }
         }
@@ -197,6 +232,11 @@ public class Producer {
                 in.close();
                 kafkaByteArray = outputStream.toByteArray();
                 //consumer socket yaz
+
+                pw.println("Oldu");
+                pw2.println("Oldu");
+
+
             }
             catch (Exception e) {
                 e.printStackTrace();
