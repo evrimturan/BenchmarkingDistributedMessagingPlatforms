@@ -55,10 +55,10 @@ class Synchronizer {
                     readerProducer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     readerProducer1 = new BufferedReader(new InputStreamReader(socket1.getInputStream()));
 
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
 
                     System.out.println("Producer A connected to both consumers.");
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
 
@@ -76,10 +76,10 @@ class Synchronizer {
                     readerProducer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     readerProducer1 = new BufferedReader(new InputStreamReader(socket1.getInputStream()));
 
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
 
                     System.out.println("Producer B connected to both consumers.");
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -118,6 +118,11 @@ class Synchronizer {
             try{
                 System.out.printf("Consumer %s is ready to sync.\n",id);
 
+                printConsumer.println("READY:CONSUMER");
+                printConsumer.flush();
+                printConsumer1.println("READY:CONSUMER");
+                printConsumer1.flush();
+
                 String first = readerConsumer.readLine();
                 String second = readerConsumer1.readLine();
 
@@ -128,11 +133,6 @@ class Synchronizer {
                         System.out.println("Consumer "+id+" synced with producers.");
                     }
                 }
-
-                printConsumer.println("READY:CONSUMER");
-                printConsumer.flush();
-                printConsumer1.println("READY:CONSUMER");
-                printConsumer1.flush();
 
                 Thread.sleep(1000);//give them time to start execution
 
