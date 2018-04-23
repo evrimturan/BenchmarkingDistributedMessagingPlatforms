@@ -88,6 +88,8 @@ class Synchronizer {
                 Socket s = serverSockets.get(0).accept();
                 Socket s1 = serverSockets.get(1).accept();
 
+                System.out.println("Consumer "+ id +" accepted connections.");
+
                 BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 BufferedReader reader1 = new BufferedReader(new InputStreamReader(s1.getInputStream()));
 
