@@ -6,7 +6,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import javax.jms.*;
 import java.io.*;
-import java.net.Socket;
 import java.util.Properties;
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -111,31 +110,6 @@ public class Producer {
         this.id = id;
 // normal socket aç
 // bağlan connect consumer
-        Socket echoSocket = null;
-        Socket echoSocket2 = null;
-        PrintWriter pw = null;
-        PrintWriter pw2 = null;
-        try{
-            if(id.equals("A")){
-                echoSocket = new Socket("ubuntu-s-1vcpu-1gb-fra1-07",10001);
-                echoSocket2 = new Socket("ubuntu-s-1vcpu-1gb-fra1-08",10001);
-            }else if(id.equals("B")){
-                echoSocket = new Socket("ubuntu-s-1vcpu-1gb-fra1-07",10002);
-                echoSocket2 = new Socket("ubuntu-s-1vcpu-1gb-fra1-08",10002);
-            }
-
-            if(echoSocket == null | echoSocket2 == null){
-                System.err.println("Cannot connect to consumers.");
-                System.exit(1);
-            }
-
-            System.out.println("SOCKET ACILDI");
-            pw = new PrintWriter(echoSocket.getOutputStream(), true);
-            pw2 = new PrintWriter(echoSocket2.getOutputStream(), true);
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
 
         switch (platform) {
             case "activemq":
@@ -161,21 +135,6 @@ public class Producer {
                     }
                     in.close();
                     //Consumer mesaj socket write utf/println
-
-                    if (pw != null) {
-                        pw.println("Oldu");
-                    }
-                    if (pw2 != null) {
-                        pw2.println("Oldu");
-                    }
-
-                    if (echoSocket != null) {
-                        echoSocket.close();
-                    }
-                    if (echoSocket2 != null) {
-                        echoSocket2.close();
-                    }
-
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -205,20 +164,6 @@ public class Producer {
                     rabbitByteArray = outputStream.toByteArray();
                     outputStream.close();
                     //COnsumer socketine yasz
-
-                    if (pw != null) {
-                        pw.println("Oldu");
-                    }
-                    if (pw2 != null) {
-                        pw2.println("Oldu");
-                    }
-
-                    if (echoSocket != null) {
-                        echoSocket.close();
-                    }
-                    if (echoSocket2 != null) {
-                        echoSocket2.close();
-                    }
 
                 } catch (Exception e) {
                     System.exit(1);
@@ -253,20 +198,6 @@ public class Producer {
                     }
                     in.close();
                     kafkaByteArray = outputStream.toByteArray();
-                    //consumer socket yaz
-
-                    if (pw != null) {
-                        pw.println("Oldu");
-                    }
-                    if (pw2 != null) {
-                        pw2.println("Oldu");
-                    }
-                    if (echoSocket != null) {
-                        echoSocket.close();
-                    }
-                    if (echoSocket2 != null) {
-                        echoSocket2.close();
-                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();

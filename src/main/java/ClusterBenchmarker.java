@@ -24,7 +24,7 @@ public class ClusterBenchmarker {
         double finalAvgCPU;
         double finalAvgMem;
 
-        /* This is redundant right now
+        /* This is redundant right now, maybe enable in the future ?
         try{
             Process broker = null;
             switch(config.getPlatform()){
@@ -62,6 +62,7 @@ public class ClusterBenchmarker {
         */
 
         if(config.getPubOrSub().equals("producer")){
+            Synchronizer synchronizer = new Synchronizer(config.getId(),"producer");
             for(int j = 0;j<3;j++){
 
                 Producer producer;
@@ -69,10 +70,8 @@ public class ClusterBenchmarker {
                 String brokerIP = null;
                 int queueNumber = 0;
 
-
                 switch (config.getTest()) {
                     case "pubsub":
-
                         for (int k = 0; k < pubNum; k++) {
                             if (config.getId().equals("A")) {
                                 if (k < pubNum / 2) {
@@ -294,9 +293,11 @@ public class ClusterBenchmarker {
                         }
                         break;
                 }
-
                 ScheduledExecutorService ex = Executors.newScheduledThreadPool(pList.size());
                 List<Thread> threadList = new ArrayList<>();
+
+                synchronizer.sync();
+
                 for(Producer p : pList) {
                     Callable<Void> call = () -> {
                         System.out.println("Running producer AGAIN");
@@ -366,10 +367,11 @@ public class ClusterBenchmarker {
             }
 
         }else if(config.getPubOrSub().equals("consumer")){
+            Synchronizer synchronizer = new Synchronizer(config.getId(),"consumer");
             for(int j = 0;j<3;j++){
                 for(int i=0; i<subNum; i++){
                     /*
-                    * MKDIR removed from consumer because it is redundant
+                    * MKDIR removed from consumer because it is redundant, i will check if it creates problems
                     *
                     */
                     Random r = new Random();
@@ -379,8 +381,11 @@ public class ClusterBenchmarker {
                     Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
                     cList.add(c);
                 }
+
                 ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
                 List<Thread> threadList = new ArrayList<>();
+
+                synchronizer.sync();
 
                 for(Consumer c : cList) {
                     Callable<Void> call = () -> {

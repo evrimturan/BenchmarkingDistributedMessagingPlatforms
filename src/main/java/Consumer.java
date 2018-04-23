@@ -8,11 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 
 import javax.jms.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -137,33 +133,6 @@ public class Consumer {
         this.queueNum = queueNum;
         this.brokerIp = brokerIp;
 
-
-        ServerSocket ss;
-        ServerSocket ss2;
-        Socket clientSocket;
-        Socket clientSocket2;
-        BufferedReader rd1 = null;
-        BufferedReader rd2 = null;
-        String msg = "Oldu";
-        Boolean run = false;
-        Boolean run2 = false;
-
-        try{
-            ss = new ServerSocket(10001);
-            ss2 = new ServerSocket(10002);
-            clientSocket = ss.accept();
-            clientSocket2 = ss2.accept();
-            rd1 = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            rd2 = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
-
-            System.out.println("Connection established with both producers");
-
-        }catch (Exception e){
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-
         switch (platform) {
             case "activemq":
                 try {
@@ -175,15 +144,6 @@ public class Consumer {
                     Queue dest = activemqSession.createQueue("queue-" + queueNum);
                     activemqConsumer = activemqSession.createConsumer(dest);
 
-                    if (rd1.readLine().equals(msg)) {
-                        run = true;
-                    }
-                    if (rd2.readLine().equals(msg)) {
-                        run2 = true;
-                    }
-                    if (!run && !run2) {
-                        System.exit(1);
-                    }
                     System.out.println("ActiveMQ connection established.");
 
                 } catch (Exception e) {
@@ -222,15 +182,6 @@ public class Consumer {
                             */
                         }
                     };
-                    if (rd1.readLine().equals(msg)) {
-                        run = true;
-                    }
-                    if (rd2.readLine().equals(msg)) {
-                        run2 = true;
-                    }
-                    if (!run && !run2) {
-                        System.exit(1);
-                    }
 
                     System.out.println("RabbitMQ connection established.");
 
@@ -253,16 +204,6 @@ public class Consumer {
                 try {
                     kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
                     kafkaConsumer.subscribe(Collections.singletonList("queue-" + queueNum));
-
-                    if (rd1.readLine().equals(msg)) {
-                        run = true;
-                    }
-                    if (rd2.readLine().equals(msg)) {
-                        run2 = true;
-                    }
-                    if (!run && !run2) {
-                        System.exit(1);
-                    }
 
                     System.out.println("Kafka connection established.");
                 } catch (Exception e) {
