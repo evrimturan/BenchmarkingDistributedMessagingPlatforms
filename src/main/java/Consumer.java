@@ -155,6 +155,7 @@ public class Consumer {
             rd1 = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             rd2 = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
 
+            System.out.println("Connection established with both producers");
 
         }catch (Exception e){
             System.out.println(e);
@@ -181,6 +182,7 @@ public class Consumer {
                 if (!run && !run2){
                     System.exit(1);
                 }
+                System.out.println("ActiveMQ connection established.");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -227,6 +229,8 @@ public class Consumer {
                     System.exit(1);
                 }
 
+                System.out.println("RabbitMQ connection established.");
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -257,6 +261,8 @@ public class Consumer {
                 if (!run && !run2){
                     System.exit(1);
                 }
+
+                System.out.println("Kafka connection established.");
             }
 
             catch (Exception e) {

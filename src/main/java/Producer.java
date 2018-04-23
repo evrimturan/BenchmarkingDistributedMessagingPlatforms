@@ -116,17 +116,8 @@ public class Producer {
         PrintWriter pw = null;
         PrintWriter pw2 = null;
         try{
-            InetAddress addr = InetAddress.getByName("207.154.218.150");
-            InetAddress addr2 = InetAddress.getByName("46.101.221.10");
-
-            SocketAddress sAddr = new InetSocketAddress(addr, 10001);
-            SocketAddress sAddr2 = new InetSocketAddress(addr2, 10002);
-
-            echoSocket = new Socket();
-            echoSocket2 = new Socket();
-
-            echoSocket.connect(sAddr);
-            echoSocket2.connect(sAddr2);
+            echoSocket = new Socket("ubuntu-s-1vcpu-1gb-fra1-07",10001);
+            echoSocket2 = new Socket("ubuntu-s-1vcpu-1gb-fra1-08",10002);
 
             System.out.println("SOCKET ACILDI");
             pw = new PrintWriter(echoSocket.getOutputStream(), true);
