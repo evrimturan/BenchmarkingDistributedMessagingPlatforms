@@ -81,7 +81,9 @@ class Synchronizer {
         if(type.equals("producer")){
             try {
                 printProducer.println("READY:PRODUCER");
+                printProducer.flush();
                 printProducer1.println("READY:PRODUCER");
+                printProducer.flush();
 
                 System.out.println("Producer sent ready message to consumer.");
 
@@ -118,7 +120,9 @@ class Synchronizer {
                 }
 
                 printConsumer.println("READY:CONSUMER");
+                printConsumer.flush();
                 printConsumer1.println("READY:CONSUMER");
+                printConsumer1.flush();
 
                 Thread.sleep(1000);//give them time to start execution
 
