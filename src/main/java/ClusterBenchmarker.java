@@ -77,17 +77,21 @@ public class ClusterBenchmarker {
                             if (config.getId().equals("A")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(0).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(0);
                                 } else {
                                     brokerIP = bInfo.get(1).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(1);
                                 }
                             } else if (config.getId().equals("B")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(2).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(2);
                                 } else {
                                     brokerIP = bInfo.get(3).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(3);
                                 }
                             }
@@ -108,17 +112,21 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(3);
                                     }
                                 }
@@ -131,20 +139,24 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(0);
                                         queueNumber.add(4);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(1);
                                         queueNumber.add(5);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(2);
                                         queueNumber.add(6);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(3);
                                         queueNumber.add(7);
                                     }
@@ -160,17 +172,21 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(2).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(3).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(3);
                                     }
                                 }
@@ -182,17 +198,21 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(k);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(k);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(2).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(k + 4);
                                     } else {
                                         brokerIP = bInfo.get(3).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(k + 4);
                                     }
                                 }
@@ -206,10 +226,12 @@ public class ClusterBenchmarker {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
                                         if(k % 2 == 0) {
+                                            queueNumber.clear();
                                             queueNumber.add(0);
                                             queueNumber.add(8);
                                         }
                                         else {
+                                            queueNumber.clear();
                                             queueNumber.add(1);
                                             queueNumber.add(9);
                                         }
@@ -217,10 +239,12 @@ public class ClusterBenchmarker {
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
                                         if(k % 2 == 0) {
+                                            queueNumber.clear();
                                             queueNumber.add(2);
                                             queueNumber.add(10);
                                         }
                                         else {
+                                            queueNumber.clear();
                                             queueNumber.add(3);
                                             queueNumber.add(11);
                                         }
@@ -229,10 +253,12 @@ public class ClusterBenchmarker {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(2).getIp();
                                         if(k % 2 == 0) {
+                                            queueNumber.clear();
                                             queueNumber.add(4);
                                             queueNumber.add(12);
                                         }
                                         else {
+                                            queueNumber.clear();
                                             queueNumber.add(5);
                                             queueNumber.add(13);
                                         }
@@ -240,10 +266,12 @@ public class ClusterBenchmarker {
                                     } else {
                                         brokerIP = bInfo.get(3).getIp();
                                         if(k % 2 == 0) {
+                                            queueNumber.clear();
                                             queueNumber.add(6);
                                             queueNumber.add(14);
                                         }
                                         else {
+                                            queueNumber.clear();
                                             queueNumber.add(7);
                                             queueNumber.add(15);
                                         }
@@ -260,17 +288,21 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(3);
                                     }
                                 }
@@ -282,17 +314,21 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(1).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(3);
                                     }
                                 }
@@ -304,17 +340,21 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(1).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(2).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(3);
                                     }
                                 }
@@ -326,17 +366,21 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(2).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(3).getIp();
+                                        queueNumber.clear();
                                         queueNumber.add(3);
                                     }
                                 }
@@ -350,17 +394,21 @@ public class ClusterBenchmarker {
                             if (config.getId().equals("A")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(0).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(0);
                                 } else {
                                     brokerIP = bInfo.get(1).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(1);
                                 }
                             } else if (config.getId().equals("B")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(2).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(2);
                                 } else {
                                     brokerIP = bInfo.get(3).getIp();
+                                    queueNumber.clear();
                                     queueNumber.add(3);
                                 }
                             }
