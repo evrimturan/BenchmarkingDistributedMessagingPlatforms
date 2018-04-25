@@ -99,7 +99,8 @@ public class ClusterBenchmarker {
                     case "topic1":
                         if (topicNum == 1) {
                             for (int k = 0; k < pubNum; k++) {
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), 0, bInfo.get(0).getIp(), config.getType(), config.getId());
+                                queueNumber.add(0);
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, bInfo.get(0).getIp(), config.getType(), config.getId());
                                 pList.add(producer);
                             }
                         } else if (topicNum == 4) {
