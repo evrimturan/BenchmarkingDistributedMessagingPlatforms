@@ -130,6 +130,7 @@ public class Producer {
                     activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
 
                     for(int i = 0;i< queueNum.size();i++){
+                        System.out.println("queue-"+queueNum.get(i));
                         producers.put("queue-"+queueNum.get(i),activemqSession.createQueue("queue-"+queueNum.get(i)));
                     }
 
