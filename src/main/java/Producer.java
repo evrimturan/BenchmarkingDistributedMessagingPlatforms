@@ -6,6 +6,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import javax.jms.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -15,7 +18,7 @@ public class Producer {
     private int tNum;
     private String platform;
     private long totalTimeEllapsed;
-    private int queueNum;
+    private List<Integer> queueNum;
     private String folderName;
     private String brokerIp;
     private javax.jms.Connection activemqConnection;
@@ -23,14 +26,14 @@ public class Producer {
     private com.rabbitmq.client.Connection rabbitmqConnection;
     private Channel rabbitmqChannel;
     private String type;
-    private Queue dest;
-    private MessageProducer activemqProducer;
     private BytesMessage bMessage;
     private byte[] rabbitByteArray;
     private byte[] kafkaByteArray;
     private org.apache.kafka.clients.producer.Producer<String, byte[]> kafkaProducer;
     private int counter = 0;
     private String id;
+    private MessageProducer activemqProducer;
+    private HashMap<String,Queue> producers;
 
     public long getTotalTimeEllapsed() {
         return totalTimeEllapsed;
@@ -42,9 +45,11 @@ public class Producer {
         if(platform.equals("activemq")){
             try{
                 while(true){
-                    activemqProducer.send(bMessage);
-                    counter = getCounter() + 1;
-                    System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
+                    for(int i = 0;i<queueNum.size();i++){
+                        activemqProducer.send(producers.get("queue-"+queueNum.get(i)),bMessage);
+                        counter = getCounter() + 1;
+                        System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
+                    }
                 }
 
             }catch(Exception e){
@@ -58,9 +63,11 @@ public class Producer {
         }else if (platform.equals("rabbitmq")){
             try{
                 while(true) {
-                    rabbitmqChannel.basicPublish("", "queue-"+queueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
-                    counter = getCounter() + 1;
-                    System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
+                    for(int i = 0;i<queueNum.size();i++){
+                        rabbitmqChannel.basicPublish("", "queue-"+queueNum.get(i), MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                        counter = getCounter() + 1;
+                        System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
+                    }
                 }
 
             }catch(Exception e){
@@ -74,8 +81,6 @@ public class Producer {
                 }
             }
         }else if(platform.equals("kafka")){
-
-
             try {
                 while(true) {
                     kafkaProducer.send(new ProducerRecord<>("queue-" + queueNum, kafkaByteArray));
@@ -98,7 +103,7 @@ public class Producer {
         //long finish = System.currentTimeMillis();
     }
 
-    Producer(long mSize, long dSize, int tNum, String folderName, String platform, int queueNum, String brokerIp, String type, String id){
+    Producer(long mSize, long dSize, int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp, String type, String id){
         this.mSize = mSize;
         this.dSize=dSize;
         this.tNum = tNum;
@@ -114,15 +119,18 @@ public class Producer {
         switch (platform) {
             case "activemq":
                 try {
+                    producers = new HashMap<>();
                     ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
                     connectionFactory.setProducerWindowSize((int) dSize);
                     this.activemqConnection = connectionFactory.createConnection("admin", "admin");
                     activemqConnection.start();
                     this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-                    dest = activemqSession.createQueue("queue-" + queueNum);
-                    activemqProducer = activemqSession.createProducer(dest);
-                    activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
+                    activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
+
+                    for(int i = 0;i< queueNum.size();i++){
+                        producers.put("queue-"+queueNum.get(i),activemqSession.createQueue("queue-"+queueNum.get(i)));
+                    }
 
                     FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
 
@@ -134,7 +142,6 @@ public class Producer {
                         bMessage.writeBytes(buffer);
                     }
                     in.close();
-                    //Consumer mesaj socket write utf/println
 
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -163,7 +170,6 @@ public class Producer {
                     in.close();
                     rabbitByteArray = outputStream.toByteArray();
                     outputStream.close();
-                    //COnsumer socketine yasz
 
                 } catch (Exception e) {
                     System.exit(1);

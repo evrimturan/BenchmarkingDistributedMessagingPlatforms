@@ -10,6 +10,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import javax.jms.*;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -18,7 +20,7 @@ public class Consumer {
     private String folderName;
     private String platform;
     private long totalTimeElapsed;
-    private int queueNum;
+    private List<Integer> queueNum;
     private String brokerIp;
     private javax.jms.Connection activemqConnection;
     private ActiveMQSession activemqSession;
@@ -28,6 +30,7 @@ public class Consumer {
     private MessageConsumer activemqConsumer;
     private com.rabbitmq.client.Consumer rabbitmqConsumer;
     private org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]> kafkaConsumer;
+    private HashMap<String,Queue> consumers;
 
     public long getTotalTimeElapsed() {
         return totalTimeElapsed;
@@ -38,7 +41,8 @@ public class Consumer {
         int count = 0;
         if (platform.equals("activemq")) {
             try {
-                System.out.println("queue-"+queueNum);
+                System.out.println("queue-"+queueNum.get(i));
+
                 MessageListener listener = message -> {
                     try{
                         if(message instanceof BytesMessage){
@@ -62,7 +66,7 @@ public class Consumer {
                     }
                 };
                 activemqConsumer.setMessageListener(listener);
-                while(count < 20){
+                while(count < 120){
                     count++;
                     System.out.println("Waiting consumer...");
                     Thread.sleep(1000);
@@ -88,8 +92,20 @@ public class Consumer {
 
                 rabbitmqChannel.basicConsume("queue-" + queueNum, true, rabbitmqConsumer);
 
+                while(count < 120){
+                    count++;
+                    System.out.println("Waiting consumer...");
+                    Thread.sleep(1000);
+                }
+
             } catch (Exception e) {
-                e.printStackTrace();
+                try{
+                    rabbitmqChannel.close();
+                    rabbitmqConnection.close();
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+                //e.printStackTrace();
             }
         } else if (platform.equals("kafka")) {
             try {
@@ -120,13 +136,14 @@ public class Consumer {
                 }
                 //kafkaConsumer.unsubscribe();
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                kafkaConsumer.unsubscribe();
             }
         }
         //long finish = System.currentTimeMillis();
     }
 
-    Consumer(int tNum, String folderName, String platform, int queueNum, String brokerIp) {
+    Consumer(int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp) {
         this.tNum = tNum;
         this.folderName = folderName;
         this.platform = platform;
@@ -136,14 +153,25 @@ public class Consumer {
         switch (platform) {
             case "activemq":
                 try {
+                    consumers = new HashMap<>();
                     ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
                     this.activemqConnection = connectionFactory.createConnection("admin", "admin");
                     activemqConnection.start();
                     this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-                    Queue dest = activemqSession.createQueue("queue-" + queueNum);
-                    activemqConsumer = activemqSession.createConsumer(dest);
+                    //Queue dest = activemqSession.createQueue("queue-" + queueNum);
+                    String dest = "";
+                    for(Integer a : queueNum){
+                        dest+=("queue://queue-"+a);
+                        dest+=","
+                    }
+                    dest = dest.substring(0,dest.length()-1);
+                    System.out.println("queue is : "+dest);
+                    activemqConsumer = activemqSession.createConsumer(activemqSession.createQueue(dest));
 
+                    for (Integer aQueueNum : queueNum) {
+                        consumers.put("queue-" + aQueueNum, activemqSession.createQueue("queue-" + aQueueNum));
+                    }
                     System.out.println("ActiveMQ connection established.");
 
                 } catch (Exception e) {
