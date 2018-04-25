@@ -41,7 +41,6 @@ public class Consumer {
         int count = 0;
         if (platform.equals("activemq")) {
             try {
-                System.out.println("queue-"+queueNum.get(i));
 
                 MessageListener listener = message -> {
                     try{
