@@ -1,7 +1,6 @@
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.ActiveMQSession;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import javax.jms.*;
@@ -22,7 +21,7 @@ public class Producer {
     private String folderName;
     private String brokerIp;
     private javax.jms.Connection activemqConnection;
-    private ActiveMQSession activemqSession;
+    private Session activemqSession;
     private com.rabbitmq.client.Connection rabbitmqConnection;
     private Channel rabbitmqChannel;
     private String type;
@@ -127,7 +126,7 @@ public class Producer {
                     connectionFactory.setProducerWindowSize((int) dSize);
                     this.activemqConnection = connectionFactory.createConnection("admin", "admin");
                     activemqConnection.start();
-                    this.activemqSession = (ActiveMQSession) activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                    this.activemqSession = activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
                     activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
 
