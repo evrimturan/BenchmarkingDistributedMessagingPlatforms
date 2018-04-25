@@ -46,9 +46,10 @@ public class Producer {
             try{
                 System.out.println(queueNum.size());
                 while(true){
-                    for(int i = 0;i<queueNum.size();i++){
-                        System.out.println(producers.get("queue-"+queueNum.get(i)));
-                        activemqProducer.send(producers.get("queue-"+queueNum.get(i)+""),bMessage);
+                    for (Integer aQueueNum : queueNum) {
+                        String queue = "queue-" + aQueueNum;
+                        System.out.println(producers.get(queue);
+                        activemqProducer.send(producers.get(queue), bMessage);
                         counter = getCounter() + 1;
                         System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
                     }
@@ -130,10 +131,11 @@ public class Producer {
 
                     activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
 
-                    for(int i = 0;i< queueNum.size();i++){
-                        System.out.println("adding to hashmap : queue-"+queueNum.get(i)+"");
-                        Destination destination = activemqSession.createQueue("queue-"+queueNum.get(i)+"");
-                        producers.put("queue-"+queueNum.get(i),destination);
+                    for (Integer aQueueNum : queueNum) {
+                        String queue = "queue-" + aQueueNum;
+                        System.out.println("adding to hashmap :"+queue);
+                        Destination destination = activemqSession.createQueue(queue);
+                        producers.put(queue, destination);
                     }
 
                     FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
