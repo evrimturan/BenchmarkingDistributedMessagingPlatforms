@@ -69,7 +69,7 @@ public class ClusterBenchmarker {
                 Producer producer;
 
                 String brokerIP = null;
-                int queueNumber = 0;
+                ArrayList<Integer> queueNumber = new ArrayList<>();
 
                 switch (config.getTest()) {
                     case "pubsub":
@@ -77,18 +77,18 @@ public class ClusterBenchmarker {
                             if (config.getId().equals("A")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(0).getIp();
-                                    queueNumber = 0;
+                                    queueNumber.add(0);
                                 } else {
                                     brokerIP = bInfo.get(1).getIp();
-                                    queueNumber = 1;
+                                    queueNumber.add(1);
                                 }
                             } else if (config.getId().equals("B")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(2).getIp();
-                                    queueNumber = 2;
+                                    queueNumber.add(2);
                                 } else {
                                     brokerIP = bInfo.get(3).getIp();
-                                    queueNumber = 3;
+                                    queueNumber.add(3);
                                 }
                             }
                             producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
@@ -107,26 +107,50 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 0;
+                                        queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 1;
+                                        queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 2;
+                                        queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 3;
+                                        queueNumber.add(3);
                                     }
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
                             }
                         } else if (topicNum == 8) {
-                            //TODO: bir thread 2 queueya atıcak
-                            System.out.println("Now empty, will be resolved.");
+
+                            for (int k = 0; k < pubNum; k++) {
+                                if (config.getId().equals("A")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.add(0);
+                                        queueNumber.add(4);
+                                    } else {
+                                        brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.add(1);
+                                        queueNumber.add(5);
+                                    }
+                                } else if (config.getId().equals("B")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.add(2);
+                                        queueNumber.add(6);
+                                    } else {
+                                        brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.add(3);
+                                        queueNumber.add(7);
+                                    }
+                                }
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
+                                pList.add(producer);
+                            }
                         }
                         break;
                     case "topic2":
@@ -135,18 +159,18 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 0;
+                                        queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
-                                        queueNumber = 1;
+                                        queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(2).getIp();
-                                        queueNumber = 2;
+                                        queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(3).getIp();
-                                        queueNumber = 3;
+                                        queueNumber.add(3);
                                     }
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
@@ -157,26 +181,76 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = k;
+                                        queueNumber.add(k);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
-                                        queueNumber = k;
+                                        queueNumber.add(k);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(2).getIp();
-                                        queueNumber = k + 4;
+                                        queueNumber.add(k + 4);
                                     } else {
                                         brokerIP = bInfo.get(3).getIp();
-                                        queueNumber = k + 4;
+                                        queueNumber.add(k + 4);
                                     }
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
                             }
                         } else if (topicNum == 16) {
-                            System.out.println("Now empty, will be resolved.");
-                            //TODO: bir thread 2 queueya atıcak
+
+                            for (int k = 0; k < pubNum; k++) {
+                                if (config.getId().equals("A")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(0).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(0);
+                                            queueNumber.add(8);
+                                        }
+                                        else {
+                                            queueNumber.add(1);
+                                            queueNumber.add(9);
+                                        }
+
+                                    } else {
+                                        brokerIP = bInfo.get(1).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(2);
+                                            queueNumber.add(10);
+                                        }
+                                        else {
+                                            queueNumber.add(3);
+                                            queueNumber.add(11);
+                                        }
+                                    }
+                                } else if (config.getId().equals("B")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(2).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(4);
+                                            queueNumber.add(12);
+                                        }
+                                        else {
+                                            queueNumber.add(5);
+                                            queueNumber.add(13);
+                                        }
+
+                                    } else {
+                                        brokerIP = bInfo.get(3).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(6);
+                                            queueNumber.add(14);
+                                        }
+                                        else {
+                                            queueNumber.add(7);
+                                            queueNumber.add(15);
+                                        }
+                                    }
+                                }
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
+                                pList.add(producer);
+                            }
                         }
                         break;
                     case "broker":
@@ -185,18 +259,18 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 0;
+                                        queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 1;
+                                        queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 2;
+                                        queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 3;
+                                        queueNumber.add(3);
                                     }
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
@@ -207,18 +281,18 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 0;
+                                        queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 1;
+                                        queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(1).getIp();
-                                        queueNumber = 2;
+                                        queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
-                                        queueNumber = 3;
+                                        queueNumber.add(3);
                                     }
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
@@ -229,18 +303,18 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 0;
+                                        queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 1;
+                                        queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(1).getIp();
-                                        queueNumber = 2;
+                                        queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(2).getIp();
-                                        queueNumber = 3;
+                                        queueNumber.add(3);
                                     }
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
@@ -251,18 +325,18 @@ public class ClusterBenchmarker {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(0).getIp();
-                                        queueNumber = 0;
+                                        queueNumber.add(0);
                                     } else {
                                         brokerIP = bInfo.get(1).getIp();
-                                        queueNumber = 1;
+                                        queueNumber.add(1);
                                     }
                                 } else if (config.getId().equals("B")) {
                                     if (k < pubNum / 2) {
                                         brokerIP = bInfo.get(2).getIp();
-                                        queueNumber = 2;
+                                        queueNumber.add(2);
                                     } else {
                                         brokerIP = bInfo.get(3).getIp();
-                                        queueNumber = 3;
+                                        queueNumber.add(3);
                                     }
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
@@ -275,18 +349,18 @@ public class ClusterBenchmarker {
                             if (config.getId().equals("A")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(0).getIp();
-                                    queueNumber = 0;
+                                    queueNumber.add(0);
                                 } else {
                                     brokerIP = bInfo.get(1).getIp();
-                                    queueNumber = 1;
+                                    queueNumber.add(1);
                                 }
                             } else if (config.getId().equals("B")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(2).getIp();
-                                    queueNumber = 2;
+                                    queueNumber.add(2);
                                 } else {
                                     brokerIP = bInfo.get(3).getIp();
-                                    queueNumber = 3;
+                                    queueNumber.add(3);
                                 }
                             }
                             producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
@@ -372,16 +446,44 @@ public class ClusterBenchmarker {
             Synchronizer synchronizer = new Synchronizer(config.getId(),"consumer");
             for(int j = 0;j<3;j++){
                 //TODO: consumer'lar nasil handle edilecek onemli onu konusmamiz lazim
+
+                ArrayList<Integer> queueList= new ArrayList<>();
+                for(int q = 0; q<topicNum; q++) {
+                    queueList.add(q);
+                }
+                Collections.shuffle(queueList);
+
+                ArrayList<Integer> brokerList = new ArrayList<>();
+                for(int b = 0; b<brokerNum; b++) {
+                    brokerList.add(b);
+                }
+                Collections.shuffle(brokerList);
+
+                ArrayList<Integer> queue = new ArrayList<>();
+
                 for(int i=0; i<subNum; i++){
                     /*
                     * INFORMATIONAL: MKDIR removed from consumer
                     * because it is redundant, i will check if it creates problems(no problems)
                     */
-                    Random r = new Random();
-                    int bId = r.nextInt(brokerNum);
-                    String bIp = bInfo.get(bId).getIp();
 
-                    Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),i, bIp);
+                    for(int t = 0; t<topicNum/subNum; t++) {
+                        queue.add(queueList.remove(0));
+                    }
+
+
+                    if(brokerList.size() == 0) {
+                        for(int b = 0; b<brokerNum; b++) {
+                            brokerList.add(b);
+                        }
+                        Collections.shuffle(brokerList);
+                    }
+
+                    String bIp = bInfo.get(brokerList.remove(0)).getIp();
+
+
+                    Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),queue, bIp);
+
                     cList.add(c);
                 }
 
