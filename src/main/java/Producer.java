@@ -33,7 +33,7 @@ public class Producer {
     private int counter = 0;
     private String id;
     private MessageProducer activemqProducer;
-    private HashMap<String,Queue> producers;
+    private HashMap<String,Destination> producers;
 
     public long getTotalTimeEllapsed() {
         return totalTimeEllapsed;
@@ -47,7 +47,7 @@ public class Producer {
                 System.out.println(queueNum.size());
                 while(true){
                     for(int i = 0;i<queueNum.size();i++){
-                        System.out.println(producers.get("queue-"+queueNum.get(i)).getQueueName());
+                        System.out.println(producers.get("queue-"+queueNum.get(i)));
                         activemqProducer.send(producers.get("queue-"+queueNum.get(i)),bMessage);
                         counter = getCounter() + 1;
                         System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
