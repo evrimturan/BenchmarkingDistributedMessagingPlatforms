@@ -44,6 +44,10 @@ public class Producer {
         //long start = System.currentTimeMillis();
         if(platform.equals("activemq")){
             try{
+                System.out.println(queueNum.size());
+                for(Integer a : queueNum){
+                    activemqSession.createQueue("queue-"+a);
+                }
                 while(true){
                     for(int i = 0;i<queueNum.size();i++){
                         activemqProducer.send(producers.get("queue-"+queueNum.get(i)),bMessage);
