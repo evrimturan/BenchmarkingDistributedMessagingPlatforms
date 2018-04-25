@@ -48,7 +48,7 @@ public class Producer {
                 while(true){
                     for (Integer aQueueNum : queueNum) {
                         String queue = "queue-" + aQueueNum;
-                        System.out.println(producers.get(queue);
+                        System.out.println(producers.get(queue));
                         activemqProducer.send(producers.get(queue), bMessage);
                         counter = getCounter() + 1;
                         System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
