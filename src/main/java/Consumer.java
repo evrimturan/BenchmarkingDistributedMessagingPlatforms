@@ -162,7 +162,7 @@ public class Consumer {
                     String dest = "";
                     for(Integer a : queueNum){
                         dest+=("queue://queue-"+a);
-                        dest+=","
+                        dest+=",";
                     }
                     dest = dest.substring(0,dest.length()-1);
                     System.out.println("queue is : "+dest);
