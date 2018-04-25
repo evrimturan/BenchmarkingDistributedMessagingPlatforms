@@ -97,6 +97,7 @@ public class ClusterBenchmarker {
                             }
                             producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                             pList.add(producer);
+                            //queueNumber.clear();
                         }
 
                         break;
@@ -106,6 +107,7 @@ public class ClusterBenchmarker {
                                 queueNumber.add(0);
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, bInfo.get(0).getIp(), config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         } else if (topicNum == 4) {
                             for (int k = 0; k < pubNum; k++) {
@@ -132,6 +134,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         } else if (topicNum == 8) {
 
@@ -163,6 +166,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         }
                         break;
@@ -192,6 +196,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         } else if (topicNum == 8) {
                             for (int k = 0; k < pubNum; k++) {
@@ -218,6 +223,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         } else if (topicNum == 16) {
 
@@ -279,6 +285,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         }
                         break;
@@ -308,6 +315,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         } else if (brokerNum == 2) {
                             for (int k = 0; k < pubNum; k++) {
@@ -334,6 +342,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         } else if (brokerNum == 3) {
                             for (int k = 0; k < pubNum; k++) {
@@ -360,6 +369,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         } else if (brokerNum == 4) {
                             for (int k = 0; k < pubNum; k++) {
@@ -386,6 +396,7 @@ public class ClusterBenchmarker {
                                 }
                                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                                 pList.add(producer);
+                                //queueNumber.clear();
                             }
                         }
                         break;
@@ -430,7 +441,7 @@ public class ClusterBenchmarker {
                     };
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(call),10,TimeUnit.SECONDS);
+                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
                         } catch (InterruptedException e) {
                             //e.printStackTrace(); This is redundant
                         }
@@ -549,7 +560,7 @@ public class ClusterBenchmarker {
                     };
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(call),10,TimeUnit.SECONDS);
+                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
