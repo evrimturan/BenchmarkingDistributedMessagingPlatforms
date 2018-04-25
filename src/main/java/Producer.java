@@ -131,8 +131,9 @@ public class Producer {
                     activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
 
                     for(int i = 0;i< queueNum.size();i++){
-                        System.out.println("queue-"+queueNum.get(i));
-                        producers.put("queue-"+queueNum.get(i),activemqSession.createQueue("queue-"+queueNum.get(i)));
+                        System.out.println("adding to hashmap : queue-"+queueNum.get(i)+"");
+                        Destination destination = activemqSession.createQueue("queue-"+queueNum.get(i)+"");
+                        producers.put("queue-"+queueNum.get(i),destination);
                     }
 
                     FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
