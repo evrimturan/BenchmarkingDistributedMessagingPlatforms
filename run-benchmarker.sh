@@ -1,5 +1,9 @@
 #!/bin/bash
 
+git pull
+
+clear
+
 mvn clean compile assembly:single
 
 cp target/SeniorDesign-1.0-jar-with-dependencies.jar $( pwd )
