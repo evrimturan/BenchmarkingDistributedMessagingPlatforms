@@ -77,12 +77,12 @@ public class ClusterBenchmarker {
                             if (config.getId().equals("A")) {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(0).getIp();
-                                    queueNumber.clear();
-                                    queueNumber.add(0);
+                                    //queueNumber.clear();
+                                    queueNumber.add(new Integer(0));
                                 } else {
                                     brokerIP = bInfo.get(1).getIp();
-                                    queueNumber.clear();
-                                    queueNumber.add(1);
+                                    //queueNumber.clear();
+                                    queueNumber.add(new Integer(1));
                                 }
                             } else if (config.getId().equals("B")) {
                                 if (k < pubNum / 2) {
@@ -97,7 +97,7 @@ public class ClusterBenchmarker {
                             }
                             producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId());
                             pList.add(producer);
-                            //queueNumber.clear();
+                            queueNumber.clear();
                         }
 
                         break;

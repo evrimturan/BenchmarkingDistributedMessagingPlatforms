@@ -110,11 +110,12 @@ public class Producer {
         this.dSize=dSize;
         this.tNum = tNum;
         this.platform = platform;
-        this.queueNum = queueNum;
+        this.queueNum = new ArrayList<>();
         this.folderName = folderName;
         this.brokerIp = brokerIp;
         this.type = type;
         this.id = id;
+        this.queueNum.addAll(queueNum);
 // normal socket aç
 // bağlan connect consumer
 
