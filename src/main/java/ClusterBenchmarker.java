@@ -464,15 +464,26 @@ public class ClusterBenchmarker {
                 //TODO: consumer'lar nasil handle edilecek onemli onu konusmamiz lazim
 
                 ArrayList<Integer> queueList= new ArrayList<>();
-                for(int q = 0; q<topicNum; q++) {
-                    queueList.add(q);
+                ArrayList<Integer> brokerList = new ArrayList<>();
+
+                if(config.getId().equals("A")) {
+                    for(int q = 0; q<topicNum/2; q++) {
+                        queueList.add(q);
+                    }
+                    for(int b = brokerNum/2; b<brokerNum; b++) {
+                        brokerList.add(b);
+                    }
+                }
+                else if(config.getId().equals("B")) {
+                    for(int q = topicNum/2; q<topicNum; q++) {
+                        queueList.add(q);
+                    }
+                    for(int b = 0; b<brokerNum/2; b++) {
+                        brokerList.add(b);
+                    }
                 }
                 Collections.shuffle(queueList);
 
-                ArrayList<Integer> brokerList = new ArrayList<>();
-                for(int b = 0; b<brokerNum; b++) {
-                    brokerList.add(b);
-                }
                 Collections.shuffle(brokerList);
 
                 ArrayList<Integer> queue = new ArrayList<>();
@@ -483,13 +494,20 @@ public class ClusterBenchmarker {
                     * because it is redundant, i will check if it creates problems(no problems)
                     */
 
-                    for(int t = 0; t<topicNum/subNum; t++) {
+                    for(int t = 0; t<((topicNum/2)/subNum); t++) {
                         queue.add(queueList.remove(0));
                     }
 
                     if(brokerList.size() == 0) {
-                        for(int b = 0; b<brokerNum; b++) {
-                            brokerList.add(b);
+                        if(config.getId().equals("A")) {
+                            for(int b = brokerNum/2; b<brokerNum; b++) {
+                                brokerList.add(b);
+                            }
+                        }
+                        else if(config.getId().equals("B")) {
+                            for(int b = 0; b<brokerNum/2; b++) {
+                                brokerList.add(b);
+                            }
                         }
                         Collections.shuffle(brokerList);
                     }
