@@ -543,6 +543,9 @@ public class ClusterBenchmarker {
 
                     Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),queue, bIp);
 
+                    for(Integer a1: queue){
+                        System.out.println("will consume from : " + a1);
+                    }
                     cList.add(c);
                     queue.clear();
                 }
