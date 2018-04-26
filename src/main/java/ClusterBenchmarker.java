@@ -491,7 +491,7 @@ public class ClusterBenchmarker {
                     * because it is redundant, i will check if it creates problems(no problems)
                     */
 
-                    for(int t = 0; t<(topicNum/subNum); t++) {
+                    for(int t = 0; t<((topicNum/2)/subNum); t++) {
                         queue.add(queueList.remove(0));
                     }
 
