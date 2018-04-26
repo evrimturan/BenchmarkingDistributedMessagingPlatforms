@@ -78,11 +78,11 @@ public class ClusterBenchmarker {
                                 if (k < pubNum / 2) {
                                     brokerIP = bInfo.get(0).getIp();
                                     //queueNumber.clear();
-                                    queueNumber.add(new Integer(0));
+                                    queueNumber.add(0);
                                 } else {
                                     brokerIP = bInfo.get(1).getIp();
                                     //queueNumber.clear();
-                                    queueNumber.add(new Integer(1));
+                                    queueNumber.add(1);
                                 }
                             } else if (config.getId().equals("B")) {
                                 if (k < pubNum / 2) {
@@ -531,7 +531,6 @@ public class ClusterBenchmarker {
                         queue.add(queueList.remove(0));
                     }
 
-
                     if(brokerList.size() == 0) {
                         for(int b = 0; b<brokerNum; b++) {
                             brokerList.add(b);
@@ -545,6 +544,7 @@ public class ClusterBenchmarker {
                     Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),queue, bIp);
 
                     cList.add(c);
+                    queue.clear();
                 }
 
                 ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());

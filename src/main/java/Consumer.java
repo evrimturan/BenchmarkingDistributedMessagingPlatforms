@@ -8,11 +8,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 
 import javax.jms.*;
+import javax.jms.Queue;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Consumer {
@@ -146,8 +144,9 @@ public class Consumer {
         this.tNum = tNum;
         this.folderName = folderName;
         this.platform = platform;
-        this.queueNum = queueNum;
+        this.queueNum = new ArrayList<>();
         this.brokerIp = brokerIp;
+        this.queueNum.addAll(queueNum);
 
         switch (platform) {
             case "activemq":
