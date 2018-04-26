@@ -160,7 +160,7 @@ public class Consumer {
                     //Queue dest = activemqSession.createQueue("queue-" + queueNum);
                     String dest = "";
                     for(Integer a : queueNum){
-                        dest+=("queue://queue-"+a);
+                        dest+=("queue-"+a);
                         dest+=",";
                     }
                     dest = dest.substring(0,dest.length()-1);
