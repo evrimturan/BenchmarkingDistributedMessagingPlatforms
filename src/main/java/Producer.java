@@ -50,7 +50,7 @@ public class Producer {
                         //System.out.println(producers.get(queue));
                         activemqProducer.send(bMessage);
                         counter = getCounter() + 1;
-                        System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp);
+                        System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0));
                     }
                 }
 
