@@ -23,13 +23,14 @@ sudo apt-get install openjdk-8-jdk
 tar xzvf kafka_2.11-1.0.1.tgz
 
 #hosts file
-echo "159.89.102.49 ubuntu-s-1vcpu-1gb-fra1-01" >> /etc/hosts
-echo "159.65.120.184 ubuntu-s-1vcpu-1gb-fra1-02" >> /etc/hosts
-echo "207.154.192.177 ubuntu-s-1vcpu-1gb-fra1-03" >> /etc/hosts
-echo "138.197.188.213 ubuntu-s-1vcpu-1gb-fra1-04" >> /etc/hosts
-echo "159.65.115.195 ubuntu-s-1vcpu-1gb-fra1-05" >> /etc/hosts
-echo "167.99.134.186 ubuntu-s-1vcpu-1gb-fra1-06" >> /etc/hosts
-echo "207.154.218.150 ubuntu-s-1vcpu-1gb-fra1-07" >> /etc/hosts
-echo "159.89.110.187 ubuntu-s-1vcpu-1gb-fra1-08" >> /etc/hosts
+echo "35.196.67.34 ubuntu-s-1vcpu-1gb-fra1-01" >> /etc/hosts
+echo "35.229.33.212 ubuntu-s-1vcpu-1gb-fra1-02" >> /etc/hosts
+echo "35.196.143.132 ubuntu-s-1vcpu-1gb-fra1-03" >> /etc/hosts
+echo "35.190.161.41 ubuntu-s-1vcpu-1gb-fra1-04" >> /etc/hosts
+#asagidakiler degisecek
+#echo "159.65.115.195 ubuntu-s-1vcpu-1gb-fra1-05" >> /etc/hosts
+#echo "167.99.134.186 ubuntu-s-1vcpu-1gb-fra1-06" >> /etc/hosts
+#echo "207.154.218.150 ubuntu-s-1vcpu-1gb-fra1-07" >> /etc/hosts
+#echo "159.89.110.187 ubuntu-s-1vcpu-1gb-fra1-08" >> /etc/hosts
 echo "DONE"
 
