@@ -133,6 +133,7 @@ public class Producer {
                     System.out.println("adding to hashmap :"+queue);
                     Destination destination = activemqSession.createQueue(queue);
                     activemqProducer = activemqSession.createProducer(destination);
+                    activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
                     //activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
 
