@@ -53,6 +53,7 @@ public class Utilizer implements Runnable{
                     System.out.println("Trying to connect to "+machine_9 +" port : "+ port);
                     socket = new Socket(machine_9,port);
                     print = new PrintWriter(socket.getOutputStream());
+                    reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 }
             }
         }catch(Exception e){
