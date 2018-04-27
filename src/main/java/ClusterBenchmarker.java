@@ -129,7 +129,7 @@ public class ClusterBenchmarker {
                                 queueNumber.clear();
                             }
                         } else if (topicNum == 8) {
-
+                            //TODO:2 queue 1 producer
                             for (int k = 0; k < pubNum; k++) {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {
@@ -206,7 +206,7 @@ public class ClusterBenchmarker {
                                 queueNumber.clear();
                             }
                         } else if (topicNum == 16) {
-
+                            //TODO:2 queue 1 producer
                             for (int k = 0; k < pubNum; k++) {
                                 if (config.getId().equals("A")) {
                                     if (k < pubNum / 2) {

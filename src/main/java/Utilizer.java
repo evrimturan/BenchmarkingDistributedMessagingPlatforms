@@ -111,6 +111,7 @@ public class Utilizer implements Runnable{
                     }
 
                     print.println("CPU Util: " + cpuUtil + ", MEM Util: "+ memUtil);
+                    print.flush();
                     totalCPU+=cpuUtil;
                     totalMem+=memUtil;
                     System.out.println("CPU %" + cpuUtil + " MEM %" + memUtil);
