@@ -129,6 +129,7 @@ public class Utilizer implements Runnable{
             print.println("Data atmayi bitirdim.");
             print.flush();
             System.out.println("CPU thread stopped.");
+            socket.close();
             //TODO: HTTP request to website and live statistics most probably JSON
         }catch(Exception e)
         {
