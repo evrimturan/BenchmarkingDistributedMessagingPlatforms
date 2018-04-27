@@ -44,7 +44,7 @@ public class Consumer {
                     try{
                         if(message instanceof BytesMessage){
                             //FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
-                            System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp + " queue is : "+queueNum.get(0));
+                            //System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp + " queue is : "+queueNum.get(0)); removed for now
                                 /*long start = System.currentTimeMillis();
 
                                 long end = System.currentTimeMillis();

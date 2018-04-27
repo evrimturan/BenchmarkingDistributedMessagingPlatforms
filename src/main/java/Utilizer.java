@@ -60,7 +60,7 @@ public class Utilizer implements Runnable{
             System.out.println(e.toString());
             System.out.println("Socket could not open.");
         }
-        System.out.println("CPUMEM thread running");
+        System.out.println("CPUMEM thread running of id :" + id);
         try{
             int count = 0;
             double totalCPU = 0;
