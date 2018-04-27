@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git pull
+git pull >> /dev/null 2>&1
 
 clear
 

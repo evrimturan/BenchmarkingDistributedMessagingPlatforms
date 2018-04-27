@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo-apt-get update
+sudo apt-get update
 sudo apt-get install unzip
 #activemq
 wget http://ftp.itu.edu.tr/Mirror/Apache//activemq/5.15.3/apache-activemq-5.15.3-bin.zip
@@ -28,9 +28,9 @@ echo "35.229.33.212 ubuntu-s-1vcpu-1gb-fra1-02" >> /etc/hosts
 echo "35.196.143.132 ubuntu-s-1vcpu-1gb-fra1-03" >> /etc/hosts
 echo "35.190.161.41 ubuntu-s-1vcpu-1gb-fra1-04" >> /etc/hosts
 #asagidakiler degisecek
-#echo "159.65.115.195 ubuntu-s-1vcpu-1gb-fra1-05" >> /etc/hosts
-#echo "167.99.134.186 ubuntu-s-1vcpu-1gb-fra1-06" >> /etc/hosts
-#echo "207.154.218.150 ubuntu-s-1vcpu-1gb-fra1-07" >> /etc/hosts
-#echo "159.89.110.187 ubuntu-s-1vcpu-1gb-fra1-08" >> /etc/hosts
+echo "35.231.45.182 ubuntu-s-1vcpu-1gb-fra1-05" >> /etc/hosts
+echo "35.196.203.141  ubuntu-s-1vcpu-1gb-fra1-06" >> /etc/hosts
+echo "35.231.86.203 ubuntu-s-1vcpu-1gb-fra1-07" >> /etc/hosts
+echo "35.231.31.72  ubuntu-s-1vcpu-1gb-fra1-08" >> /etc/hosts
 echo "DONE"
 

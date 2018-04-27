@@ -66,9 +66,11 @@ public class Utilizer implements Runnable{
             double totalMem = 0;
 
             print.println("Data atmaya basliyorum.");
+            print.flush();
 
             if(reader.readLine().equals("OK")){
                 print.println("CPU Util: " + 0 + ", MEM Util: "+ 0);
+                print.flush();
             }else{
                 System.out.println("Machine 9 did not say OK.");
             }
@@ -118,10 +120,13 @@ public class Utilizer implements Runnable{
                 if(stop)break;
             }
             print.println("Total CPU Util: "+ totalCPU + ", Total MEM Util: "+ totalMem);
+            print.flush();
             avgCPU = totalCPU / count;
             avgMem = totalMem / count;
             print.println("Average CPU Util: "+ avgCPU+ ", Average MEM Util: "+ avgMem);
+            print.flush();
             print.println("Data atmayi bitirdim.");
+            print.flush();
             System.out.println("CPU thread stopped.");
             //TODO: HTTP request to website and live statistics most probably JSON
         }catch(Exception e)
