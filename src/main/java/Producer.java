@@ -48,7 +48,7 @@ public class Producer {
                     for (Integer aQueueNum : queueNum) {
                         //String queue = "queue-" + aQueueNum;
                         //System.out.println(producers.get(queue));
-                        activemqProducer.send(bMessage);
+                        activemqProducer.send(activemqSession.createQueue("queue-"+aQueueNum),bMessage);
                         counter = getCounter() + 1;
                         //System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0)); removed for now
                     }
@@ -129,10 +129,7 @@ public class Producer {
                     activemqConnection.start();
                     this.activemqSession = activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-                    String queue = "queue-" + queueNum.get(0);
-                    System.out.println("adding to hashmap :"+queue);
-                    Destination destination = activemqSession.createQueue(queue);
-                    activemqProducer = activemqSession.createProducer(destination);
+                    activemqProducer = activemqSession.createProducer(null);
                     activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
                     //activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
