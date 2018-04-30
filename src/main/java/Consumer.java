@@ -64,7 +64,7 @@ public class Consumer {
                     }
                 };
                 activemqConsumer.setMessageListener(listener);
-                while(count < 20){
+                while(count < 120){
                     count++;
                     System.out.println("Waiting consumer...");
                     Thread.sleep(1000);
@@ -92,7 +92,7 @@ public class Consumer {
                     rabbitmqChannel.basicConsume("queue-" + a, true, rabbitmqConsumer);
                 }
 
-                while(count < 20){
+                while(count < 120){
                     count++;
                     System.out.println("Waiting consumer...");
                     Thread.sleep(1000);
@@ -141,6 +141,31 @@ public class Consumer {
             }
         }
         //long finish = System.currentTimeMillis();
+    }
+
+    public void shutdown(){
+        switch (platform) {
+            case "activemq":
+                try {
+                    activemqConsumer.close();
+                    activemqSession.close();
+                    activemqConnection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "rabbitmq":
+                try {
+                    rabbitmqChannel.close();
+                    rabbitmqConnection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "kafka":
+                kafkaConsumer.close();
+                break;
+        }
     }
 
     Consumer(int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp) {

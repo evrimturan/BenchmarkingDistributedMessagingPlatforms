@@ -105,23 +105,27 @@ public class Producer {
     }
 
     public void shutdown(){
-        if(platform.equals("activemq")){
-            try{
-                activemqProducer.close();
-                activemqSession.close();
-                activemqConnection.close();
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-        }else if(platform.equals("rabbitmq")){
-            try{
-                rabbitmqChannel.close();
-                rabbitmqConnection.close();
-            }catch(Exception ex){
-                ex.printStackTrace();
-            }
-        }else if(platform.equals("kafka")){
-            kafkaProducer.close();
+        switch (platform) {
+            case "activemq":
+                try {
+                    activemqProducer.close();
+                    activemqSession.close();
+                    activemqConnection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "rabbitmq":
+                try {
+                    rabbitmqChannel.close();
+                    rabbitmqConnection.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                break;
+            case "kafka":
+                kafkaProducer.close();
+                break;
         }
     }
 
