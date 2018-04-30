@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 
 @SuppressWarnings("InfiniteLoopStatement")
-public class Producer implements Callable {
+public class Producer {
     private long mSize;
     private long dSize;
     private int tNum;
@@ -37,8 +37,7 @@ public class Producer implements Callable {
         return totalTimeEllapsed;
     }
 
-    @Override
-    public Void call(){
+    public void run(){
         System.out.println(Thread.currentThread().getId()+" says hello Producer :)");
         //long start = System.currentTimeMillis();
         if(platform.equals("activemq")){
@@ -103,7 +102,6 @@ public class Producer implements Callable {
             }
 
         }
-        return null;
         //long finish = System.currentTimeMillis();
     }
 

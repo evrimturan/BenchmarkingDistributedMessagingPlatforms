@@ -15,8 +15,8 @@ public class ClusterBenchmarker {
         long dataSize = config.getDataSize();
         int topicNum = config.getTopicNum();
         List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
-        List<Callable<Producer>> pList = new ArrayList<>();
-        List<Callable<Consumer>> cList = new ArrayList<>();
+        List<Producer> pList = new ArrayList<>();
+        List<Consumer> cList = new ArrayList<>();
 
         double finalCPU = 0;
         double finalMem = 0;
@@ -386,15 +386,15 @@ public class ClusterBenchmarker {
 
                 synchronizer.sync();
 
-                for(Callable<Producer> p : pList) {
-                    /*Callable<Void> call = () -> {
+                for(Producer p : pList) {
+                    Callable<Void> call = () -> {
                         System.out.println("Running producer AGAIN");
                         p.run();
                         return null;
-                    };*/
+                    };
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(p),20,TimeUnit.SECONDS);
+                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
                         } catch (InterruptedException e) {
                             //e.printStackTrace(); This is redundant
                         }
@@ -539,15 +539,15 @@ public class ClusterBenchmarker {
 
                 synchronizer.sync();
 
-                for(Callable<Consumer> c : cList) {
-                    /*Callable<Void> call = () -> {
+                for(Consumer c : cList) {
+                    Callable<Void> call = () -> {
                         System.out.println("Running Consumer AGAIN");
                         c.run();
                         return null;
-                    };*/
+                    };
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(c),30,TimeUnit.SECONDS);
+                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

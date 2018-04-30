@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 @SuppressWarnings("InfiniteLoopStatement")
-public class Consumer implements Callable {
+public class Consumer {
     private int tNum;
     private String folderName;
     private String platform;
@@ -35,8 +35,7 @@ public class Consumer implements Callable {
         return totalTimeElapsed;
     }
 
-    @Override
-    public Void call() {
+    public void run() {
         System.out.println(Thread.currentThread().getId() + " says hello consumer :)");
         int count = 0;
         if (platform.equals("activemq")) {
@@ -142,7 +141,6 @@ public class Consumer implements Callable {
             }
         }
         //long finish = System.currentTimeMillis();
-        return null;
     }
 
     Consumer(int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp) {
