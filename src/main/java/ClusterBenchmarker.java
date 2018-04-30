@@ -505,8 +505,13 @@ public class ClusterBenchmarker {
                             }
                         }
                         else if(config.getId().equals("B")) {
-                            for(int b = 0; b<brokerNum/2; b++) {
-                                brokerList.add(b);
+                            if(brokerNum != 1) {
+                                for(int b = 0; b<brokerNum/2; b++) {
+                                    brokerList.add(b);
+                                }
+                            }
+                            else {
+                                brokerList.add(0);
                             }
                         }
                         Collections.shuffle(brokerList);
