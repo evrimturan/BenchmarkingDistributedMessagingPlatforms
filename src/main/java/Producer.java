@@ -59,7 +59,6 @@ public class Producer {
                     activemqSession.close();
                     activemqConnection.close();
                 }catch(Exception ex){ /*unimportant*/ }
-
             }
         }else if (platform.equals("rabbitmq")){
             try{
