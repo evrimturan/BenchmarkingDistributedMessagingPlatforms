@@ -92,7 +92,7 @@ public class Consumer {
                     rabbitmqChannel.basicConsume("queue-" + a, true, rabbitmqConsumer);
                 }
 
-                while(count < 30){
+                while(count < 120){
                     count++;
                     System.out.println("Waiting consumer...");
                     Thread.sleep(1000);
