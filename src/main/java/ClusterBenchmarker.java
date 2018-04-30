@@ -387,14 +387,14 @@ public class ClusterBenchmarker {
                 synchronizer.sync();
 
                 for(Producer p : pList) {
-                    Callable<Void> call = () -> {
+                    /*Callable<Void> call = () -> {
                         System.out.println("Running producer AGAIN");
                         p.run();
                         return null;
-                    };
+                    };*/
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
+                            ex.invokeAll(Collections.singletonList(p),2,TimeUnit.MINUTES);
                         } catch (InterruptedException e) {
                             //e.printStackTrace(); This is redundant
                         }
@@ -540,14 +540,14 @@ public class ClusterBenchmarker {
                 synchronizer.sync();
 
                 for(Consumer c : cList) {
-                    Callable<Void> call = () -> {
+                    /*Callable<Void> call = () -> {
                         System.out.println("Running Consumer AGAIN");
                         c.run();
                         return null;
-                    };
+                    };*/
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
+                            ex.invokeAll(Collections.singletonList(c),2,TimeUnit.MINUTES);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

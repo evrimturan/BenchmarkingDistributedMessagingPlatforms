@@ -11,9 +11,10 @@ import javax.jms.*;
 import javax.jms.Queue;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 @SuppressWarnings("InfiniteLoopStatement")
-public class Consumer {
+public class Consumer implements Callable {
     private int tNum;
     private String folderName;
     private String platform;
@@ -34,7 +35,8 @@ public class Consumer {
         return totalTimeElapsed;
     }
 
-    public void run() {
+    @Override
+    public Void call() {
         System.out.println(Thread.currentThread().getId() + " says hello consumer :)");
         int count = 0;
         if (platform.equals("activemq")) {
@@ -138,6 +140,7 @@ public class Consumer {
             }
         }
         //long finish = System.currentTimeMillis();
+        return null;
     }
 
     Consumer(int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp) {

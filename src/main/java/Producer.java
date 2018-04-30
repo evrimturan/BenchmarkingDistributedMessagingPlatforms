@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 @SuppressWarnings("InfiniteLoopStatement")
-public class Producer {
+public class Producer implements Callable {
     private long mSize;
     private long dSize;
     private int tNum;
@@ -38,7 +39,8 @@ public class Producer {
         return totalTimeEllapsed;
     }
 
-    public void run(){
+    @Override
+    public Void call(){
         System.out.println(Thread.currentThread().getId()+" says hello Producer :)");
         //long start = System.currentTimeMillis();
         if(platform.equals("activemq")){
@@ -101,7 +103,7 @@ public class Producer {
             }
 
         }
-
+        return null;
         //long finish = System.currentTimeMillis();
     }
 
