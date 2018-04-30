@@ -500,8 +500,13 @@ public class ClusterBenchmarker {
 
                     if(brokerList.size() == 0) {
                         if(config.getId().equals("A")) {
-                            for(int b = brokerNum/2; b<brokerNum; b++) {
-                                brokerList.add(b);
+                            if(brokerNum != 1) {
+                                for(int b = brokerNum/2; b<brokerNum; b++) {
+                                    brokerList.add(b);
+                                }
+                            }
+                            else {
+                                brokerList.add(0);
                             }
                         }
                         else if(config.getId().equals("B")) {
