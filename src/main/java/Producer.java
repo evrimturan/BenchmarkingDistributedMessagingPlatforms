@@ -104,6 +104,27 @@ public class Producer {
         //long finish = System.currentTimeMillis();
     }
 
+    public void shutdown(){
+        if(platform.equals("activemq")){
+            try{
+                activemqProducer.close();
+                activemqSession.close();
+                activemqConnection.close();
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }else if(platform.equals("rabbitmq")){
+            try{
+                rabbitmqChannel.close();
+                rabbitmqConnection.close();
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }else if(platform.equals("kafka")){
+            kafkaProducer.close();
+        }
+    }
+
     Producer(long mSize, long dSize, int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp, String type, String id){
         this.mSize = mSize;
         this.dSize=dSize;
