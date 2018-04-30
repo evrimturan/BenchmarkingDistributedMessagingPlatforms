@@ -6,7 +6,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import javax.jms.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -74,10 +73,10 @@ public class Producer implements Callable {
                 }
 
             }catch(Exception e){
-                e.printStackTrace();
+                //e.printStackTrace();
                 try {
-                    rabbitmqChannel.close();
                     rabbitmqConnection.close();
+                    rabbitmqChannel.close();
                 }
                 catch (Exception ex) {
                     e.printStackTrace();
