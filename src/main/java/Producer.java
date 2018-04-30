@@ -33,7 +33,6 @@ public class Producer implements Callable {
     private int counter = 0;
     private String id;
     private MessageProducer activemqProducer;
-    private HashMap<String,Destination> producers;
 
     public long getTotalTimeEllapsed() {
         return totalTimeEllapsed;
@@ -57,7 +56,7 @@ public class Producer implements Callable {
                 }
 
             }catch(Exception e){
-                e.printStackTrace();
+                //e.printStackTrace();
                 try{
                     activemqSession.close();
                     activemqConnection.close();
@@ -67,10 +66,10 @@ public class Producer implements Callable {
         }else if (platform.equals("rabbitmq")){
             try{
                 while(true) {
-                    for(int i = 0;i<queueNum.size();i++){
-                        rabbitmqChannel.basicPublish("", "queue-"+queueNum.get(i), MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                    for (Integer aQueueNum : queueNum) {
+                        rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
                         counter = getCounter() + 1;
-                        System.out.println("RABBITMQ PRODUCED TO:  "+brokerIp);
+                        System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
                     }
                 }
 
@@ -87,9 +86,11 @@ public class Producer implements Callable {
         }else if(platform.equals("kafka")){
             try {
                 while(true) {
-                    kafkaProducer.send(new ProducerRecord<>("queue-" + queueNum, kafkaByteArray));
-                    counter = getCounter() + 1;
-                    System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                    for(Integer a : queueNum){
+                        kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
+                        counter = getCounter() + 1;
+                        System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                    }
                 }
 
             }catch (Exception e) {
@@ -124,7 +125,6 @@ public class Producer implements Callable {
         switch (platform) {
             case "activemq":
                 try {
-                    producers = new HashMap<>();
                     ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
                     connectionFactory.setProducerWindowSize((int) dSize);
                     this.activemqConnection = connectionFactory.createConnection("admin", "admin");
@@ -168,9 +168,11 @@ public class Producer implements Callable {
                     this.rabbitmqConnection = factory.newConnection();
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
 
-                    rabbitmqChannel.queueDeclare("queue-" + queueNum, true, false, false, null);
+                    for(Integer a : queueNum){
+                        rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
+                    }
 
-                    FileInputStream in = new FileInputStream(new File(folderName + "/activemqProducer.data-" + type));
+                    FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
 
                     byte[] buffer = new byte[81920];
 
@@ -203,9 +205,9 @@ public class Producer implements Callable {
                 kafkaProducer = null;
 
                 try {
-                    kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<String, byte[]>(props);
+                    kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
 
-                    FileInputStream in = new FileInputStream(new File(folderName + "/activemqProducer.data-" + type));
+                    FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
 
                     byte[] buffer = new byte[81920];
 

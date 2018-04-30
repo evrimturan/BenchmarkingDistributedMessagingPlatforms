@@ -89,7 +89,9 @@ public class Consumer implements Callable {
 
                 System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
-                rabbitmqChannel.basicConsume("queue-" + queueNum, true, rabbitmqConsumer);
+                for(Integer a : queueNum){
+                    rabbitmqChannel.basicConsume("queue-" + a, true, rabbitmqConsumer);
+                }
 
                 while(count < 120){
                     count++;
@@ -111,7 +113,7 @@ public class Consumer implements Callable {
                 while(true){
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
                     for (ConsumerRecord<String, byte[]> ignored : records) {
-                        System.out.println("CONSUMING FROM " + brokerIp);
+                        System.out.println("KAFKA CONSUMING FROM " + brokerIp);
 
                             /*FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
                             fileNumber++;
@@ -189,7 +191,9 @@ public class Consumer implements Callable {
                     this.rabbitmqConnection = factory.newConnection();
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
 
-                    rabbitmqChannel.queueDeclare("queue-" + queueNum, true, false, false, null);
+                    for(Integer a : queueNum){
+                        rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
+                    }
 
                     rabbitmqConsumer = new DefaultConsumer(rabbitmqChannel) {
                         @Override
@@ -232,7 +236,9 @@ public class Consumer implements Callable {
 
                 try {
                     kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
-                    kafkaConsumer.subscribe(Collections.singletonList("queue-" + queueNum));
+                    for(Integer a : queueNum){
+                        kafkaConsumer.subscribe(Collections.singletonList("queue-" + a));
+                    }
 
                     System.out.println("Kafka connection established.");
                 } catch (Exception e) {
