@@ -93,7 +93,7 @@ public class Consumer implements Callable {
                     rabbitmqChannel.basicConsume("queue-" + a, true, rabbitmqConsumer);
                 }
 
-                while(count < 120){
+                while(count < 30){
                     count++;
                     System.out.println("Waiting consumer...");
                     Thread.sleep(1000);

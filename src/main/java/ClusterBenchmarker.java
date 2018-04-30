@@ -394,7 +394,7 @@ public class ClusterBenchmarker {
                     };*/
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(p),2,TimeUnit.MINUTES);
+                            ex.invokeAll(Collections.singletonList(p),20,TimeUnit.SECONDS);
                         } catch (InterruptedException e) {
                             //e.printStackTrace(); This is redundant
                         }
@@ -547,7 +547,7 @@ public class ClusterBenchmarker {
                     };*/
                     Thread temp = new Thread(() -> {
                         try {
-                            ex.invokeAll(Collections.singletonList(c),2,TimeUnit.MINUTES);
+                            ex.invokeAll(Collections.singletonList(c),30,TimeUnit.SECONDS);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
