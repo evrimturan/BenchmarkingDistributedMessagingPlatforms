@@ -259,10 +259,13 @@ public class Consumer {
 
                 try {
                     kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
+                    List<String> topics = new ArrayList<>();
                     for(Integer a : queueNum){
                         System.out.println("KAFKA SUB TO : "+a);
-                        kafkaConsumer.subscribe(Collections.singletonList("queue-" + a));
+                        topics.add("queue-"+queueNum);
                     }
+                    kafkaConsumer.subscribe(topics);
+
 
                     System.out.println("Kafka connection established.");
                 } catch (Exception e) {
