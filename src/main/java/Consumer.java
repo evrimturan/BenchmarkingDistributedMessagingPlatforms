@@ -112,7 +112,7 @@ public class Consumer {
                 while(true){
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(200);
                     for (ConsumerRecord<String, byte[]> ignored : records) {
-                        //System.out.println("KAFKA CONSUMING FROM " + brokerIp);
+                        System.out.println("KAFKA CONSUMING FROM " + brokerIp + " TOPIC : "+ignored.topic());
 
                             /*FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
                             fileNumber++;
