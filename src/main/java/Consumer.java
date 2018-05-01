@@ -262,7 +262,7 @@ public class Consumer {
                     List<String> topics = new ArrayList<>();
                     for(Integer a : queueNum){
                         System.out.println("KAFKA SUB TO : "+a);
-                        topics.add("queue-"+queueNum);
+                        topics.add("queue-"+a);
                     }
                     kafkaConsumer.subscribe(topics);
 
