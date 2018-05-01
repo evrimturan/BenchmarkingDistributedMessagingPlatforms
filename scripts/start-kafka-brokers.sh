@@ -13,5 +13,5 @@ do
         ssh "$hostName$brokerNumber" "cd kafka_2.11-1.0.1/;bin/kafka-server-start.sh -daemon config/server.properties"
     fi
     echo "Broker $brokerNumber Finished"
-    sleep 1
+    sleep 10
 done

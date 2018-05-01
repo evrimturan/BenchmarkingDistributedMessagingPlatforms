@@ -110,9 +110,9 @@ public class Consumer {
         } else if (platform.equals("kafka")) {
             try {
                 while(true){
-                    ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
+                    ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(200);
                     for (ConsumerRecord<String, byte[]> ignored : records) {
-                        System.out.println("KAFKA CONSUMING FROM " + brokerIp);
+                        //System.out.println("KAFKA CONSUMING FROM " + brokerIp);
 
                             /*FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
                             fileNumber++;
@@ -260,6 +260,7 @@ public class Consumer {
                 try {
                     kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
                     for(Integer a : queueNum){
+                        System.out.println("KAFKA SUB TO : "+a);
                         kafkaConsumer.subscribe(Collections.singletonList("queue-" + a));
                     }
 
