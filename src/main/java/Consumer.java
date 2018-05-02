@@ -110,7 +110,8 @@ public class Consumer {
         } else if (platform.equals("kafka")) {
             try {
                 while(true){
-                    ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(200);
+                    ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
+                    System.out.println("Record Size: " + records.count());
                     for (ConsumerRecord<String, byte[]> ignored : records) {
                         System.out.println("KAFKA CONSUMING FROM " + brokerIp + " TOPIC : "+ignored.topic());
 
