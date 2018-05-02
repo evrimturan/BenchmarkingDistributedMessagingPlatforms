@@ -440,6 +440,10 @@ public class ClusterBenchmarker {
                 finalMem += avgMem;
 
                 pList.clear();
+                Producer.setDeleteTopics(true);
+                if(Producer.isDeleteTopics()) {
+                    System.out.println("Delete Topics True");
+                }
             }
 
             finalAvgCPU = finalCPU / 3;

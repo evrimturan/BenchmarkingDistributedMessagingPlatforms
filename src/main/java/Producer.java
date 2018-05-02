@@ -2,14 +2,12 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.KafkaFuture;
 
 import javax.jms.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Producer {
@@ -33,6 +31,15 @@ public class Producer {
     private int counter = 0;
     private String id;
     private MessageProducer activemqProducer;
+    private static boolean deleteTopics = false;
+
+    public static boolean isDeleteTopics() {
+        return deleteTopics;
+    }
+
+    public static void setDeleteTopics(boolean deleteTopics) {
+        Producer.deleteTopics = deleteTopics;
+    }
 
     public long getTotalTimeEllapsed() {
         return totalTimeEllapsed;
@@ -230,10 +237,14 @@ public class Producer {
 
                 try {
 
-                    kafkaAdmin = AdminClient.create(props);
-                    KafkaFuture<java.util.Set<java.lang.String>> topicList = kafkaAdmin.listTopics().names();
-                    Set<String> topicSet = topicList.get();
-                    kafkaAdmin.deleteTopics(topicSet);
+                    if(isDeleteTopics()) {
+                        kafkaAdmin = AdminClient.create(props);
+                        KafkaFuture<java.util.Set<java.lang.String>> topicList = kafkaAdmin.listTopics().names();
+                        Set<String> topicSet = topicList.get();
+                        kafkaAdmin.deleteTopics(topicSet);
+                        System.out.println("Topics Deleted");
+                        setDeleteTopics(false);
+                    }
 
                     kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
 
