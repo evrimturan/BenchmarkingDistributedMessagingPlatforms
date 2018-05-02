@@ -1,13 +1,14 @@
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.KafkaFuture;
 
 import javax.jms.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -225,7 +226,15 @@ public class Producer {
 
                 kafkaProducer = null;
 
+                AdminClient kafkaAdmin = null;
+
                 try {
+
+                    kafkaAdmin = AdminClient.create(props);
+                    KafkaFuture<java.util.Set<java.lang.String>> topicList = kafkaAdmin.listTopics().names();
+                    Set<String> topicSet = topicList.get();
+                    kafkaAdmin.deleteTopics(topicSet);
+
                     kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
 
                     FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
