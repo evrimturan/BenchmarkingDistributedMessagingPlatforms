@@ -16,6 +16,8 @@ public class Utilizer implements Runnable{
 
     private double avgCPU;
     private double avgMem;
+    private double producerThroughput;
+    private double consumerThroughput;
 
     private Socket socket;
     private PrintWriter print;
@@ -121,11 +123,23 @@ public class Utilizer implements Runnable{
                 count++;
                 if(stop)break;
             }
-            print.println("Total CPU Util: "+ totalCPU + ", Total MEM Util: "+ totalMem);
+            if(type.equals("producer")) {
+                print.println("Total CPU Util: " + totalCPU + ", Total MEM Util: "+ totalMem + ", Total messages sent " + Producer.getCounter());
+            }
+            else if(type.equals("consumer")) {
+                print.println("Total CPU Util: " + totalCPU + ", Total MEM Util: "+ totalMem + ", Total messages received " + Consumer.getCounter());
+            }
             print.flush();
             avgCPU = totalCPU / count;
             avgMem = totalMem / count;
-            print.println("Average CPU Util: "+ avgCPU+ ", Average MEM Util: "+ avgMem);
+            producerThroughput = Producer.getCounter() / 114;
+            consumerThroughput = Consumer.getCounter() / 114;
+            if(type.equals("producer")) {
+                print.println("Average CPU Util: " + avgCPU + ", Average MEM Util: " + avgMem + ", Throughput " + producerThroughput + "/s");
+            }
+            else if(type.equals("consumer")) {
+                print.println("Average CPU Util: " + avgCPU + ", Average MEM Util: " + avgMem + ", Throughput " + consumerThroughput + "/s");
+            }
             print.flush();
             print.println("Data atmayi bitirdim.");
             print.flush();

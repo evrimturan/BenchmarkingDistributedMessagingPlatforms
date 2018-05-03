@@ -11,7 +11,6 @@ import javax.jms.*;
 import javax.jms.Queue;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Consumer {
@@ -30,6 +29,11 @@ public class Consumer {
     private com.rabbitmq.client.Consumer rabbitmqConsumer;
     private org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]> kafkaConsumer;
     private HashMap<String,Queue> consumers;
+    private static int counter = 0;
+
+    public static int getCounter() {
+        return counter;
+    }
 
     public long getTotalTimeElapsed() {
         return totalTimeElapsed;
@@ -44,6 +48,7 @@ public class Consumer {
                 MessageListener listener = message -> {
                     try{
                         if(message instanceof BytesMessage){
+                            counter = getCounter() + 1;
                             //FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + queueNum);
                             //System.out.println("ACTIVEMQ CONSUMING FROM " + brokerIp + " queue is : "+queueNum.get(0)); removed for now
                                 /*long start = System.currentTimeMillis();
@@ -114,6 +119,7 @@ public class Consumer {
                     System.out.println("Record Size: " + records.count());
                     for (ConsumerRecord<String, byte[]> ignored : records) {
                         System.out.println("KAFKA CONSUMING FROM " + brokerIp + " TOPIC : "+ignored.topic());
+                        counter = getCounter() + 1;
 
                             /*FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
                             fileNumber++;
@@ -225,6 +231,7 @@ public class Consumer {
                                 throws IOException {
 
                             System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
+                            counter = getCounter() + 1;
                             /*
                             FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);
                             fileNumber++;

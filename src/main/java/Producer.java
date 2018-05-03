@@ -28,7 +28,7 @@ public class Producer {
     private byte[] rabbitByteArray;
     private byte[] kafkaByteArray;
     private org.apache.kafka.clients.producer.Producer<String, byte[]> kafkaProducer;
-    private int counter = 0;
+    private static int counter = 0;
     private String id;
     private MessageProducer activemqProducer;
     private static boolean deleteTopics = false;
@@ -39,6 +39,10 @@ public class Producer {
 
     public static void setDeleteTopics(boolean deleteTopics) {
         Producer.deleteTopics = deleteTopics;
+    }
+
+    public static int getCounter() {
+        return counter;
     }
 
     public long getTotalTimeEllapsed() {
@@ -266,7 +270,5 @@ public class Producer {
         }
     }
 
-    public int getCounter() {
-        return counter;
-    }
+
 }
