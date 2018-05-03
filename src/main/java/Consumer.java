@@ -35,6 +35,8 @@ public class Consumer {
         return counter;
     }
 
+    public static void setCounter(int counter) { Consumer.counter = counter; }
+
     public long getTotalTimeElapsed() {
         return totalTimeElapsed;
     }

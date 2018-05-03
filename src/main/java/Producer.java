@@ -45,6 +45,8 @@ public class Producer {
         return counter;
     }
 
+    public static void setCounter(int counter){ Producer.counter = counter;}
+
     public long getTotalTimeEllapsed() {
         return totalTimeEllapsed;
     }

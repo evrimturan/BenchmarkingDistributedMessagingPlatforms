@@ -140,6 +140,8 @@ public class Utilizer implements Runnable{
             else if(type.equals("consumer")) {
                 print.println("Average CPU Util: " + avgCPU + ", Average MEM Util: " + avgMem + ", Throughput " + consumerThroughput + "/s");
             }
+            Producer.setCounter(0);
+            Consumer.setCounter(0);
             print.flush();
             print.println("Data atmayi bitirdim.");
             print.flush();
