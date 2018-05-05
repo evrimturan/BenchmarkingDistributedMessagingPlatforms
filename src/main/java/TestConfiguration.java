@@ -20,6 +20,7 @@ public class TestConfiguration {
     private String pubOrSub;
     private String id;
     private String test;
+    private int serverNum;
 
     TestConfiguration(String Filename){
         try {
@@ -35,6 +36,7 @@ public class TestConfiguration {
                 i++;
             }
             //binfo.add(new BrokerInfo());
+            serverNum = conf.getInt("server.num");
             pubOrSub = conf.getString("type");
             brokerNum = conf.getInt("broker.amount");
             pubNum = conf.getInt("publisher.amount");
@@ -129,6 +131,8 @@ public class TestConfiguration {
     public String getTest() {
         return test;
     }
+
+    public int getServerNum() { return serverNum; }
 
     protected class BrokerInfo{
         private int id;

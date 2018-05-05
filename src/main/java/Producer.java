@@ -32,6 +32,8 @@ public class Producer {
     private String id;
     private MessageProducer activemqProducer;
     private static boolean deleteTopics = false;
+    private int serverNum;
+    private boolean isZigzag;
 
     public static boolean isDeleteTopics() {
         return deleteTopics;
@@ -59,11 +61,20 @@ public class Producer {
                 System.out.println(queueNum.size());
                 while(true){
                     for (Integer aQueueNum : queueNum) {
-                        //String queue = "queue-" + aQueueNum;
-                        //System.out.println(producers.get(queue));
-                        activemqProducer.send(activemqSession.createQueue("queue-"+aQueueNum),bMessage);
-                        counter = getCounter() + 1;
-                        //System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0)); removed for now
+                        if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
+                            //String queue = "queue-" + aQueueNum;
+                            //System.out.println(producers.get(queue));
+                            activemqProducer.send(activemqSession.createQueue("queue-"+aQueueNum),bMessage);
+                            counter = getCounter() + 1;
+                            //System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0)); removed for now
+                        }
+                        else if(!isZigzag) {
+                            //String queue = "queue-" + aQueueNum;
+                            //System.out.println(producers.get(queue));
+                            activemqProducer.send(activemqSession.createQueue("queue-"+aQueueNum),bMessage);
+                            counter = getCounter() + 1;
+                            //System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0)); removed for now
+                        }
                     }
                 }
 
@@ -78,9 +89,17 @@ public class Producer {
             try{
                 while(true) {
                     for (Integer aQueueNum : queueNum) {
-                        rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
-                        counter = getCounter() + 1;
-                        System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
+                        if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
+                            rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                            counter = getCounter() + 1;
+                            System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
+                        }
+                        else if(!isZigzag) {
+                            rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                            counter = getCounter() + 1;
+                            System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
+                        }
+
                     }
                 }
 
@@ -98,9 +117,16 @@ public class Producer {
             try {
                 while(true) {
                     for(Integer a : queueNum){
-                        kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
-                        counter = getCounter() + 1;
-                        System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                        if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
+                            kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
+                            counter = getCounter() + 1;
+                            System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                        }
+                        else if(!isZigzag) {
+                            kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
+                            counter = getCounter() + 1;
+                            System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                        }
                     }
                 }
 
@@ -143,7 +169,7 @@ public class Producer {
         }
     }
 
-    Producer(long mSize, long dSize, int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp, String type, String id){
+    Producer(long mSize, long dSize, int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp, String type, String id, int serverNum, boolean isZagzag){
         this.mSize = mSize;
         this.dSize=dSize;
         this.tNum = tNum;
@@ -154,6 +180,8 @@ public class Producer {
         this.type = type;
         this.id = id;
         this.queueNum.addAll(queueNum);
+        this.serverNum = serverNum;
+        this.isZigzag = isZagzag;
 // normal socket aç
 // bağlan connect consumer
 
