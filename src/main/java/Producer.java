@@ -1,6 +1,8 @@
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.KafkaFuture;
@@ -19,7 +21,7 @@ public class Producer {
     private List<Integer> queueNum;
     private String folderName;
     private String brokerIp;
-    private javax.jms.Connection activemqConnection;
+    private ActiveMQConnection activemqConnection;
     private Session activemqSession;
     private com.rabbitmq.client.Connection rabbitmqConnection;
     private Channel rabbitmqChannel;
@@ -74,6 +76,7 @@ public class Producer {
                             activemqProducer.send(activemqSession.createQueue("queue-"+aQueueNum),bMessage);
                             counter = getCounter() + 1;
                             //System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0)); removed for now
+
                         }
                     }
                 }
@@ -190,12 +193,21 @@ public class Producer {
                 try {
                     ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://" + brokerIp + ":61616");
                     connectionFactory.setProducerWindowSize((int) dSize);
-                    this.activemqConnection = connectionFactory.createConnection("admin", "admin");
+                    this.activemqConnection = (ActiveMQConnection) connectionFactory.createConnection("admin", "admin");
                     activemqConnection.start();
                     this.activemqSession = activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
                     activemqProducer = activemqSession.createProducer(null);
                     activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
+
+                    if(isDeleteTopics()) {
+                        for(int i = 0; i<tNum; i++) {
+                            String queue = "queue-" + i;
+                            activemqConnection.destroyDestination((ActiveMQDestination) activemqSession.createQueue(queue));
+                        }
+                        setDeleteTopics(false);
+                    }
+
 
                     //activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
 
@@ -230,6 +242,14 @@ public class Producer {
                     factory.setHost(brokerIp);
                     this.rabbitmqConnection = factory.newConnection();
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
+
+                    if(isDeleteTopics()) {
+                        for(int i = 0; i<tNum; i++) {
+                            String queue = "queue-" + i;
+                            rabbitmqChannel.queueDelete(queue);
+                        }
+                        setDeleteTopics(false);
+                    }
 
                     for(Integer a : queueNum){
                         rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
