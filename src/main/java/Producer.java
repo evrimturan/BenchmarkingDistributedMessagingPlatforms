@@ -172,7 +172,7 @@ public class Producer {
         }
     }
 
-    Producer(long mSize, long dSize, int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp, String type, String id, int serverNum, boolean isZagzag){
+    Producer(long mSize, long dSize, int tNum, String folderName, String platform, List<Integer> queueNum, String brokerIp, String type, String id, int serverNum, boolean isZigzag){
         this.mSize = mSize;
         this.dSize=dSize;
         this.tNum = tNum;
@@ -184,7 +184,7 @@ public class Producer {
         this.id = id;
         this.queueNum.addAll(queueNum);
         this.serverNum = serverNum;
-        this.isZigzag = isZagzag;
+        this.isZigzag = isZigzag;
 // normal socket aç
 // bağlan connect consumer
 
