@@ -11,6 +11,7 @@ public class Utilizer implements Runnable{
     private String id;
     //private byte[] bArray;
     private boolean stop;
+    private String platform;
 
     private double avgCPU;
     private double avgMem;
@@ -135,10 +136,10 @@ public class Utilizer implements Runnable{
             producerThroughput = Producer.getCounter() / 114;
             consumerThroughput = Consumer.getCounter() / 114;
             if(type.equals("producer")) {
-                print.println(avgCPU + "," + avgMem + "," + producerThroughput);
+                print.println(platform + "," + avgCPU + "," + avgMem + "," + producerThroughput);
             }
             else if(type.equals("consumer")) {
-                print.println( avgCPU + "," + avgMem + "," + consumerThroughput);
+                print.println(platform + ","+ avgCPU + "," + avgMem + "," + consumerThroughput);
             }
             Producer.setCounter(0);
             Consumer.setCounter(0);
@@ -154,11 +155,12 @@ public class Utilizer implements Runnable{
         }
     }
 
-    Utilizer(Long pId, String type, String id) {
+    Utilizer(Long pId, String type, String id, String platform) {
         this.pId = pId;
         this.type = type;
         this.id = id;
         this.stop = false;
+        this.platform = platform;
     }
 
     void setStop(boolean halt){

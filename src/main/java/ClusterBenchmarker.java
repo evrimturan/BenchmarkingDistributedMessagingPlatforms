@@ -518,7 +518,8 @@ public class ClusterBenchmarker {
                 Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
                 String type = config.getPubOrSub();
                 String id = config.getId();
-                Utilizer u = new Utilizer(pId, type, id);
+                String platform = config.getPlatform();
+                Utilizer u = new Utilizer(pId, type, id, platform);
                 Thread uThread = new Thread(u);
                 uThread.start();
 
@@ -677,7 +678,8 @@ public class ClusterBenchmarker {
                 Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
                 String type = config.getPubOrSub();
                 String id = config.getId();
-                Utilizer u = new Utilizer(pId, type, id);
+                String platform = config.getPlatform();
+                Utilizer u = new Utilizer(pId, type, id,platform);
                 Thread uThread = new Thread(u);
                 uThread.start();
 
