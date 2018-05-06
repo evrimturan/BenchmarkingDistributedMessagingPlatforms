@@ -136,10 +136,10 @@ public class Utilizer implements Runnable{
             producerThroughput = Producer.getCounter() / 114;
             consumerThroughput = Consumer.getCounter() / 114;
             if(type.equals("producer")) {
-                print.println(platform + "," + avgCPU + "," + avgMem + "," + producerThroughput);
+                print.println(platform + "," + avgCPU + "," + avgMem + "," + getProducerThroughput());
             }
             else if(type.equals("consumer")) {
-                print.println(platform + ","+ avgCPU + "," + avgMem + "," + consumerThroughput);
+                print.println(platform + ","+ avgCPU + "," + avgMem + "," + getConsumerThroughput());
             }
             Producer.setCounter(0);
             Consumer.setCounter(0);
@@ -173,5 +173,13 @@ public class Utilizer implements Runnable{
 
     double getAvgMem() {
         return avgMem;
+    }
+
+    public double getProducerThroughput() {
+        return producerThroughput;
+    }
+
+    public double getConsumerThroughput() {
+        return consumerThroughput;
     }
 }

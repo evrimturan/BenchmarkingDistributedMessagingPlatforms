@@ -20,9 +20,12 @@ public class ClusterBenchmarker {
 
         double finalCPU = 0;
         double finalMem = 0;
+        double finalThroughput = 0;
 
         double finalAvgCPU;
         double finalAvgMem;
+        double finalAvgThroughput;
+
 
         /* This is redundant right now, maybe enable in the future ?
         better fix required
@@ -537,12 +540,15 @@ public class ClusterBenchmarker {
                 }catch (InterruptedException ex1){
                     ex1.printStackTrace();
                 }
-                double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+                double avgCPU = u.getAvgCPU();
+                double avgMem = u.getAvgMem();
+                double throughput = u.getProducerThroughput();
 
                 System.out.println("Average TEST: " + avgCPU + " " + avgMem);
 
                 finalCPU += avgCPU;
                 finalMem += avgMem;
+                finalThroughput += throughput;
 
                 pList.clear();
                 Producer.setDeleteTopics(true);
@@ -553,8 +559,9 @@ public class ClusterBenchmarker {
 
             finalAvgCPU = finalCPU / 3;
             finalAvgMem = finalMem / 3;
+            finalAvgThroughput = finalThroughput / 3;
 
-            String testResult = "PRODUCER --> Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem;
+            String testResult = "PRODUCER --> Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem  + "Average Throughput: " + finalAvgThroughput;
 
             System.out.println(testResult);
 
@@ -697,19 +704,23 @@ public class ClusterBenchmarker {
                 }catch (InterruptedException ex1){
                     ex1.printStackTrace();
                 }
-                double avgCPU = u.getAvgCPU(),avgMem = u.getAvgMem();
+                double avgCPU = u.getAvgCPU();
+                double avgMem = u.getAvgMem();
+                double throughput = u.getConsumerThroughput();
 
                 System.out.println("Average TEST: " + avgCPU + " " + avgMem);
 
                 finalCPU += avgCPU;
                 finalMem += avgMem;
+                finalThroughput += throughput;
                 cList.clear();
             }
 
             finalAvgCPU = finalCPU / 3;
             finalAvgMem = finalMem / 3;
+            finalAvgThroughput = finalThroughput / 3;
 
-            String testResult = "CONSUMER --> Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem;
+            String testResult = "CONSUMER --> Average CPU Utilization: " + finalAvgCPU + " Average Memory Utilization: " + finalAvgMem + "Average Throughput: " + finalAvgThroughput;
 
             System.out.println(testResult);
 
