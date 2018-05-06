@@ -12,11 +12,17 @@ public class Utilizer implements Runnable{
     //private byte[] bArray;
     private boolean stop;
     private String platform;
+    private int iteration;
 
     private double avgCPU;
     private double avgMem;
     private double producerThroughput;
     private double consumerThroughput;
+
+    private static double finalCPU = 0;
+    private static double finalMem = 0;
+    private static double finalProducerThroughput = 0;
+    private static double finalConsumerThroughput = 0;
 
     private Socket socket;
     private PrintWriter print;
@@ -135,12 +141,26 @@ public class Utilizer implements Runnable{
             avgMem = totalMem / count;
             producerThroughput = Producer.getCounter() / 114;
             consumerThroughput = Consumer.getCounter() / 114;
-            if(type.equals("producer")) {
-                print.println(platform + "," + avgCPU + "," + avgMem + "," + getProducerThroughput());
+
+            finalCPU += avgCPU;
+            finalMem += avgMem;
+            finalProducerThroughput += producerThroughput;
+            finalConsumerThroughput += producerThroughput;
+
+            if(iteration == 2) {
+                double finalAvgCPU = finalCPU / 3;
+                double finalAvgMem = finalMem / 3;
+                double finalAvgProducerThroughput = finalProducerThroughput / 3;
+                double finalAvgConsumerThroughput = finalConsumerThroughput / 3;
+
+                if(type.equals("producer")) {
+                    print.println(platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgProducerThroughput);
+                }
+                else if(type.equals("consumer")) {
+                    print.println(platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgConsumerThroughput);
+                }
             }
-            else if(type.equals("consumer")) {
-                print.println(platform + ","+ avgCPU + "," + avgMem + "," + getConsumerThroughput());
-            }
+
             Producer.setCounter(0);
             Consumer.setCounter(0);
             print.flush();
@@ -155,12 +175,13 @@ public class Utilizer implements Runnable{
         }
     }
 
-    Utilizer(Long pId, String type, String id, String platform) {
+    Utilizer(Long pId, String type, String id, String platform, int iteration) {
         this.pId = pId;
         this.type = type;
         this.id = id;
         this.stop = false;
         this.platform = platform;
+        this.iteration = iteration;
     }
 
     void setStop(boolean halt){

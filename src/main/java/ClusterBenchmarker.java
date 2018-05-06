@@ -522,7 +522,7 @@ public class ClusterBenchmarker {
                 String type = config.getPubOrSub();
                 String id = config.getId();
                 String platform = config.getPlatform();
-                Utilizer u = new Utilizer(pId, type, id, platform);
+                Utilizer u = new Utilizer(pId, type, id, platform, j);
                 Thread uThread = new Thread(u);
                 uThread.start();
 
@@ -686,7 +686,7 @@ public class ClusterBenchmarker {
                 String type = config.getPubOrSub();
                 String id = config.getId();
                 String platform = config.getPlatform();
-                Utilizer u = new Utilizer(pId, type, id,platform);
+                Utilizer u = new Utilizer(pId, type, id,platform, j);
                 Thread uThread = new Thread(u);
                 uThread.start();
 
