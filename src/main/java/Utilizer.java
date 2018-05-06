@@ -1,5 +1,3 @@
-import org.apache.kafka.common.protocol.types.Field;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -27,7 +25,9 @@ public class Utilizer implements Runnable{
 
     @Override
     public void run(){
-
+        class Test{
+            String asdf;
+        }
         try{
             if(type.equals("producer")){
                 if(id.equals("A")){
@@ -72,7 +72,7 @@ public class Utilizer implements Runnable{
             print.flush();
 
             if(reader.readLine().equals("OK")){
-                print.println("CPU Util: " + 0 + ", MEM Util: "+ 0);
+                print.println(0 + ","+ 0);
                 print.flush();
             }else{
                 System.out.println("Machine 9 did not say OK.");
@@ -113,7 +113,7 @@ public class Utilizer implements Runnable{
                         memUtil = 0.0;
                     }
 
-                    print.println("CPU Util: " + cpuUtil + ", MEM Util: "+ memUtil);
+                    print.println(cpuUtil + ","+ memUtil);
                     print.flush();
                     totalCPU+=cpuUtil;
                     totalMem+=memUtil;
@@ -124,10 +124,10 @@ public class Utilizer implements Runnable{
                 if(stop)break;
             }
             if(type.equals("producer")) {
-                print.println("Total CPU Util: " + totalCPU + ", Total MEM Util: "+ totalMem + ", Total messages sent " + Producer.getCounter());
+                print.println(totalCPU + ","+ totalMem + "," + Producer.getCounter());
             }
             else if(type.equals("consumer")) {
-                print.println("Total CPU Util: " + totalCPU + ", Total MEM Util: "+ totalMem + ", Total messages received " + Consumer.getCounter());
+                print.println(totalCPU + ","+ totalMem + "," + Consumer.getCounter());
             }
             print.flush();
             avgCPU = totalCPU / count;
@@ -135,10 +135,10 @@ public class Utilizer implements Runnable{
             producerThroughput = Producer.getCounter() / 114;
             consumerThroughput = Consumer.getCounter() / 114;
             if(type.equals("producer")) {
-                print.println("Average CPU Util: " + avgCPU + ", Average MEM Util: " + avgMem + ", Throughput " + producerThroughput + "/s");
+                print.println(avgCPU + "," + avgMem + "," + producerThroughput);
             }
             else if(type.equals("consumer")) {
-                print.println("Average CPU Util: " + avgCPU + ", Average MEM Util: " + avgMem + ", Throughput " + consumerThroughput + "/s");
+                print.println( avgCPU + "," + avgMem + "," + consumerThroughput);
             }
             Producer.setCounter(0);
             Consumer.setCounter(0);
