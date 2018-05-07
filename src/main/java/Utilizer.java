@@ -158,12 +158,14 @@ public class Utilizer implements Runnable{
                 }
                 Producer.setCounter(0);
                 Consumer.setCounter(0);
-                print.println("Data atmayi bitirdim.");
-                print.flush();
-                System.out.println("CPU thread stopped.");
-                socket.close();
                 //TODO: HTTP request to website and live statistics most probably JSON
             }
+
+            print.println("Data atmayi bitirdim.");
+            print.flush();
+            System.out.println("CPU thread stopped.");
+            socket.close();
+            
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
