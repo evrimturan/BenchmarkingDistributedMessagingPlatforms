@@ -34,9 +34,6 @@ public class Utilizer implements Runnable{
 
     @Override
     public void run() {
-        class Test {
-            String asdf;
-        }
         try {
             if (type.equals("producer")) {
                 if (id.equals("A")) {
@@ -153,14 +150,9 @@ public class Utilizer implements Runnable{
                 double finalAvgConsumerThroughput = finalConsumerThroughput / 3;
 
                 if (type.equals("producer")) {
-                    print.println(platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgProducerThroughput);
+                    print.println("TEST," + testName +","+ platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgProducerThroughput);
                 } else if (type.equals("consumer")) {
-                    print.println(platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgConsumerThroughput);
-                }
-                if (type.equals("producer")) {
-                    print.println("TEST," + testName + "," + avgCPU + "," + avgMem + "," + producerThroughput);
-                } else if (type.equals("consumer")) {
-                    print.println("TEST," + testName + "," + avgCPU + "," + avgMem + "," + consumerThroughput);
+                    print.println("TEST," + testName +","+ platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgConsumerThroughput);
                 }
 
                 Producer.setCounter(0);
