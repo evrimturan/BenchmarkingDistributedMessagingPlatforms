@@ -151,13 +151,13 @@ public class Utilizer implements Runnable{
 
                 if (type.equals("producer")) {
                     print.println("TEST," + testName +","+ platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgProducerThroughput);
+                    print.flush();
                 } else if (type.equals("consumer")) {
                     print.println("TEST," + testName +","+ platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgConsumerThroughput);
+                    print.flush();
                 }
-
                 Producer.setCounter(0);
                 Consumer.setCounter(0);
-                print.flush();
                 print.println("Data atmayi bitirdim.");
                 print.flush();
                 System.out.println("CPU thread stopped.");
