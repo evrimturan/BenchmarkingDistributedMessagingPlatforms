@@ -141,7 +141,7 @@ public class Utilizer implements Runnable{
             finalCPU += avgCPU;
             finalMem += avgMem;
             finalProducerThroughput += producerThroughput;
-            finalConsumerThroughput += producerThroughput;
+            finalConsumerThroughput += consumerThroughput;
 
             if (this.iteration == 2) {
                 double finalAvgCPU = finalCPU / 3;
