@@ -73,7 +73,7 @@ public class Consumer {
                 activemqConsumer.setMessageListener(listener);
                 while(count < 120){
                     count++;
-                    System.out.println("Waiting consumer...");
+                    //System.out.println("Waiting consumer...");
                     Thread.sleep(1000);
                 }
                 activemqConsumer.close();
