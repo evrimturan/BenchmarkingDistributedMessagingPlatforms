@@ -10,6 +10,7 @@ import org.apache.kafka.common.KafkaFuture;
 import javax.jms.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Producer {
@@ -36,6 +37,7 @@ public class Producer {
     private static boolean deleteTopics = false;
     private int serverNum;
     private boolean isZigzag;
+    private Properties props;
 
     public static boolean isDeleteTopics() {
         return deleteTopics;
@@ -200,13 +202,7 @@ public class Producer {
                     activemqProducer = activemqSession.createProducer(null);
                     activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
-                    if(isDeleteTopics()) {
-                        for(int i = 0; i<tNum; i++) {
-                            String queue = "queue-" + i;
-                            activemqConnection.destroyDestination((ActiveMQDestination) activemqSession.createQueue(queue));
-                        }
-                        setDeleteTopics(false);
-                    }
+
 
 
                     //activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
@@ -243,13 +239,6 @@ public class Producer {
                     this.rabbitmqConnection = factory.newConnection();
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
 
-                    if(isDeleteTopics()) {
-                        for(int i = 0; i<tNum; i++) {
-                            String queue = "queue-" + i;
-                            rabbitmqChannel.queueDelete(queue);
-                        }
-                        setDeleteTopics(false);
-                    }
 
                     for(Integer a : queueNum){
                         rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
@@ -273,7 +262,7 @@ public class Producer {
                 }
                 break;
             case "kafka":
-                Properties props = new Properties();
+                props = new Properties();
                 props.put("bootstrap.servers", brokerIp + ":9092");
                 props.put("acks", "all");
                 props.put("retries", 0);
@@ -287,18 +276,9 @@ public class Producer {
 
                 kafkaProducer = null;
 
-                AdminClient kafkaAdmin = null;
+
 
                 try {
-
-                    if(isDeleteTopics()) {
-                        kafkaAdmin = AdminClient.create(props);
-                        KafkaFuture<java.util.Set<java.lang.String>> topicList = kafkaAdmin.listTopics().names();
-                        Set<String> topicSet = topicList.get();
-                        kafkaAdmin.deleteTopics(topicSet);
-                        System.out.println("Topics Deleted");
-                        setDeleteTopics(false);
-                    }
 
                     kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
 
@@ -320,5 +300,49 @@ public class Producer {
         }
     }
 
+    void deleteQueues(){
+        if(isDeleteTopics()) {
+            switch (platform) {
+                case "activemq":
+                    for (int i = 0; i < tNum; i++) {
+                        String queue = "queue-" + i;
+                        try {
+                            activemqConnection.destroyDestination((ActiveMQDestination) activemqSession.createQueue(queue));
+                        } catch (JMSException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    setDeleteTopics(false);
+                    break;
+                case "rabbitmq":
+                    for(int i = 0; i<tNum; i++) {
+                        String queue = "queue-" + i;
+                        try {
+                            rabbitmqChannel.queueDelete(queue);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    setDeleteTopics(false);
+                    break;
+                case "kafka":
+                    AdminClient kafkaAdmin;
+                    kafkaAdmin = AdminClient.create(props);
+                    KafkaFuture<java.util.Set<java.lang.String>> topicList = kafkaAdmin.listTopics().names();
+                    Set<String> topicSet = null;
+                    try {
+                        topicSet = topicList.get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                    kafkaAdmin.deleteTopics(topicSet);
+                    System.out.println("Topics Deleted");
+                    setDeleteTopics(false);
+                    break;
+            }
 
+        }
+    }
 }

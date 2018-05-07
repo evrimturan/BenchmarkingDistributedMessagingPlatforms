@@ -553,6 +553,10 @@ public class ClusterBenchmarker {
                 finalMem += avgMem;
                 finalThroughput += throughput;
 
+                synchronizer.sync();
+                for(Producer p: pList){
+                    p.deleteQueues();
+                }
                 pList.clear();
                 Producer.setDeleteTopics(true);
                 if(Producer.isDeleteTopics()) {
@@ -719,6 +723,9 @@ public class ClusterBenchmarker {
                 finalCPU += avgCPU;
                 finalMem += avgMem;
                 finalThroughput += throughput;
+
+                synchronizer.sync();
+
                 cList.clear();
             }
 
