@@ -165,7 +165,7 @@ public class Utilizer implements Runnable{
             print.flush();
             System.out.println("CPU thread stopped.");
             socket.close();
-            
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
