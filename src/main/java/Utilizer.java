@@ -149,13 +149,19 @@ public class Utilizer implements Runnable{
                 double finalAvgProducerThroughput = finalProducerThroughput / 3;
                 double finalAvgConsumerThroughput = finalConsumerThroughput / 3;
 
-                if (type.equals("producer")) {
+
+                if(testName.contains("zigzag")) {
+                    print.println("TEST," + testName +","+ platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgProducerThroughput + "," + finalAvgConsumerThroughput);
+                    print.flush();
+                }
+                else if (type.equals("producer")) {
                     print.println("TEST," + testName +","+ platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgProducerThroughput);
                     print.flush();
                 } else if (type.equals("consumer")) {
                     print.println("TEST," + testName +","+ platform + "," + finalAvgCPU + "," + finalAvgMem + "," + finalAvgConsumerThroughput);
                     print.flush();
                 }
+
                 Producer.setCounter(0);
                 Consumer.setCounter(0);
                 //TODO: HTTP request to website and live statistics most probably JSON
