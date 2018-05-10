@@ -125,12 +125,12 @@ public class Producer {
                         if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
                             kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
                             counter = getCounter() + 1;
-                            //System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                            System.out.println("KAFKA PRODUCED TO:  "+brokerIp + "queue is : " + a);
                         }
                         else if(!isZigzag) {
                             kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
                             counter = getCounter() + 1;
-                            //System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                            System.out.println("KAFKA PRODUCED TO:  "+brokerIp + "queue is : " + a);
                         }
                     }
                 }

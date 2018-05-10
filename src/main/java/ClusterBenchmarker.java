@@ -555,6 +555,12 @@ public class ClusterBenchmarker {
                 if(Producer.isDeleteTopics()) {
                     System.out.println("Delete Topics True");
                 }
+
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             finalAvgCPU = finalCPU / 3;
@@ -740,10 +746,17 @@ public class ClusterBenchmarker {
                 finalMem += avgMem;
                 finalThroughput += throughput;
 
+
                 synchronizer.sync();
 
 
                 cList.clear();
+
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             finalAvgCPU = finalCPU / 3;

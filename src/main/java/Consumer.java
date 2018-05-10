@@ -117,6 +117,7 @@ public class Consumer {
         } else if (platform.equals("kafka")) {
             try {
                 while(true){
+                    kafkaConsumer.subscription().forEach(System.out::println);
                     ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
                     System.out.println("Record Size: " + records.count());
                     for (ConsumerRecord<String, byte[]> ignored : records) {
@@ -142,11 +143,13 @@ public class Consumer {
                                 }
                             }*/
                     }
+                    kafkaConsumer.commitAsync();
                 }
                 //kafkaConsumer.unsubscribe();
             } catch (Exception e) {
                 //e.printStackTrace();
-                kafkaConsumer.unsubscribe();
+                kafkaConsumer.commitSync();
+                kafkaConsumer.close();
             }
         }
         //long finish = System.currentTimeMillis();
@@ -172,6 +175,7 @@ public class Consumer {
                 }
                 break;
             case "kafka":
+                kafkaConsumer.commitSync();
                 kafkaConsumer.close();
                 break;
         }
@@ -260,7 +264,7 @@ public class Consumer {
                 props.put("group.id", "group-1");
                 props.put("enable.auto.commit", "true");
                 props.put("auto.commit.interval.ms", "1000");
-                props.put("auto.offset.reset", "earliest");
+                props.put("auto.offset.reset", "latest");
                 props.put("session.timeout.ms", "30000");
                 props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
                 props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
