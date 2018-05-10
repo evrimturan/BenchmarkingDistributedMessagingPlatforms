@@ -34,7 +34,7 @@ public class Producer {
     private static int counter = 0;
     private String id;
     private MessageProducer activemqProducer;
-    private static boolean deleteTopics = false;
+    private static boolean deleteTopics = true;
     private int serverNum;
     private boolean isZigzag;
     private Properties props;
