@@ -269,12 +269,12 @@ public class Consumer {
 
                 try {
                     kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
-                    List<String> topics = new ArrayList<>();
-                    for(Integer a : queueNum){
-                        System.out.println("KAFKA SUB TO : "+a);
-                        topics.add("queue-"+a);
+
+                    String[] topics = new String[queueNum.size()];
+                    for(int i = 0; i<queueNum.size(); i++) {
+                        topics[i] = "queue-" + queueNum.get(i);
                     }
-                    kafkaConsumer.subscribe(topics);
+                    kafkaConsumer.subscribe(Arrays.asList(topics));
 
                     System.out.println("Kafka consumer has subscriptions of these : ");
                     kafkaConsumer.subscription().forEach(System.out::println);
