@@ -8,7 +8,7 @@ public class ClusterBenchmarker {
     public static void main(String[] args) {
 
         TestConfiguration config = new TestConfiguration(args[0]);
-        if(config.getTest().contains("zigzag")){
+        if(config.getTest().contains("zigzag") || config.getTest().contains("messagesize")){
             return;
         }
         int brokerNum = config.getBrokerNum();
@@ -58,43 +58,53 @@ public class ClusterBenchmarker {
 
             String brokerIP = null;
             ArrayList<Integer> queueNumber = new ArrayList<>();
-            queueNumber.add(0);
+
 
             if(config.getServerNum() == 0) {
+                queueNumber.add(0);
                 brokerIP = bInfo.get(0).getIp();
                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
                 pList.add(producer);
+                queueNumber.clear();
             }
 
             else if(config.getServerNum() == 1) {
+                queueNumber.add(0);
                 brokerIP = bInfo.get(0).getIp();
                 consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
                 cList.add(consumer);
+                queueNumber.clear();
 
+                queueNumber.add(1);
                 brokerIP = bInfo.get(1).getIp();
                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
                 pList.add(producer);
+                queueNumber.clear();
             }
 
             else if(config.getServerNum() == 2) {
+                queueNumber.add(1);
                 brokerIP = bInfo.get(1).getIp();
                 consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
                 cList.add(consumer);
+                queueNumber.clear();
             }
         }
 
         else if(config.getTest().equals("zigzag3")) {
+            //TODO queue numarası ver, sonra clear yap. hepsine yap
             Producer producer;
             Consumer consumer;
 
             String brokerIP = null;
             ArrayList<Integer> queueNumber = new ArrayList<>();
-            queueNumber.add(0);
 
             if(config.getServerNum() == 0) {
+                queueNumber.add(0);
                 brokerIP = bInfo.get(0).getIp();
                 producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
                 pList.add(producer);
+                queueNumber.clear();
             }
 
             else if(config.getServerNum() == 1) {
@@ -519,10 +529,11 @@ public class ClusterBenchmarker {
                 finalMem += avgMem;
                 finalThroughput += throughput;
 
-                synchronizer.sync();
                 for(Producer p: pList){
                     p.deleteQueues();
                 }
+                synchronizer.sync();
+
                 pList.clear();
                 Producer.setDeleteTopics(true);
                 if(Producer.isDeleteTopics()) {
@@ -548,6 +559,7 @@ public class ClusterBenchmarker {
             }
 
             synchronizer.closeConnection();
+            System.exit(0);
 
         }else if(config.getPubOrSub().equals("consumer")){
             Synchronizer synchronizer = new Synchronizer(config.getId(),"consumer");
@@ -573,19 +585,41 @@ public class ClusterBenchmarker {
                         brokerList.add(b);
                     }
                 }
+                if(queueList.isEmpty()){
+                    queueList.add(0);
+                }
                 Collections.shuffle(queueList);
 
                 Collections.shuffle(brokerList);
 
+                System.out.println("QUEUE LIST : ");
+                queueList.forEach(System.out::println);
                 ArrayList<Integer> queue = new ArrayList<>();
-
+                if(topicNum/2 < subNum){
+                    List<Integer> dup = new ArrayList<>();
+                    if((int)(topicNum/2) == 0){
+                        for(int k = 0;k< 1;k++){
+                            dup.addAll(queueList);
+                        }
+                    }else{
+                        for(int k = 0;k< subNum / (topicNum/2);k++){
+                            dup.addAll(queueList);
+                        }
+                    }
+                    queueList.addAll(dup);
+                }
+                System.out.println("new Qqueue list");
+                queueList.forEach(System.out::println);
                 for(int i=0; i<subNum; i++){
                     /*
                      * INFORMATIONAL: MKDIR removed from consumer
                      * because it is redundant, i will check if it creates problems(no problems)
                      */
-
-                    for(int t = 0; t<((topicNum/2)/subNum); t++) {
+                    int iteration = (topicNum / 2)/subNum;
+                    if(iteration == 0){
+                        iteration++;
+                    }
+                    for(int t = 0; t<iteration; t++) {
                         queue.add(queueList.remove(0));
                     }
 
@@ -692,6 +726,7 @@ public class ClusterBenchmarker {
 
                 synchronizer.sync();
 
+
                 cList.clear();
             }
 
@@ -713,6 +748,8 @@ public class ClusterBenchmarker {
             }
 
             synchronizer.closeConnection();
+
+            System.exit(0);
             //HTTP request final
             /*
             for(Consumer c : cList){

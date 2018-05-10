@@ -196,7 +196,7 @@ public class Consumer {
 
                     //Queue dest = activemqSession.createQueue("queue-" + queueNum);
                     String dest = "";
-                    for(Integer a : queueNum){
+                    for(Integer a : this.queueNum){
                         dest+=("queue-"+a);
                         dest+=",";
                     }
@@ -204,7 +204,7 @@ public class Consumer {
                     System.out.println("queue is : "+dest);
                     activemqConsumer = activemqSession.createConsumer(activemqSession.createQueue(dest));
 
-                    for (Integer aQueueNum : queueNum) {
+                    for (Integer aQueueNum : this.queueNum) {
                         consumers.put("queue-" + aQueueNum, activemqSession.createQueue("queue-" + aQueueNum));
                     }
                     System.out.println("ActiveMQ connection established.");
@@ -229,10 +229,9 @@ public class Consumer {
 
                     rabbitmqConsumer = new DefaultConsumer(rabbitmqChannel) {
                         @Override
-                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-                                throws IOException {
+                        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
 
-                            System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
+                            //System.out.println("RABBITMQ CONSUMING FROM " + brokerIp);
                             counter = getCounter() + 1;
                             /*
                             FileOutputStream fos = new FileOutputStream(folderName + "/consumer.data-" + fileNumber);

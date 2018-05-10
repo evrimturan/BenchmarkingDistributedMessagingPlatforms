@@ -97,12 +97,12 @@ public class Producer {
                         if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
                             rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
                             counter = getCounter() + 1;
-                            System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
+                            //System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
                         }
                         else if(!isZigzag) {
                             rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
                             counter = getCounter() + 1;
-                            System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
+                            //System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
                         }
 
                     }
@@ -125,12 +125,12 @@ public class Producer {
                         if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
                             kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
                             counter = getCounter() + 1;
-                            System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                            //System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                         }
                         else if(!isZigzag) {
                             kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
                             counter = getCounter() + 1;
-                            System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
+                            //System.out.println("KAFKA PRODUCED TO:  "+brokerIp);
                         }
                     }
                 }
@@ -269,14 +269,13 @@ public class Producer {
                 props.put("batch.size", 16384);
                 props.put("linger.ms", 1);
                 props.put("buffer.memory", 33554432);
+                props.put("max.poll.records",10000);
 
                 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
                 props.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 
                 kafkaProducer = null;
-
-
 
                 try {
 
@@ -315,15 +314,31 @@ public class Producer {
                     setDeleteTopics(false);
                     break;
                 case "rabbitmq":
-                    for(int i = 0; i<tNum; i++) {
-                        String queue = "queue-" + i;
-                        try {
-                            rabbitmqChannel.queueDelete(queue);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
+                    factory.setUsername("admin");
+                    factory.setPassword("admin");
+                    factory.setPort(5672);
+                    factory.setHost(brokerIp);
+                    try {
+                        com.rabbitmq.client.Connection rabbitmqConnectionS = factory.newConnection();
+                        Channel rabbitmqChannelS = rabbitmqConnectionS.createChannel();
+                        for(int i = 0; i<tNum; i++) {
+                            String queue = "queue-" + i;
+                            try {
+                                rabbitmqChannelS.queueDelete(queue);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        setDeleteTopics(false);
+                        rabbitmqChannelS.close();
+                        rabbitmqConnectionS.close();
                     }
-                    setDeleteTopics(false);
+
+                    catch (Exception m) {
+
+                    }
+
                     break;
                 case "kafka":
                     AdminClient kafkaAdmin;
