@@ -3,6 +3,7 @@ import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.*;
 
+@SuppressWarnings("ALL")
 public class ClusterBenchmarker {
 
     public static void main(String[] args) {
