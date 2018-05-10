@@ -264,6 +264,7 @@ public class Consumer {
                 props.put("session.timeout.ms", "30000");
                 props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
                 props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+                props.put("max.poll.records",10000);
                 kafkaConsumer = null;
 
                 try {
@@ -275,6 +276,8 @@ public class Consumer {
                     }
                     kafkaConsumer.subscribe(topics);
 
+                    System.out.println("Kafka consumer has subscriptions of these : ");
+                    kafkaConsumer.subscription().forEach(System.out::println);
 
                     System.out.println("Kafka connection established.");
                 } catch (Exception e) {
