@@ -104,7 +104,6 @@ public class Producer {
                             counter = getCounter() + 1;
                             //System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
                         }
-
                     }
                 }
 
@@ -351,7 +350,7 @@ public class Producer {
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
-                    kafkaAdmin.deleteTopics(topicSet);
+                    if(topicSet !=null){kafkaAdmin.deleteTopics(topicSet);}
                     System.out.println("Topics Deleted");
                     setDeleteTopics(false);
                     break;
