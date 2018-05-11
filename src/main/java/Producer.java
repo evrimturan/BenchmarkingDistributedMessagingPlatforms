@@ -108,7 +108,8 @@ public class Producer {
                 }
 
             }catch(Exception e){
-                //e.printStackTrace();
+                System.out.println("EXCEPTION");
+                e.printStackTrace();
                 try {
                     rabbitmqConnection.close();
                     rabbitmqChannel.close();

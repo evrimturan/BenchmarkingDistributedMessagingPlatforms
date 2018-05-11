@@ -258,107 +258,136 @@ public class ClusterBenchmarker {
                         }
                         break;
                     case "topic2":
-                        if (topicNum == 4) {
-                            for (int k = 0; k < pubNum; k++) {
-                                if (config.getId().equals("A")) {
-                                    if (k < pubNum / 2) {
-                                        brokerIP = bInfo.get(0).getIp();
-                                        queueNumber.add(0);
-                                    } else {
-                                        brokerIP = bInfo.get(1).getIp();
-                                        queueNumber.add(1);
-                                    }
-                                } else if (config.getId().equals("B")) {
-                                    if (k < pubNum / 2) {
-                                        brokerIP = bInfo.get(2).getIp();
-                                        queueNumber.add(2);
-                                    } else {
-                                        brokerIP = bInfo.get(3).getIp();
-                                        queueNumber.add(3);
-                                    }
-                                }
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
-                                pList.add(producer);
-                                queueNumber.clear();
-                            }
-                        } else if (topicNum == 8) {
-                            for (int k = 0; k < pubNum; k++) {
-                                if (config.getId().equals("A")) {
-                                    if (k < pubNum / 2) {
-                                        brokerIP = bInfo.get(0).getIp();
-                                        queueNumber.add(k);
-                                    } else {
-                                        brokerIP = bInfo.get(1).getIp();
-                                        queueNumber.add(k);
-                                    }
-                                } else if (config.getId().equals("B")) {
-                                    if (k < pubNum / 2) {
-                                        brokerIP = bInfo.get(2).getIp();
-                                        queueNumber.add(k + 4);
-                                    } else {
-                                        brokerIP = bInfo.get(3).getIp();
-                                        queueNumber.add(k + 4);
-                                    }
-                                }
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
-                                pList.add(producer);
-                                queueNumber.clear();
-                            }
-                        } else if (topicNum == 16) {
-                            //TODO:2 queue 1 producer
-                            for (int k = 0; k < pubNum; k++) {
-                                if (config.getId().equals("A")) {
-                                    if (k < pubNum / 2) {
-                                        brokerIP = bInfo.get(0).getIp();
-                                        if(k % 2 == 0) {
-                                            queueNumber.add(0);
-                                            queueNumber.add(8);
-                                        }
-                                        else {
-                                            queueNumber.add(1);
-                                            queueNumber.add(9);
-                                        }
+                            if (topicNum == 4) {
 
-                                    } else {
-                                        brokerIP = bInfo.get(1).getIp();
-                                        if(k % 2 == 0) {
-                                            queueNumber.add(2);
-                                            queueNumber.add(10);
-                                        }
-                                        else {
-                                            queueNumber.add(3);
-                                            queueNumber.add(11);
-                                        }
-                                    }
-                                } else if (config.getId().equals("B")) {
-                                    if (k < pubNum / 2) {
-                                        brokerIP = bInfo.get(2).getIp();
-                                        if(k % 2 == 0) {
-                                            queueNumber.add(4);
-                                            queueNumber.add(12);
-                                        }
-                                        else {
-                                            queueNumber.add(5);
-                                            queueNumber.add(13);
-                                        }
 
-                                    } else {
-                                        brokerIP = bInfo.get(3).getIp();
-                                        if(k % 2 == 0) {
-                                            queueNumber.add(6);
-                                            queueNumber.add(14);
-                                        }
-                                        else {
-                                            queueNumber.add(7);
-                                            queueNumber.add(15);
-                                        }
+                                if(config.getPlatform().equals("rabbitmq")) {
+                                    if(config.getId().equals("A")) {
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(0), bInfo.get(0).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(0), bInfo.get(0).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(1), bInfo.get(1).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(1), bInfo.get(1).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                    }
+                                    else if(config.getId().equals("B")){
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(2), bInfo.get(2).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(2), bInfo.get(2).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(3), bInfo.get(3).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(3), bInfo.get(3).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
                                     }
                                 }
-                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
-                                pList.add(producer);
-                                queueNumber.clear();
+
+                                else {
+                                    for (int k = 0; k < pubNum; k++) {
+                                        if (config.getId().equals("A")) {
+                                            if (k < pubNum / 2) {
+                                                brokerIP = bInfo.get(0).getIp();
+                                                queueNumber.add(0);
+                                            } else {
+                                                brokerIP = bInfo.get(1).getIp();
+                                                queueNumber.add(1);
+                                            }
+                                        } else if (config.getId().equals("B")) {
+                                            if (k < pubNum / 2) {
+                                                brokerIP = bInfo.get(2).getIp();
+                                                queueNumber.add(2);
+                                            } else {
+                                                brokerIP = bInfo.get(3).getIp();
+                                                queueNumber.add(3);
+                                            }
+                                        }
+                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
+                                        pList.add(producer);
+                                        queueNumber.clear();
+                                    }
+                                }
+
+
+                            } else if (topicNum == 8) {
+                                for (int k = 0; k < pubNum; k++) {
+                                    if (config.getId().equals("A")) {
+                                        if (k < pubNum / 2) {
+                                            brokerIP = bInfo.get(0).getIp();
+                                            queueNumber.add(k);
+                                        } else {
+                                            brokerIP = bInfo.get(1).getIp();
+                                            queueNumber.add(k);
+                                        }
+                                    } else if (config.getId().equals("B")) {
+                                        if (k < pubNum / 2) {
+                                            brokerIP = bInfo.get(2).getIp();
+                                            queueNumber.add(k + 4);
+                                        } else {
+                                            brokerIP = bInfo.get(3).getIp();
+                                            queueNumber.add(k + 4);
+                                        }
+                                    }
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                    queueNumber.clear();
+                                }
+                            } else if (topicNum == 16) {
+                                //TODO:2 queue 1 producer
+                                for (int k = 0; k < pubNum; k++) {
+                                    if (config.getId().equals("A")) {
+                                        if (k < pubNum / 2) {
+                                            brokerIP = bInfo.get(0).getIp();
+                                            if(k % 2 == 0) {
+                                                queueNumber.add(0);
+                                                queueNumber.add(8);
+                                            }
+                                            else {
+                                                queueNumber.add(1);
+                                                queueNumber.add(9);
+                                            }
+
+                                        } else {
+                                            brokerIP = bInfo.get(1).getIp();
+                                            if(k % 2 == 0) {
+                                                queueNumber.add(2);
+                                                queueNumber.add(10);
+                                            }
+                                            else {
+                                                queueNumber.add(3);
+                                                queueNumber.add(11);
+                                            }
+                                        }
+                                    } else if (config.getId().equals("B")) {
+                                        if (k < pubNum / 2) {
+                                            brokerIP = bInfo.get(2).getIp();
+                                            if(k % 2 == 0) {
+                                                queueNumber.add(4);
+                                                queueNumber.add(12);
+                                            }
+                                            else {
+                                                queueNumber.add(5);
+                                                queueNumber.add(13);
+                                            }
+
+                                        } else {
+                                            brokerIP = bInfo.get(3).getIp();
+                                            if(k % 2 == 0) {
+                                                queueNumber.add(6);
+                                                queueNumber.add(14);
+                                            }
+                                            else {
+                                                queueNumber.add(7);
+                                                queueNumber.add(15);
+                                            }
+                                        }
+                                    }
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                    queueNumber.clear();
+                                }
                             }
-                        }
                         break;
                     case "broker":
                         if (brokerNum == 1) {
@@ -588,175 +617,199 @@ public class ClusterBenchmarker {
             for(int j = 0;j<3;j++){
                 //TODO: consumer'lar nasil handle edilecek onemli onu konusmamiz lazim
 
-                ArrayList<Integer> queueList= new ArrayList<>();
-                ArrayList<Integer> brokerList = new ArrayList<>();
-
-                if(config.getId().equals("A")) {
-                    for(int q = 0; q<topicNum/2; q++) {
-                        queueList.add(q);
+                if(config.getPlatform().equals("rabbitmq") && topicNum == 4) {
+                    Consumer c = null;
+                    if(config.getId().equals("A")) {
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(0), bInfo.get(2).getIp());
+                        cList.add(c);
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(0), bInfo.get(2).getIp());
+                        cList.add(c);
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(1), bInfo.get(3).getIp());
+                        cList.add(c);
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(1), bInfo.get(3).getIp());
+                        cList.add(c);
                     }
-                    for(int b = brokerNum/2; b<brokerNum; b++) {
-                        brokerList.add(b);
+                    else if(config.getId().equals("B")){
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(2), bInfo.get(0).getIp());
+                        cList.add(c);
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(2), bInfo.get(0).getIp());
+                        cList.add(c);
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(3), bInfo.get(1).getIp());
+                        cList.add(c);
+                        c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(3), bInfo.get(1).getIp());
+                        cList.add(c);
                     }
                 }
-                else if(config.getId().equals("B")) {
-                    for(int q = topicNum/2; q<topicNum; q++) {
-                        queueList.add(q);
-                    }
-                    for(int b = 0; b<brokerNum/2; b++) {
-                        brokerList.add(b);
-                    }
-                }
-                if(queueList.isEmpty()){
-                    queueList.add(0);
-                }
-                Collections.shuffle(queueList);
 
-                Collections.shuffle(brokerList);
+                else {
+                    ArrayList<Integer> queueList = new ArrayList<>();
+                    ArrayList<Integer> brokerList = new ArrayList<>();
 
-                System.out.println("QUEUE LIST : ");
-                queueList.forEach(System.out::println);
-                ArrayList<Integer> queue = new ArrayList<>();
-                if(topicNum/2 < subNum){
-                    List<Integer> dup = new ArrayList<>();
-                    if((int)(topicNum/2) == 0){
-                        for(int k = 0;k< 1;k++){
-                            dup.addAll(queueList);
+                    if (config.getId().equals("A")) {
+                        for (int q = 0; q < topicNum / 2; q++) {
+                            queueList.add(q);
                         }
-                    }else{
-                        for(int k = 0;k< subNum / (topicNum/2);k++){
-                            dup.addAll(queueList);
+                        for (int b = brokerNum / 2; b < brokerNum; b++) {
+                            brokerList.add(b);
+                        }
+                    } else if (config.getId().equals("B")) {
+                        for (int q = topicNum / 2; q < topicNum; q++) {
+                            queueList.add(q);
+                        }
+                        for (int b = 0; b < brokerNum / 2; b++) {
+                            brokerList.add(b);
                         }
                     }
-                    queueList.addAll(dup);
-                }
-                System.out.println("new Qqueue list");
-                queueList.forEach(System.out::println);
-                for(int i=0; i<subNum; i++){
-                    /*
-                     * INFORMATIONAL: MKDIR removed from consumer
-                     * because it is redundant, i will check if it creates problems(no problems)
-                     */
-                    int iteration = (topicNum / 2)/subNum;
-                    if(iteration == 0){
-                        iteration++;
+                    if (queueList.isEmpty()) {
+                        queueList.add(0);
                     }
-                    for(int t = 0; t<iteration; t++) {
-                        queue.add(queueList.remove(0));
-                    }
+                    Collections.shuffle(queueList);
 
-                    if(brokerList.size() == 0) {
-                        if(config.getId().equals("A")) {
-                            if(brokerNum != 1) {
-                                for(int b = brokerNum/2; b<brokerNum; b++) {
-                                    brokerList.add(b);
+                    Collections.shuffle(brokerList);
+
+                    System.out.println("QUEUE LIST : ");
+                    queueList.forEach(System.out::println);
+                    ArrayList<Integer> queue = new ArrayList<>();
+                    if (topicNum / 2 < subNum) {
+                        List<Integer> dup = new ArrayList<>();
+                        if ((int) (topicNum / 2) == 0) {
+                            for (int k = 0; k < 1; k++) {
+                                dup.addAll(queueList);
+                            }
+                        } else {
+                            for (int k = 0; k < subNum / (topicNum / 2); k++) {
+                                dup.addAll(queueList);
+                            }
+                        }
+                        queueList.addAll(dup);
+                    }
+                    System.out.println("new Qqueue list");
+                    queueList.forEach(System.out::println);
+                    for (int i = 0; i < subNum; i++) {
+                        /*
+                         * INFORMATIONAL: MKDIR removed from consumer
+                         * because it is redundant, i will check if it creates problems(no problems)
+                         */
+                        int iteration = (topicNum / 2) / subNum;
+                        if (iteration == 0) {
+                            iteration++;
+                        }
+                        for (int t = 0; t < iteration; t++) {
+                            queue.add(queueList.remove(0));
+                        }
+
+                        if (brokerList.size() == 0) {
+                            if (config.getId().equals("A")) {
+                                if (brokerNum != 1) {
+                                    for (int b = brokerNum / 2; b < brokerNum; b++) {
+                                        brokerList.add(b);
+                                    }
+                                } else {
+                                    brokerList.add(0);
+                                }
+                            } else if (config.getId().equals("B")) {
+                                if (brokerNum != 1) {
+                                    for (int b = 0; b < brokerNum / 2; b++) {
+                                        brokerList.add(b);
+                                    }
+                                } else {
+                                    brokerList.add(0);
                                 }
                             }
-                            else {
-                                brokerList.add(0);
-                            }
+                            Collections.shuffle(brokerList);
                         }
-                        else if(config.getId().equals("B")) {
-                            if(brokerNum != 1) {
-                                for(int b = 0; b<brokerNum/2; b++) {
-                                    brokerList.add(b);
-                                }
-                            }
-                            else {
-                                brokerList.add(0);
-                            }
+
+                        String bIp = bInfo.get(brokerList.remove(0)).getIp();
+
+                        System.out.println("Queue Size: " + queue.size());
+
+
+                        Consumer c = new Consumer(topicNum, ("ConsumerFolder" + "-" + i), config.getPlatform(), queue, bIp);
+
+                        for (Integer a1 : queue) {
+                            System.out.println("will consume from : " + a1);
                         }
-                        Collections.shuffle(brokerList);
+                        cList.add(c);
+                        queue.clear();
                     }
-
-                    String bIp = bInfo.get(brokerList.remove(0)).getIp();
-
-
-                    Consumer c = new Consumer(topicNum,("ConsumerFolder"+"-"+i),config.getPlatform(),queue, bIp);
-
-                    for(Integer a1: queue){
-                        System.out.println("will consume from : " + a1);
-                    }
-                    cList.add(c);
-                    queue.clear();
                 }
+                    ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
+                    List<Thread> threadList = new ArrayList<>();
 
-                ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
-                List<Thread> threadList = new ArrayList<>();
+                    synchronizer.sync();
 
-                synchronizer.sync();
-
-                for(Consumer c : cList) {
-                    Callable<Void> call = () -> {
-                        System.out.println("Running Consumer AGAIN");
-                        c.run();
-                        return null;
-                    };
-                    Thread temp = new Thread(() -> {
-                        try {
-                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }finally{
-                            c.shutdown();
-                        }
-                    });
-                    threadList.add(temp);
-                    temp.start();
+                    for(Consumer c : cList) {
+                        Callable<Void> call = () -> {
+                            System.out.println("Running Consumer AGAIN");
+                            c.run();
+                            return null;
+                        };
+                        Thread temp = new Thread(() -> {
+                            try {
+                                ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }finally{
+                                c.shutdown();
+                            }
+                        });
+                        threadList.add(temp);
+                        temp.start();
 
                 /*final Future handler = ex.submit(call);
                 ex.schedule(() -> {
                     handler.cancel(true); // bura sıkıntılı
                 },10,TimeUnit.SECONDS);*/
-                    System.out.println("--------------------------------");
-                }
-
-                Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
-                String type = config.getPubOrSub();
-                String id = config.getId();
-                String platform = config.getPlatform();
-                String testName = args[0].replace(".config",".test");
-                testName = testName.split("/")[1];
-                System.out.printf("NAME OF TEST:"+testName);
-                Utilizer u = new Utilizer(pId, type, id,platform,testName,j);
-                Thread uThread = new Thread(u);
-                uThread.start();
-
-                for(Thread e : threadList){
-                    try {
-                        e.join();
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
+                        System.out.println("--------------------------------");
                     }
-                }
-                ex.shutdown();
-                u.setStop(true);
-                try{
-                    uThread.join();
-                }catch (InterruptedException ex1){
-                    ex1.printStackTrace();
-                }
-                double avgCPU = u.getAvgCPU();
-                double avgMem = u.getAvgMem();
-                double throughput = u.getConsumerThroughput();
 
-                System.out.println("Average TEST: " + avgCPU + " " + avgMem);
+                    Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+                    String type = config.getPubOrSub();
+                    String id = config.getId();
+                    String platform = config.getPlatform();
+                    String testName = args[0].replace(".config",".test");
+                    testName = testName.split("/")[1];
+                    System.out.printf("NAME OF TEST:"+testName);
+                    Utilizer u = new Utilizer(pId, type, id,platform,testName,j);
+                    Thread uThread = new Thread(u);
+                    uThread.start();
 
-                finalCPU += avgCPU;
-                finalMem += avgMem;
-                finalThroughput += throughput;
+                    for(Thread e : threadList){
+                        try {
+                            e.join();
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                    ex.shutdown();
+                    u.setStop(true);
+                    try{
+                        uThread.join();
+                    }catch (InterruptedException ex1){
+                        ex1.printStackTrace();
+                    }
+                    double avgCPU = u.getAvgCPU();
+                    double avgMem = u.getAvgMem();
+                    double throughput = u.getConsumerThroughput();
+
+                    System.out.println("Average TEST: " + avgCPU + " " + avgMem);
+
+                    finalCPU += avgCPU;
+                    finalMem += avgMem;
+                    finalThroughput += throughput;
 
 
-                synchronizer.sync();
+                    synchronizer.sync();
 
 
-                cList.clear();
+                    cList.clear();
 
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
             }
 
             finalAvgCPU = finalCPU / 3;

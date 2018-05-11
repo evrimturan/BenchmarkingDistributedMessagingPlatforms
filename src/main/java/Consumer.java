@@ -107,6 +107,8 @@ public class Consumer {
 
             } catch (Exception e) {
                 try{
+                    System.out.println("EXCEPTION");
+                    e.printStackTrace();
                     rabbitmqChannel.close();
                     rabbitmqConnection.close();
                 }catch(Exception ex){
