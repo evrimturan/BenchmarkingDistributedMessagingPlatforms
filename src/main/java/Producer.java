@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-@SuppressWarnings("InfiniteLoopStatement")
+@SuppressWarnings("ALL")
 public class Producer {
     private long mSize;
     private long dSize;
