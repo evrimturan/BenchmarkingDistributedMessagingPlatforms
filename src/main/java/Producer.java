@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-@SuppressWarnings("InfiniteLoopStatement")
+@SuppressWarnings("ALL")
 public class Producer {
     private long mSize;
     private long dSize;
@@ -65,20 +65,12 @@ public class Producer {
                 System.out.println(queueNum.size());
                 while(true){
                     for (Integer aQueueNum : queueNum) {
-                        if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
+                        if(!(isZigzag && serverNum != 0 && Producer.getCounter() >= Consumer.getCounter())) {
                             //String queue = "queue-" + aQueueNum;
                             //System.out.println(producers.get(queue));
                             activemqProducer.send(activemqSession.createQueue("queue-"+aQueueNum),bMessage);
                             counter = getCounter() + 1;
                             //System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0)); removed for now
-                        }
-                        else if(!isZigzag) {
-                            //String queue = "queue-" + aQueueNum;
-                            //System.out.println(producers.get(queue));
-                            activemqProducer.send(activemqSession.createQueue("queue-"+aQueueNum),bMessage);
-                            counter = getCounter() + 1;
-                            //System.out.println("ACTIVEMQ PRODUCED TO:  " + brokerIp + " to queue "+ queueNum.get(0)); removed for now
-
                         }
                     }
                 }
@@ -94,12 +86,7 @@ public class Producer {
             try{
                 while(true) {
                     for (Integer aQueueNum : queueNum) {
-                        if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
-                            rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
-                            counter = getCounter() + 1;
-                            //System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
-                        }
-                        else if(!isZigzag) {
+                        if(!(isZigzag && serverNum != 0 && Producer.getCounter() >= Consumer.getCounter())) {
                             rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
                             counter = getCounter() + 1;
                             //System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
@@ -122,12 +109,7 @@ public class Producer {
             try {
                 while(true) {
                     for(Integer a : queueNum){
-                        if(isZigzag && serverNum != 0 && Producer.getCounter() < Consumer.getCounter()) {
-                            kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
-                            counter = getCounter() + 1;
-                            System.out.println("KAFKA PRODUCED TO:  "+brokerIp + "queue is : " + a);
-                        }
-                        else if(!isZigzag) {
+                        if(!(isZigzag && serverNum != 0 && Producer.getCounter() >= Consumer.getCounter())) {
                             kafkaProducer.send(new ProducerRecord<>("queue-" + a, kafkaByteArray));
                             counter = getCounter() + 1;
                             System.out.println("KAFKA PRODUCED TO:  "+brokerIp + "queue is : " + a);
