@@ -9,9 +9,7 @@ public class ClusterBenchmarker {
     public static void main(String[] args) {
 
         TestConfiguration config = new TestConfiguration(args[0]);
-        if(config.getTest().contains("zigzag") || config.getTest().contains("messagesize")){
-            return;
-        }
+
         int brokerNum = config.getBrokerNum();
         int pubNum = config.getPubNum();
         int subNum = config.getSubNum();
@@ -161,18 +159,17 @@ public class ClusterBenchmarker {
                 }
 
             }
-
-            for(int j = 0;j<3;j++){
-
-
-
-            }
         }
 
 
+        if(config.getPubOrSub().equals("producer")){
+            Synchronizer synchronizer;
+            if(config.getTest().contains("zigzag")){
+                synchronizer = null;
+            }else{
+                synchronizer = new Synchronizer(config.getId(),"producer");
+            }
 
-        else if(config.getPubOrSub().equals("producer")){
-            Synchronizer synchronizer = new Synchronizer(config.getId(),"producer");
             for(int j = 0;j<3;j++){
 
                 Producer producer;
@@ -520,13 +517,40 @@ public class ClusterBenchmarker {
                         }
                         break;
                 }
-                ScheduledExecutorService ex = Executors.newScheduledThreadPool(pList.size());
+                System.out.println("Su anda burdayim 0");
+                ScheduledExecutorService ex;
+                if(config.getTest().contains("zigzag")){
+                    ex = Executors.newScheduledThreadPool(2);
+                }else{
+                    ex = Executors.newScheduledThreadPool(pList.size());
+                }
                 List<Thread> threadList = new ArrayList<>();
+                System.out.println("Buraya girdiler. 1");
 
                 if(!config.getTest().contains("zigzag")) {
                     synchronizer.sync();
                 }
 
+                System.out.println("buradayim 2");
+                System.out.println("Clist size : " + cList.size() + " Plist size: "+pList.size());
+                for(Consumer c : cList){
+                    Callable<Void> call = () -> {
+                        System.out.println("Running Consumer AGAIN");
+                        c.run();
+                        return null;
+                    };
+                    Thread temp = new Thread(() -> {
+                        try {
+                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
+                        } catch (InterruptedException e) {
+                            //e.printStackTrace(); This is redundant
+                        } c.shutdown();
+                    });
+                    threadList.add(temp);
+                    temp.start();
+                    System.out.println("--------------------------------");
+                }
+                System.out.println("Consumer bitti");
                 for(Producer p : pList) {
                     Callable<Void> call = () -> {
                         System.out.println("Running producer AGAIN");
@@ -540,6 +564,7 @@ public class ClusterBenchmarker {
                             //e.printStackTrace(); This is redundant
                         }finally{
                             p.shutdown();
+
                         }
                     });
                     threadList.add(temp);
@@ -595,7 +620,9 @@ public class ClusterBenchmarker {
                     synchronizer.sync();
                 }
 
-                pList.clear();
+                if(!config.getTest().contains("zigzag")){
+                    pList.clear();
+                }
                 Producer.setDeleteTopics(true);
                 if(Producer.isDeleteTopics()) {
                     System.out.println("Delete Topics True");
@@ -778,6 +805,30 @@ public class ClusterBenchmarker {
                 },10,TimeUnit.SECONDS);*/
                         System.out.println("--------------------------------");
                     }
+                for(Producer p : pList) {
+                    Callable<Void> call = () -> {
+                        System.out.println("Running producer AGAIN");
+                        p.run();
+                        return null;
+                    };
+                    Thread temp = new Thread(() -> {
+                        try {
+                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
+                        } catch (InterruptedException e) {
+                            //e.printStackTrace(); This is redundant
+                        }finally{
+                            p.shutdown();
+                        }
+                    });
+                    threadList.add(temp);
+                    temp.start();
+
+                /*final Future handler = ex.submit(call);
+                ex.schedule(() -> {
+                    handler.cancel(true); // bura sıkıntılı
+                },10,TimeUnit.SECONDS);*/
+                    System.out.println("--------------------------------");
+                }
 
                     Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
                     String type = config.getPubOrSub();
