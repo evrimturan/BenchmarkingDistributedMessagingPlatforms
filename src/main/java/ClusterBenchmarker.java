@@ -512,7 +512,9 @@ public class ClusterBenchmarker {
                 ScheduledExecutorService ex = Executors.newScheduledThreadPool(pList.size());
                 List<Thread> threadList = new ArrayList<>();
 
-                synchronizer.sync();
+                if(!config.getTest().contains("zigzag")) {
+                    synchronizer.sync();
+                }
 
                 for(Producer p : pList) {
                     Callable<Void> call = () -> {
@@ -577,7 +579,10 @@ public class ClusterBenchmarker {
                 for(Producer p: pList){
                     p.deleteQueues();
                 }
-                synchronizer.sync();
+
+                if(!config.getTest().contains("zigzag")) {
+                    synchronizer.sync();
+                }
 
                 pList.clear();
                 Producer.setDeleteTopics(true);
