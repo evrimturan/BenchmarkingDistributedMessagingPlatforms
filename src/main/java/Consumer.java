@@ -6,11 +6,15 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.WakeupException;
 
 import javax.jms.*;
 import javax.jms.Queue;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class Consumer {
@@ -28,6 +32,7 @@ public class Consumer {
     private MessageConsumer activemqConsumer;
     private com.rabbitmq.client.Consumer rabbitmqConsumer;
     private org.apache.kafka.clients.consumer.KafkaConsumer<String, byte[]> kafkaConsumer;
+    private AtomicBoolean kafkaEnd = new AtomicBoolean(false);
     private HashMap<String,Queue> consumers;
     private static int counter = 0;
 
@@ -118,9 +123,12 @@ public class Consumer {
             }
         } else if (platform.equals("kafka")) {
             try {
-                while(true){
+                while(!kafkaEnd.get()){
                     kafkaConsumer.subscription().forEach(System.out::println);
-                    ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(100);
+                    ConsumerRecords<String, byte[]> records;
+                    synchronized (kafkaConsumer){
+                        records = kafkaConsumer.poll(100);
+                    }
                     System.out.println("Record Size: " + records.count());
                     for (ConsumerRecord<String, byte[]> ignored : records) {
                         System.out.println("KAFKA CONSUMING FROM " + brokerIp + " TOPIC : "+ignored.topic());
@@ -145,12 +153,12 @@ public class Consumer {
                                 }
                             }*/
                     }
-                    kafkaConsumer.commitAsync();
                 }
                 //kafkaConsumer.unsubscribe();
             } catch (Exception e) {
                 //e.printStackTrace();
-                kafkaConsumer.commitSync();
+                System.out.println("EXCEPTION");
+                e.printStackTrace();
                 kafkaConsumer.close();
             }
         }
@@ -177,8 +185,8 @@ public class Consumer {
                 }
                 break;
             case "kafka":
-                kafkaConsumer.commitSync();
-                kafkaConsumer.close();
+                kafkaEnd.set(true);
+                kafkaConsumer.wakeup();
                 break;
         }
     }
@@ -261,35 +269,52 @@ public class Consumer {
                 }
                 break;
             case "kafka":
-                Properties props = new Properties();
-                props.put("bootstrap.servers", brokerIp + ":9092");
-                props.put("group.id", "group-1");
-                props.put("enable.auto.commit", "true");
-                props.put("auto.commit.interval.ms", "1000");
-                props.put("auto.offset.reset", "latest");
-                props.put("session.timeout.ms", "30000");
-                props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-                props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
-                props.put("max.poll.records",10000);
-                kafkaConsumer = null;
+                if(kafkaConsumer == null){
+                    Random random = new Random();
+                    Properties props = new Properties();
+                    props.put("bootstrap.servers", brokerIp + ":9092");
+                    props.put("group.id", "group-"+ random.nextInt(1000000));
+                    props.put("enable.auto.commit", "true");
+                    props.put("auto.commit.interval.ms", "1000");
+                    props.put("auto.offset.reset", "earliest");
+                    props.put("session.timeout.ms", "30000");
+                    props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+                    props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
 
-                try {
-                    kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
+                    try {
+                        kafkaConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
+                        synchronized (kafkaConsumer){
+                            String[] topics = new String[queueNum.size()];
+                            for(int i = 0; i<queueNum.size(); i++) {
+                                topics[i] = "queue-" + queueNum.get(i);
+                            }
+                            kafkaConsumer.subscribe(Arrays.asList(topics));
 
+                            System.out.println("Kafka consumer has subscriptions of these : ");
+                            kafkaConsumer.subscription().forEach(System.out::println);
+                        }
+                        System.out.println("Kafka connection established.");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }else{
+                    kafkaEnd.set(false);
                     String[] topics = new String[queueNum.size()];
                     for(int i = 0; i<queueNum.size(); i++) {
                         topics[i] = "queue-" + queueNum.get(i);
                     }
-                    kafkaConsumer.subscribe(Arrays.asList(topics));
+                    synchronized (kafkaConsumer){
+                        kafkaConsumer.subscribe(Arrays.asList(topics));
+                    }
 
-                    System.out.println("Kafka consumer has subscriptions of these : ");
-                    kafkaConsumer.subscription().forEach(System.out::println);
-
-                    System.out.println("Kafka connection established.");
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-                break;
+
         }
     }
 }

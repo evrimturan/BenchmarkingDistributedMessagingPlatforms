@@ -269,6 +269,7 @@ public class Producer {
                 props.put("batch.size", 16384);
                 props.put("linger.ms", 1);
                 props.put("buffer.memory", 33554432);
+                props.put("request.required.acks", "1");
 
                 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
