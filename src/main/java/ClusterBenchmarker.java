@@ -31,135 +31,7 @@ public class ClusterBenchmarker {
 
 
 
-        if(config.getTest().contains("zigzag")) {
-            if(config.getTest().equals("zigzag1")) {
-                Producer producer;
-                Consumer consumer;
 
-                String brokerIP = null;
-                ArrayList<Integer> queueNumber = new ArrayList<>();
-
-
-                if(config.getServerNum() == 0) {
-                    queueNumber.add(0);
-                    brokerIP = bInfo.get(0).getIp();
-                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
-                    pList.add(producer);
-                    queueNumber.clear();
-
-                    queueNumber.add(0);
-                    brokerIP = bInfo.get(0).getIp();
-                    consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
-                    cList.add(consumer);
-                    queueNumber.clear();
-                }
-
-            }
-
-            else if(config.getTest().equals("zigzag2")) {
-                Producer producer;
-                Consumer consumer;
-
-                String brokerIP = null;
-                ArrayList<Integer> queueNumber = new ArrayList<>();
-
-
-                if(config.getServerNum() == 0) {
-                    queueNumber.add(0);
-                    brokerIP = bInfo.get(0).getIp();
-                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
-                    pList.add(producer);
-                    queueNumber.clear();
-
-                    queueNumber.add(1);
-                    brokerIP = bInfo.get(1).getIp();
-                    consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
-                    cList.add(consumer);
-                    queueNumber.clear();
-                }
-
-                else if(config.getServerNum() == 1) {
-                    queueNumber.add(0);
-                    brokerIP = bInfo.get(0).getIp();
-                    consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
-                    cList.add(consumer);
-                    queueNumber.clear();
-
-                    queueNumber.add(1);
-                    brokerIP = bInfo.get(1).getIp();
-                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
-                    pList.add(producer);
-                    queueNumber.clear();
-                }
-
-            }
-
-            else if(config.getTest().equals("zigzag3")) {
-                //TODO queue numarası ver, sonra clear yap. hepsine yap
-                Producer producer;
-                Consumer consumer;
-
-                String brokerIP = null;
-                ArrayList<Integer> queueNumber = new ArrayList<>();
-
-                if(config.getServerNum() == 0) {
-                    queueNumber.add(0);
-                    brokerIP = bInfo.get(0).getIp();
-                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
-                    pList.add(producer);
-                    queueNumber.clear();
-
-                    queueNumber.add(3);
-                    brokerIP = bInfo.get(3).getIp();
-                    consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
-                    cList.add(consumer);
-                    queueNumber.clear();
-                }
-
-                else if(config.getServerNum() == 1) {
-                    queueNumber.add(0);
-                    brokerIP = bInfo.get(0).getIp();
-                    consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
-                    cList.add(consumer);
-                    queueNumber.clear();
-
-                    queueNumber.add(1);
-                    brokerIP = bInfo.get(1).getIp();
-                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
-                    pList.add(producer);
-                    queueNumber.clear();
-                }
-
-                else if(config.getServerNum() == 2) {
-                    queueNumber.add(1);
-                    brokerIP = bInfo.get(1).getIp();
-                    consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
-                    cList.add(consumer);
-                    queueNumber.clear();
-
-                    queueNumber.add(2);
-                    brokerIP = bInfo.get(2).getIp();
-                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
-                    pList.add(producer);
-                    queueNumber.clear();
-                }
-
-                else if(config.getServerNum() == 3) {
-                    queueNumber.add(2);
-                    brokerIP = bInfo.get(2).getIp();
-                    consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
-                    cList.add(consumer);
-                    queueNumber.add(0);
-
-                    queueNumber.add(3);
-                    brokerIP = bInfo.get(3).getIp();
-                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
-                    pList.add(producer);
-                    queueNumber.clear();
-                }
-
-            }
-        }
 
 
         if(config.getPubOrSub().equals("producer")){
@@ -171,6 +43,136 @@ public class ClusterBenchmarker {
             }
 
             for(int j = 0;j<3;j++){
+
+                if(config.getTest().contains("zigzag")) {
+                    if(config.getTest().equals("zigzag1")) {
+                        Producer producer;
+                        Consumer consumer;
+
+                        String brokerIP = null;
+                        ArrayList<Integer> queueNumber = new ArrayList<>();
+
+
+                        if(config.getServerNum() == 0) {
+                            queueNumber.add(0);
+                            brokerIP = bInfo.get(0).getIp();
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
+                            pList.add(producer);
+                            queueNumber.clear();
+
+                            queueNumber.add(0);
+                            brokerIP = bInfo.get(0).getIp();
+                            consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
+                            cList.add(consumer);
+                            queueNumber.clear();
+                        }
+
+                    }
+
+                    else if(config.getTest().equals("zigzag2")) {
+                        Producer producer;
+                        Consumer consumer;
+
+                        String brokerIP = null;
+                        ArrayList<Integer> queueNumber = new ArrayList<>();
+
+
+                        if(config.getServerNum() == 0) {
+                            queueNumber.add(0);
+                            brokerIP = bInfo.get(0).getIp();
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
+                            pList.add(producer);
+                            queueNumber.clear();
+
+                            queueNumber.add(1);
+                            brokerIP = bInfo.get(1).getIp();
+                            consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
+                            cList.add(consumer);
+                            queueNumber.clear();
+                        }
+
+                        else if(config.getServerNum() == 1) {
+                            queueNumber.add(0);
+                            brokerIP = bInfo.get(0).getIp();
+                            consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
+                            cList.add(consumer);
+                            queueNumber.clear();
+
+                            queueNumber.add(1);
+                            brokerIP = bInfo.get(1).getIp();
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
+                            pList.add(producer);
+                            queueNumber.clear();
+                        }
+
+                    }
+
+                    else if(config.getTest().equals("zigzag3")) {
+                        //TODO queue numarası ver, sonra clear yap. hepsine yap
+                        Producer producer;
+                        Consumer consumer;
+
+                        String brokerIP = null;
+                        ArrayList<Integer> queueNumber = new ArrayList<>();
+
+                        if(config.getServerNum() == 0) {
+                            queueNumber.add(0);
+                            brokerIP = bInfo.get(0).getIp();
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
+                            pList.add(producer);
+                            queueNumber.clear();
+
+                            queueNumber.add(3);
+                            brokerIP = bInfo.get(3).getIp();
+                            consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
+                            cList.add(consumer);
+                            queueNumber.clear();
+                        }
+
+                        else if(config.getServerNum() == 1) {
+                            queueNumber.add(0);
+                            brokerIP = bInfo.get(0).getIp();
+                            consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
+                            cList.add(consumer);
+                            queueNumber.clear();
+
+                            queueNumber.add(1);
+                            brokerIP = bInfo.get(1).getIp();
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
+                            pList.add(producer);
+                            queueNumber.clear();
+                        }
+
+                        else if(config.getServerNum() == 2) {
+                            queueNumber.add(1);
+                            brokerIP = bInfo.get(1).getIp();
+                            consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
+                            cList.add(consumer);
+                            queueNumber.clear();
+
+                            queueNumber.add(2);
+                            brokerIP = bInfo.get(2).getIp();
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
+                            pList.add(producer);
+                            queueNumber.clear();
+                        }
+
+                        else if(config.getServerNum() == 3) {
+                            queueNumber.add(2);
+                            brokerIP = bInfo.get(2).getIp();
+                            consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
+                            cList.add(consumer);
+                            queueNumber.add(0);
+
+                            queueNumber.add(3);
+                            brokerIP = bInfo.get(3).getIp();
+                            producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), true);
+                            pList.add(producer);
+                            queueNumber.clear();
+                        }
+
+                    }
+                }
 
                 Producer producer;
 
