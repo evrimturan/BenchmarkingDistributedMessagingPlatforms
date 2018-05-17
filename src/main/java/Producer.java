@@ -87,7 +87,7 @@ public class Producer {
                 while(true) {
                     for (Integer aQueueNum : queueNum) {
                         if(!(isZigzag && serverNum != 0 && Producer.getCounter() >= Consumer.getCounter())) {
-                            rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                            rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.TEXT_PLAIN, rabbitByteArray);
                             counter = getCounter() + 1;
                             //System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
                         }
@@ -223,7 +223,7 @@ public class Producer {
 
 
                     for(Integer a : queueNum){
-                        rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
+                        rabbitmqChannel.queueDeclare("queue-" + a, false, false, false, null);
                     }
 
                     FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
