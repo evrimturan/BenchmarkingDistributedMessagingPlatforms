@@ -621,6 +621,9 @@ public class ClusterBenchmarker {
 
                 if(!config.getTest().contains("zigzag")){
                     pList.clear();
+                }else{
+                    pList.clear();
+                    cList.clear();
                 }
                 Producer.setDeleteTopics(true);
                 if(Producer.isDeleteTopics()) {
