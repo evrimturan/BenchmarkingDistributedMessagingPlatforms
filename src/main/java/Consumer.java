@@ -238,7 +238,7 @@ public class Consumer {
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
 
                     for(Integer a : queueNum){
-                        rabbitmqChannel.queueDeclare("queue-" + a, false, false, false, null);
+                        rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
                     }
 
                     rabbitmqConsumer = new DefaultConsumer(rabbitmqChannel) {
