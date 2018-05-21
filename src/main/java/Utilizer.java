@@ -15,6 +15,7 @@ public class Utilizer implements Runnable{
     private String platform;
     private int iteration;
     private String testName;
+    private int serverNumber;
 
     private double avgCPU;
     private double avgMem;
@@ -36,18 +37,46 @@ public class Utilizer implements Runnable{
     public void run() {
         try {
             if (type.equals("producer")) {
-                if (id.equals("A")) {
-                    int port = 20000;
-                    System.out.println("Trying to connect to " + machine_9 + " port : " + port);
-                    socket = new Socket(machine_9, port);
-                    print = new PrintWriter(socket.getOutputStream());
-                    reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                } else if (id.equals("B")) {
-                    int port = 20001;
-                    System.out.println("Trying to connect to " + machine_9 + " port : " + port);
-                    socket = new Socket(machine_9, port);
-                    print = new PrintWriter(socket.getOutputStream());
-                    reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                if(testName.contains("zigzag")){
+                    if(serverNumber == 0){
+                        int port = 20000;
+                        System.out.println("Trying to connect to " + machine_9 + " port : " + port);
+                        socket = new Socket(machine_9, port);
+                        print = new PrintWriter(socket.getOutputStream());
+                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    }else if(serverNumber == 1){
+                        int port = 20001;
+                        System.out.println("Trying to connect to " + machine_9 + " port : " + port);
+                        socket = new Socket(machine_9, port);
+                        print = new PrintWriter(socket.getOutputStream());
+                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    }else if (serverNumber == 2){
+                        int port = 20002;
+                        System.out.println("Trying to connect to " + machine_9 + " port : " + port);
+                        socket = new Socket(machine_9, port);
+                        print = new PrintWriter(socket.getOutputStream());
+                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    }else if(serverNumber == 3){
+                        int port = 20003;
+                        System.out.println("Trying to connect to " + machine_9 + " port : " + port);
+                        socket = new Socket(machine_9, port);
+                        print = new PrintWriter(socket.getOutputStream());
+                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    }
+                }else{
+                    if (id.equals("A")) {
+                        int port = 20000;
+                        System.out.println("Trying to connect to " + machine_9 + " port : " + port);
+                        socket = new Socket(machine_9, port);
+                        print = new PrintWriter(socket.getOutputStream());
+                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    } else if (id.equals("B")) {
+                        int port = 20001;
+                        System.out.println("Trying to connect to " + machine_9 + " port : " + port);
+                        socket = new Socket(machine_9, port);
+                        print = new PrintWriter(socket.getOutputStream());
+                        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    }
                 }
             } else if (type.equals("consumer")) {
                 if (id.equals("A")) {
@@ -179,7 +208,7 @@ public class Utilizer implements Runnable{
         }
     }
 
-    Utilizer(Long pId, String type, String id, String platform,String testName, int iteration) {
+    Utilizer(Long pId, String type, String id, String platform,String testName, int iteration,int serverNumber) {
         this.pId = pId;
         this.type = type;
         this.id = id;
@@ -187,6 +216,7 @@ public class Utilizer implements Runnable{
         this.platform = platform;
         this.testName = testName;
         this.iteration = iteration;
+        this.serverNumber = serverNumber;
     }
 
     void setStop(boolean halt){

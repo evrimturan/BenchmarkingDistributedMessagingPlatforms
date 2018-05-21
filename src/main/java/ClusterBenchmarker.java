@@ -16,6 +16,7 @@ public class ClusterBenchmarker {
         long messageSize = config.getMessageSize();
         long dataSize = config.getDataSize();
         int topicNum = config.getTopicNum();
+        int serverNumber = config.getServerNum();
         List<TestConfiguration.BrokerInfo> bInfo = config.getBInfo();
 
         List<Producer> pList = new ArrayList<>();
@@ -28,11 +29,6 @@ public class ClusterBenchmarker {
         double finalAvgCPU;
         double finalAvgMem;
         double finalAvgThroughput;
-
-
-
-
-
 
         if(config.getPubOrSub().equals("producer")){
             Synchronizer synchronizer;
@@ -162,7 +158,8 @@ public class ClusterBenchmarker {
                             brokerIP = bInfo.get(2).getIp();
                             consumer = new Consumer(topicNum,("ConsumerFolder"+"-"+ 0),config.getPlatform(),queueNumber, brokerIP);
                             cList.add(consumer);
-                            queueNumber.add(0);
+                            queueNumber.clear();
+
 
                             queueNumber.add(3);
                             brokerIP = bInfo.get(3).getIp();
@@ -586,7 +583,7 @@ public class ClusterBenchmarker {
                 String testName = args[0].replace(".config",".test");
                 testName = testName.split("/")[1];
                 System.out.printf("NAME OF TEST:"+testName);
-                Utilizer u = new Utilizer(pId, type, id,platform,testName,j);
+                Utilizer u = new Utilizer(pId, type, id,platform,testName,j,serverNumber);
                 Thread uThread = new Thread(u);
                 uThread.start();
 
@@ -839,7 +836,7 @@ public class ClusterBenchmarker {
                     String testName = args[0].replace(".config",".test");
                     testName = testName.split("/")[1];
                     System.out.printf("NAME OF TEST:"+testName);
-                    Utilizer u = new Utilizer(pId, type, id,platform,testName,j);
+                    Utilizer u = new Utilizer(pId, type, id,platform,testName,j,serverNumber);
                     Thread uThread = new Thread(u);
                     uThread.start();
 
