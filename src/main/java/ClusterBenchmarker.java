@@ -664,7 +664,7 @@ public class ClusterBenchmarker {
             for(int j = 0;j<3;j++){
                 //TODO: consumer'lar nasil handle edilecek onemli onu konusmamiz lazim
 
-                if(config.getPlatform().equals("rabbitmq") && topicNum == 4) {
+                if(config.getPlatform().equals("rabbitmq") && topicNum == 4 && config.getTest().contains("topic")) {
                     Consumer c = null;
                     if(config.getId().equals("A")) {
                         c = new Consumer(topicNum,("ConsumerFolder"+"-"+0),config.getPlatform(),Arrays.asList(0), bInfo.get(2).getIp());
