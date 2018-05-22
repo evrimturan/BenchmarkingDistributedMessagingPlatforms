@@ -11,5 +11,5 @@ mv SeniorDesign-1.0-jar-with-dependencies.jar SeniorDesign-1.0.jar
 for file in "$1"tests/"$2"*
 do
     echo "Doing for : $file"
-    java -jar SeniorDesign-1.0.jar activemqtests/"$file"
+    java -jar SeniorDesign-1.0.jar "$1"tests/"$file"
 done
