@@ -8,20 +8,8 @@ cp target/SeniorDesign-1.0-jar-with-dependencies.jar $( pwd )
 
 mv SeniorDesign-1.0-jar-with-dependencies.jar SeniorDesign-1.0.jar
 
-for file in activemqtests/*
+for file in "$1"tests/"$2"*
 do
     echo "Doing for : $file"
     java -jar SeniorDesign-1.0.jar activemqtests/"$file"
-done
-
-for file in rabbitmqtests/*
-do
-    echo "Doing for : $file"
-    java -jar SeniorDesign-1.0.jar rabbitmqtests/"$file"
-done
-
-for file in kafkatests/*
-do
-    echo "Doing for: $file"
-    java -jar SeniorDesign-1.0.jar kafkatests/"$file"
 done
