@@ -87,7 +87,11 @@ public class Producer {
                 while(true) {
                     for (Integer aQueueNum : queueNum) {
                         if(!(isZigzag && serverNum != 0 && Producer.getCounter() >= Consumer.getCounter())) {
-                            rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                            if(ClusterBenchmarker.isPersistent){
+                                rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.PERSISTENT_TEXT_PLAIN, rabbitByteArray);
+                            }else{
+                                rabbitmqChannel.basicPublish("", "queue-" + aQueueNum, MessageProperties.TEXT_PLAIN, rabbitByteArray);
+                            }
                             counter = getCounter() + 1;
                             //System.out.println("RABBITMQ PRODUCED TO:  " + brokerIp);
                         }
@@ -182,10 +186,11 @@ public class Producer {
                     this.activemqSession = activemqConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
                     activemqProducer = activemqSession.createProducer(null);
-                    activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
-
-
-
+                    if(ClusterBenchmarker.isPersistent){
+                        activemqProducer.setDeliveryMode(DeliveryMode.PERSISTENT);
+                    }else{
+                        activemqProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+                    }
 
                     //activemqProducer = activemqSession.createProducer(activemqSession.createTemporaryQueue());
 
@@ -223,7 +228,12 @@ public class Producer {
 
 
                     for(Integer a : queueNum){
-                        rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
+                        if(ClusterBenchmarker.isPersistent){
+                            rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
+                        }else{
+                            rabbitmqChannel.queueDeclare("queue-" + a, false, false, false, null);
+                        }
+
                     }
 
                     FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));

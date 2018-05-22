@@ -5,11 +5,13 @@ import java.util.concurrent.*;
 
 @SuppressWarnings("ALL")
 public class ClusterBenchmarker {
+    static boolean isPersistent;
 
     public static void main(String[] args) {
 
         TestConfiguration config = new TestConfiguration(args[0]);
 
+        isPersistent = config.isPersistent();
         int brokerNum = config.getBrokerNum();
         int pubNum = config.getPubNum();
         int subNum = config.getSubNum();

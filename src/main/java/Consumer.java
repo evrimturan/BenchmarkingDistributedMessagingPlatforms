@@ -237,8 +237,13 @@ public class Consumer {
                     this.rabbitmqConnection = factory.newConnection();
                     this.rabbitmqChannel = rabbitmqConnection.createChannel();
 
+
                     for(Integer a : queueNum){
-                        rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
+                        if(ClusterBenchmarker.isPersistent){
+                            rabbitmqChannel.queueDeclare("queue-" + a, true, false, false, null);
+                        }else{
+                            rabbitmqChannel.queueDeclare("queue-" + a, false, false, false, null);
+                        }
                     }
 
                     rabbitmqConsumer = new DefaultConsumer(rabbitmqChannel) {
