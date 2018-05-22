@@ -276,7 +276,7 @@ public class Producer {
                     AdminClient kafka = AdminClient.create(props);
                     Map<String, String> configs = new HashMap<>();
                     configs.put("max.message.bytes","10485760");
-                    int partitions = 0;
+                    int partitions = 1;
                     short replication = ClusterBenchmarker.replicationFactor;
                     for(Integer a : queueNum){
                         kafka.createTopics(Arrays.asList(new NewTopic("queue-"+a, partitions, replication).configs(configs)));
