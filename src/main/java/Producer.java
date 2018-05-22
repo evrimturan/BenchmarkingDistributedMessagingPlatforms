@@ -4,6 +4,7 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.KafkaFuture;
 
@@ -272,6 +273,14 @@ public class Producer {
                 try {
 
                     kafkaProducer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
+                    AdminClient kafka = AdminClient.create(props);
+                    Map<String, String> configs = new HashMap<>();
+                    configs.put("max.message.bytes","10485760");
+                    int partitions = 0;
+                    short replication = ClusterBenchmarker.replicationFactor;
+                    for(Integer a : queueNum){
+                        kafka.createTopics(Arrays.asList(new NewTopic("queue-"+a, partitions, replication).configs(configs)));
+                    }
 
                     FileInputStream in = new FileInputStream(new File(folderName + "/producer.data-" + type));
 

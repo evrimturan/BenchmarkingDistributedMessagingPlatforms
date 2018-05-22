@@ -21,6 +21,7 @@ public class TestConfiguration {
     private String id;
     private String test;
     private int serverNum;
+    private short replicationFactor;
 
     TestConfiguration(String Filename){
         try {
@@ -46,6 +47,7 @@ public class TestConfiguration {
             platform = conf.getString("platform.type");
             id = conf.getString("id");
             test = conf.getString("test");
+            replicationFactor = conf.getShort("replication.factor");
             //messageSize = conf.getDouble("message.size");
             String strMessage = conf.getString("message.size");
             type = strMessage;
@@ -133,6 +135,10 @@ public class TestConfiguration {
     }
 
     public int getServerNum() { return serverNum; }
+
+    public short getReplicationFactor() {
+        return replicationFactor;
+    }
 
     protected class BrokerInfo{
         private int id;
