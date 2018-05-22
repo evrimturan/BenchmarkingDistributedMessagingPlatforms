@@ -267,129 +267,49 @@ public class ClusterBenchmarker {
                         }
                         break;
                     case "topic2":
-                            if (topicNum == 4) {
+                        if (topicNum == 4) {
 
 
-                                if(config.getPlatform().equals("rabbitmq")) {
-                                    if(config.getId().equals("A")) {
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(0), bInfo.get(0).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(0), bInfo.get(0).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(1), bInfo.get(1).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(1), bInfo.get(1).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                    }
-                                    else if(config.getId().equals("B")){
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(2), bInfo.get(2).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(2), bInfo.get(2).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(3), bInfo.get(3).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(3), bInfo.get(3).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                    }
-                                }
-
-                                else {
-                                    for (int k = 0; k < pubNum; k++) {
-                                        if (config.getId().equals("A")) {
-                                            if (k < pubNum / 2) {
-                                                brokerIP = bInfo.get(0).getIp();
-                                                queueNumber.add(0);
-                                            } else {
-                                                brokerIP = bInfo.get(1).getIp();
-                                                queueNumber.add(1);
-                                            }
-                                        } else if (config.getId().equals("B")) {
-                                            if (k < pubNum / 2) {
-                                                brokerIP = bInfo.get(2).getIp();
-                                                queueNumber.add(2);
-                                            } else {
-                                                brokerIP = bInfo.get(3).getIp();
-                                                queueNumber.add(3);
-                                            }
-                                        }
-                                        producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
-                                        pList.add(producer);
-                                        queueNumber.clear();
-                                    }
-                                }
-
-
-                            } else if (topicNum == 8) {
-                                for (int k = 0; k < pubNum; k++) {
-                                    if (config.getId().equals("A")) {
-                                        if (k < pubNum / 2) {
-                                            brokerIP = bInfo.get(0).getIp();
-                                            queueNumber.add(k);
-                                        } else {
-                                            brokerIP = bInfo.get(1).getIp();
-                                            queueNumber.add(k);
-                                        }
-                                    } else if (config.getId().equals("B")) {
-                                        if (k < pubNum / 2) {
-                                            brokerIP = bInfo.get(2).getIp();
-                                            queueNumber.add(k + 4);
-                                        } else {
-                                            brokerIP = bInfo.get(3).getIp();
-                                            queueNumber.add(k + 4);
-                                        }
-                                    }
-                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
+                            if(config.getPlatform().equals("rabbitmq")) {
+                                if(config.getId().equals("A")) {
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(0), bInfo.get(0).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
                                     pList.add(producer);
-                                    queueNumber.clear();
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(0), bInfo.get(0).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(1), bInfo.get(1).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(1), bInfo.get(1).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
                                 }
-                            } else if (topicNum == 16) {
-                                //TODO:2 queue 1 producer
+                                else if(config.getId().equals("B")){
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(2), bInfo.get(2).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(2), bInfo.get(2).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(3), bInfo.get(3).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                    producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), Arrays.asList(3), bInfo.get(3).getIp(), config.getType(), config.getId(), config.getServerNum(), false);
+                                    pList.add(producer);
+                                }
+                            }
+
+                            else {
                                 for (int k = 0; k < pubNum; k++) {
                                     if (config.getId().equals("A")) {
                                         if (k < pubNum / 2) {
                                             brokerIP = bInfo.get(0).getIp();
-                                            if(k % 2 == 0) {
-                                                queueNumber.add(0);
-                                                queueNumber.add(8);
-                                            }
-                                            else {
-                                                queueNumber.add(1);
-                                                queueNumber.add(9);
-                                            }
-
+                                            queueNumber.add(0);
                                         } else {
                                             brokerIP = bInfo.get(1).getIp();
-                                            if(k % 2 == 0) {
-                                                queueNumber.add(2);
-                                                queueNumber.add(10);
-                                            }
-                                            else {
-                                                queueNumber.add(3);
-                                                queueNumber.add(11);
-                                            }
+                                            queueNumber.add(1);
                                         }
                                     } else if (config.getId().equals("B")) {
                                         if (k < pubNum / 2) {
                                             brokerIP = bInfo.get(2).getIp();
-                                            if(k % 2 == 0) {
-                                                queueNumber.add(4);
-                                                queueNumber.add(12);
-                                            }
-                                            else {
-                                                queueNumber.add(5);
-                                                queueNumber.add(13);
-                                            }
-
+                                            queueNumber.add(2);
                                         } else {
                                             brokerIP = bInfo.get(3).getIp();
-                                            if(k % 2 == 0) {
-                                                queueNumber.add(6);
-                                                queueNumber.add(14);
-                                            }
-                                            else {
-                                                queueNumber.add(7);
-                                                queueNumber.add(15);
-                                            }
+                                            queueNumber.add(3);
                                         }
                                     }
                                     producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
@@ -397,6 +317,86 @@ public class ClusterBenchmarker {
                                     queueNumber.clear();
                                 }
                             }
+
+
+                        } else if (topicNum == 8) {
+                            for (int k = 0; k < pubNum; k++) {
+                                if (config.getId().equals("A")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(0).getIp();
+                                        queueNumber.add(k);
+                                    } else {
+                                        brokerIP = bInfo.get(1).getIp();
+                                        queueNumber.add(k);
+                                    }
+                                } else if (config.getId().equals("B")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(2).getIp();
+                                        queueNumber.add(k + 4);
+                                    } else {
+                                        brokerIP = bInfo.get(3).getIp();
+                                        queueNumber.add(k + 4);
+                                    }
+                                }
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
+                                pList.add(producer);
+                                queueNumber.clear();
+                            }
+                        } else if (topicNum == 16) {
+                            //TODO:2 queue 1 producer
+                            for (int k = 0; k < pubNum; k++) {
+                                if (config.getId().equals("A")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(0).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(0);
+                                            queueNumber.add(8);
+                                        }
+                                        else {
+                                            queueNumber.add(1);
+                                            queueNumber.add(9);
+                                        }
+
+                                    } else {
+                                        brokerIP = bInfo.get(1).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(2);
+                                            queueNumber.add(10);
+                                        }
+                                        else {
+                                            queueNumber.add(3);
+                                            queueNumber.add(11);
+                                        }
+                                    }
+                                } else if (config.getId().equals("B")) {
+                                    if (k < pubNum / 2) {
+                                        brokerIP = bInfo.get(2).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(4);
+                                            queueNumber.add(12);
+                                        }
+                                        else {
+                                            queueNumber.add(5);
+                                            queueNumber.add(13);
+                                        }
+
+                                    } else {
+                                        brokerIP = bInfo.get(3).getIp();
+                                        if(k % 2 == 0) {
+                                            queueNumber.add(6);
+                                            queueNumber.add(14);
+                                        }
+                                        else {
+                                            queueNumber.add(7);
+                                            queueNumber.add(15);
+                                        }
+                                    }
+                                }
+                                producer = new Producer(messageSize, dataSize / pubNum, topicNum, ("ProducerFolder-" + 0), config.getPlatform(), queueNumber, brokerIP, config.getType(), config.getId(), config.getServerNum(), false);
+                                pList.add(producer);
+                                queueNumber.clear();
+                            }
+                        }
                         break;
                     case "broker":
                         if (brokerNum == 1) {
@@ -780,35 +780,35 @@ public class ClusterBenchmarker {
                         queue.clear();
                     }
                 }
-                    ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
-                    List<Thread> threadList = new ArrayList<>();
+                ScheduledExecutorService ex = Executors.newScheduledThreadPool(cList.size());
+                List<Thread> threadList = new ArrayList<>();
 
-                    synchronizer.sync();
+                synchronizer.sync();
 
-                    for(Consumer c : cList) {
-                        Callable<Void> call = () -> {
-                            System.out.println("Running Consumer AGAIN");
-                            c.run();
-                            return null;
-                        };
-                        Thread temp = new Thread(() -> {
-                            try {
-                                ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }finally{
-                                c.shutdown();
-                            }
-                        });
-                        threadList.add(temp);
-                        temp.start();
+                for(Consumer c : cList) {
+                    Callable<Void> call = () -> {
+                        System.out.println("Running Consumer AGAIN");
+                        c.run();
+                        return null;
+                    };
+                    Thread temp = new Thread(() -> {
+                        try {
+                            ex.invokeAll(Collections.singletonList(call),2,TimeUnit.MINUTES);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }finally{
+                            c.shutdown();
+                        }
+                    });
+                    threadList.add(temp);
+                    temp.start();
 
                 /*final Future handler = ex.submit(call);
                 ex.schedule(() -> {
                     handler.cancel(true); // bura sıkıntılı
                 },10,TimeUnit.SECONDS);*/
-                        System.out.println("--------------------------------");
-                    }
+                    System.out.println("--------------------------------");
+                }
                 for(Producer p : pList) {
                     Callable<Void> call = () -> {
                         System.out.println("Running producer AGAIN");
@@ -834,52 +834,52 @@ public class ClusterBenchmarker {
                     System.out.println("--------------------------------");
                 }
 
-                    Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
-                    String type = config.getPubOrSub();
-                    String id = config.getId();
-                    String platform = config.getPlatform();
-                    String testName = args[0].replace(".config",".test");
-                    testName = testName.split("/")[1];
-                    System.out.printf("NAME OF TEST:"+testName);
-                    Utilizer u = new Utilizer(pId, type, id,platform,testName,j,serverNumber);
-                    Thread uThread = new Thread(u);
-                    uThread.start();
+                Long pId = Long.parseLong(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+                String type = config.getPubOrSub();
+                String id = config.getId();
+                String platform = config.getPlatform();
+                String testName = args[0].replace(".config",".test");
+                testName = testName.split("/")[1];
+                System.out.printf("NAME OF TEST:"+testName);
+                Utilizer u = new Utilizer(pId, type, id,platform,testName,j,serverNumber);
+                Thread uThread = new Thread(u);
+                uThread.start();
 
-                    for(Thread e : threadList){
-                        try {
-                            e.join();
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                    ex.shutdown();
-                    u.setStop(true);
-                    try{
-                        uThread.join();
-                    }catch (InterruptedException ex1){
-                        ex1.printStackTrace();
-                    }
-                    double avgCPU = u.getAvgCPU();
-                    double avgMem = u.getAvgMem();
-                    double throughput = u.getConsumerThroughput();
-
-                    System.out.println("Average TEST: " + avgCPU + " " + avgMem);
-
-                    finalCPU += avgCPU;
-                    finalMem += avgMem;
-                    finalThroughput += throughput;
-
-
-                    synchronizer.sync();
-
-
-                    cList.clear();
-
+                for(Thread e : threadList){
                     try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        e.join();
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
                     }
+                }
+                ex.shutdown();
+                u.setStop(true);
+                try{
+                    uThread.join();
+                }catch (InterruptedException ex1){
+                    ex1.printStackTrace();
+                }
+                double avgCPU = u.getAvgCPU();
+                double avgMem = u.getAvgMem();
+                double throughput = u.getConsumerThroughput();
+
+                System.out.println("Average TEST: " + avgCPU + " " + avgMem);
+
+                finalCPU += avgCPU;
+                finalMem += avgMem;
+                finalThroughput += throughput;
+
+
+                synchronizer.sync();
+
+
+                cList.clear();
+
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
 
