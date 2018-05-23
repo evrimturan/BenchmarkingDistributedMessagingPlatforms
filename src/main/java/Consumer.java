@@ -284,6 +284,7 @@ public class Consumer {
                     props.put("auto.offset.reset", "earliest");
                     props.put("session.timeout.ms", "30000");
                     props.put("fetch.message.max.bytes","10485760");
+                    props.put("max.partition.fetch.bytes","10485760");
                     props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
                     props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
 
